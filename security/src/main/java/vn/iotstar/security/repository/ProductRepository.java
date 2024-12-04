@@ -18,13 +18,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	List<Product> findByCategory(Category category);
 
-	List<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2);
+	List<Product> findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(String ch, String ch2);
 
 	Page<Product> findByCategory(Pageable pageable, Category category);
 
-	Page<Product> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2,
+	Page<Product> findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(String ch, String ch2,
 			Pageable pageable);
 
-	Page<Product> findByisActiveTrueAndTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String ch, String ch2,
+	Page<Product> findByisActiveTrueAndTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(String ch, String ch2,
 			Pageable pageable);
 }
