@@ -6,11 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -29,6 +31,7 @@ import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
+import vn.iotstar.security.util.CommonUtil;
 
 @Controller
 @RequestMapping("/admin")
@@ -39,9 +42,21 @@ public class AdminController {
 
 	@Autowired
 	private ProductService productService;
-	
+
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private CommonUtil commonUtil;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	private User getLoggedInUserDetails(Principal p) {
+		String email = p.getName();
+		User userDtls = userService.getUserByEmail(email);
+		return userDtls;
+	}
 
 	@GetMapping("/")
 	public String index() {
@@ -242,7 +257,7 @@ public class AdminController {
 		}
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
-	
+
 	@GetMapping("/users")
 	public String getAllUsers(Model m, @RequestParam Integer type) {
 		List<User> users = null;
@@ -251,22 +266,23 @@ public class AdminController {
 		} else {
 			users = userService.getUsers("ROLE_ADMIN");
 		}
-		m.addAttribute("userType",type);
+		m.addAttribute("userType", type);
 		m.addAttribute("users", users);
 		return "/admin/users";
 	}
 
 	@GetMapping("/updateSts")
-	public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Integer id,@RequestParam Integer type, HttpSession session) {
+	public String updateUserAccountStatus(@RequestParam Boolean status, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
 		Boolean f = userService.updateAccountStatus(id, status);
 		if (f) {
 			session.setAttribute("succMsg", "Account Status Updated");
 		} else {
 			session.setAttribute("errorMsg", "Something wrong on server");
 		}
-		return "redirect:/admin/users?type="+type;
+		return "redirect:/admin/users?type=" + type;
 	}
-	
+
 	@GetMapping("/add-admin")
 	public String loadAdminAdd() {
 		return "/admin/add_admin";
@@ -296,9 +312,11 @@ public class AdminController {
 
 		return "redirect:/admin/add-admin";
 	}
-	
+
 	@GetMapping("/profile")
-	public String profile() {
+	public String profile(Principal p, Model m, HttpSession session) {
+		User loggedInUserDetails = getLoggedInUserDetails(p);
+		m.addAttribute(loggedInUserDetails);
 		return "/admin/profile";
 	}
 
@@ -310,6 +328,29 @@ public class AdminController {
 		} else {
 			session.setAttribute("succMsg", "Profile Updated");
 		}
+		return "redirect:/admin/profile";
+	}
+
+	@PostMapping("/change-password")
+	public String changePassword(@RequestParam String newPassword, @RequestParam String currentPassword, Principal p,
+			HttpSession session) {
+		User loggedInUserDetails = commonUtil.getLoggedInUserDetails(p);
+
+		boolean matches = passwordEncoder.matches(currentPassword, loggedInUserDetails.getPassword());
+
+		if (matches) {
+			String encodePassword = passwordEncoder.encode(newPassword);
+			loggedInUserDetails.setPassword(encodePassword);
+			User updateUser = userService.updateUser(loggedInUserDetails);
+			if (ObjectUtils.isEmpty(updateUser)) {
+				session.setAttribute("errorMsg", "Password not updated !! Error in server");
+			} else {
+				session.setAttribute("succMsg", "Password Updated sucessfully");
+			}
+		} else {
+			session.setAttribute("errorMsg", "Current Password incorrect");
+		}
+
 		return "redirect:/admin/profile";
 	}
 
