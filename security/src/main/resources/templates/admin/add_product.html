@@ -14,15 +14,8 @@
 						<div class="card-header text-center ">
 							<p class="fs-4">Add Product</p>
 
-							<th:block th:if="${session.succMsg}">
-								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
-
-							<th:block th:if="${session.errorMsg}">
-								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
+							<p th:if="${session.succMsg}" class="text-success fw-bold">[[${session.succMsg}]]</p>
+							<p th:if="${session.errorMsg}" class="text-danger fw-bold">[[${session.errorMsg}]]</p>
 
 						</div>
 						<div class="card-body">
@@ -40,11 +33,14 @@
 								</div>
 
 								<div class="mb-3">
-									<label>Category</label> <select class="form-control"
-										name="category">
-										<option>--select--</option>
-										<option th:each="c:${categories}">[[${c.name}]]</option>
-									</select>
+								    <label>Category</label>
+								    <select class="form-control" name="category">
+								        <option value="">--select--</option>
+								        <option th:each="c : ${categories}" 
+								                th:value="${c.id}" 
+								                th:text="${c.name}">
+								        </option>
+								    </select>
 								</div>
 
 								<div class="mb-3">
@@ -80,7 +76,7 @@
 											class="form-control">
 									</div>
 								</div>
-								<button class="btn btn-primary col-md-12">Submit</button>
+								<button class="btn btn-danger col-md-12">Submit</button>
 							</form>
 						</div>
 					</div>

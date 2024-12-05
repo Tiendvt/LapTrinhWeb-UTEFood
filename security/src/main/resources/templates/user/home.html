@@ -1,10 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>UTEFood</title>
 </head>
+
 <body>
-	<h1>User Home Page</h1>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+	    <div class="container-fluid">
+	        <a class="navbar-brand" href="/">
+	            <i class="fa fa-shopping-cart"></i> UTE FOOD SHOP
+	        </a>
+	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+	            <span class="navbar-toggler-icon"></span>
+	        </button>
+	        <div class="collapse navbar-collapse" id="navbarNav">
+	            <ul class="navbar-nav ms-auto">
+	                <li class="nav-item">
+	                    <a class="nav-link" href="/">Home</a>
+	                </li>
+	                <li class="nav-item">
+	                    <a class="nav-link" href="/product">Product</a>
+	                </li>
+	                <li class="nav-item dropdown">
+	                    <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+	                        Category
+	                    </a>
+	                    <ul class="dropdown-menu">
+	                        <li><a class="dropdown-item" href="/category/food">Food</a></li>
+	                        <li><a class="dropdown-item" href="/category/drinks">Drinks</a></li>
+	                    </ul>
+	                </li>
+	                <!-- Hiển thị khi chưa đăng nhập -->
+	                <li class="nav-item" th:if="${!isLoggedIn}">
+	                    <a class="nav-link" href="/login">
+	                        <i class="fa fa-sign-in"></i> Login
+	                    </a>
+	                </li>
+	                <li class="nav-item" th:if="${!isLoggedIn}">
+	                    <a class="nav-link" href="/register">
+	                        <i class="fa fa-user-plus"></i> Register
+	                    </a>
+	                </li>
+	                <!-- Hiển thị khi đã đăng nhập -->
+	                <li class="nav-item" th:if="${isLoggedIn}">
+	                    <a class="nav-link" href="/cart">
+	                        <i class="fa fa-shopping-cart"></i> Cart
+	                    </a>
+	                </li>
+	                <li class="nav-item" th:if="${isLoggedIn}">
+	                    <a class="nav-link" href="/logout">
+	                        <i class="fa fa-sign-out"></i> Logout
+	                    </a>
+	                </li>
+	            </ul>
+	        </div>
+	    </div>
+	</nav>
+
+	<section>
+		<div class="container p-5">
+			<p class="text-center fs-3 mt-4">Hello Users</p>
+			<div class="row p-5">
+				<div class="col-md-4 mt-2">
+					<a href="/admin/loadAddProduct" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-primary">
+								<i class="fa-solid fa-square-plus fa-3x"></i>
+								<h4>Add Product</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+				<div class="col-md-4 mt-2">
+					<a href="/admin/category" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-warning">
+								<i class="fa-solid fa-list fa-3x"></i>
+								<h4>Add Favorite Food List</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+				<div class="col-md-4 mt-2">
+					<a href="/admin/products" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-success">
+								<i class="fa-solid fa-table-list fa-3x"></i>
+								<h4>View Food</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+
+				<div class="col-md-4 mt-4">
+					<a href="/admin/orders" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-warning">
+								<i class="fa-solid fa-box-open fa-3x"></i>
+								<h4>My Orders</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+
+				<div class="col-md-4 mt-4">
+					<a href="/admin/users?type=1" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-primary">
+								<i class="fa-solid fa-circle-user fa-3x"></i>
+								<h4>Users</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+				<div class="col-md-4 mt-4">
+					<a href="/admin/add-admin" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-primary">
+								<i class="fa-solid fa-user-plus fa-3x"></i>
+								<h4>Add Friend</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+				<div class="col-md-4 mt-4">
+					<a href="/admin/users?type=2" class="text-decoration-none">
+						<div class="card card-sh">
+							<div class="card-body text-center text-primary">
+								<i class="fa-solid fa-circle-user fa-3x"></i>
+								<h4>My Profile</h4>
+							</div>
+						</div>
+					</a>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
 </body>
+
 </html>
