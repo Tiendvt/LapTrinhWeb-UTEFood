@@ -85,7 +85,7 @@ $(function(){
 				space: 'space not allowed'
 
 			},
-			confirmpassword: {
+			confirmPassword: {
 				required: 'confirm password must be required',
 				space: 'space not allowed',
 				equalTo: 'password mismatch'
@@ -159,7 +159,7 @@ $orders.validate({
 				space: true
 
 			},
-			state: {
+			province: {
 				required: true,
 
 
@@ -204,12 +204,12 @@ $orders.validate({
 
 			city: {
 				required: 'city must be required',
-				space: 'space not allowed'
+				//space: 'space not allowed'
 
 			},
-			state: {
-				required: 'state must be required',
-				space: 'space not allowed'
+			province: {
+				required: 'province must be required',
+				//space: 'space not allowed'
 
 			},
 			pincode: {
