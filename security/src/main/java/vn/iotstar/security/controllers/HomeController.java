@@ -89,8 +89,14 @@ public class HomeController {
 	}
 
 	@GetMapping("/signin")
-	public String login() {
-		return "login";
+	public String login(Principal principal) {
+		// Kiểm tra nếu người dùng hiện tại đã đăng nhập
+	    if (principal != null) {
+	        // Chuyển hướng người dùng đã đăng nhập sang trang chính
+	        return "redirect:/";
+	    }
+	    // Nếu chưa đăng nhập, hiển thị trang đăng nhập
+	    return "login";
 	}
 
 	@GetMapping("/register")
@@ -248,6 +254,10 @@ public class HomeController {
 		m.addAttribute("categories", categories);
 		return "product";
 
+	}
+	@GetMapping("/profile")
+	public String profile() {
+		return "user/profile";
 	}
 
 }
