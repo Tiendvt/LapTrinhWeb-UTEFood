@@ -1,3 +1,4 @@
+
 package vn.iotstar.security.service.impl;
 
 import java.io.File;
@@ -109,26 +110,22 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<Product> getAllActiveProducts(String categoryName) {
-	    if (ObjectUtils.isEmpty(categoryName)) {
-	        // No category filter; fetch all active products
-	        return productRepository.findByIsActiveTrue();
-	    } else {
-	        // Fetch products by category name
-	        Category category = categoryRepository.findByName(categoryName);
-	        if (category == null) {
-	            throw new RuntimeException("Category not found: " + categoryName);
-	        }
-	        return productRepository.findByCategory(category);
-	    }
-	}
+	public List<Product> getAllActiveProducts(String category_name) {
+		List<Product> products = null;
+		if (ObjectUtils.isEmpty(category_name)) {
+			products = productRepository.findByIsActiveTrue();
+		} else {
+			Category cate = categoryRepository.findByName(category_name);
+			products = productRepository.findByCategory(cate);
+		}
 
+		return products;
+	}
 
 	@Override
-	public List<Product> searchProduct(String keyword) {
-	    return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(keyword, keyword);
+	public List<Product> searchProduct(String ch) {
+		return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(ch, ch);
 	}
-
 
 	@Override
 	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch) {

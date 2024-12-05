@@ -1,6 +1,5 @@
+
 package vn.iotstar.security.service;
-
-
 
 import java.util.List;
 
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import vn.iotstar.security.model.Category;
-
 
 
 public interface CategoryService {
