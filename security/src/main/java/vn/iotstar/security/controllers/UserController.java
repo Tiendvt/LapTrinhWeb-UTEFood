@@ -50,7 +50,7 @@ public class UserController {
 				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
 				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
-		m.addAttribute("category", allActiveCategory);
+		m.addAttribute("categories", allActiveCategory);
 		m.addAttribute("products", allActiveProducts);
 		return "/user/home";
 	}
