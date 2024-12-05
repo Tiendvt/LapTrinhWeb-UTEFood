@@ -27,11 +27,11 @@ public class Product {
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     private String title;
 
-    @Column(length = 5000, columnDefinition = "NVARCHAR(5000)")
+    @Column(length = 4000, columnDefinition = "NVARCHAR(4000)")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Many products can belong to one category
-    @JoinColumn(name = "category_id") // Foreign key column for the relationship
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "category_id") 
     private Category category;
 
     private Double price;

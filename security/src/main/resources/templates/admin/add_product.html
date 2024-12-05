@@ -23,7 +23,7 @@
 								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
 								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 							</th:block>
-
+							
 						</div>
 						<div class="card-body">
 							<form action="/admin/saveProduct" method="post"
@@ -40,11 +40,14 @@
 								</div>
 
 								<div class="mb-3">
-									<label>Category</label> <select class="form-control"
-										name="category">
-										<option>--select--</option>
-										<option th:each="c:${categories}">[[${c.name}]]</option>
-									</select>
+								    <label>Category</label>
+								    <select class="form-control" name="category">
+								        <option value="">--select--</option>
+								        <option th:each="c : ${categories}" 
+								                th:value="${c.id}" 
+								                th:text="${c.name}">
+								        </option>
+								    </select>
 								</div>
 
 								<div class="mb-3">
