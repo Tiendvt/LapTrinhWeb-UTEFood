@@ -131,14 +131,6 @@ public class AdminController {
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-
-		/*
-		 * List<Product> products = null; if (ch != null && ch.length() > 0) { products
-		 * = productService.searchProduct(ch); } else { products =
-		 * productService.getAllProducts(); } if (products == null) {
-		 * System.out.print("null"); } m.addAttribute("products", products);
-		 */
-
 		
 		  Page<Product> page = null; 
 		  if (ch != null && ch.length() > 0) { 
@@ -146,13 +138,7 @@ public class AdminController {
 		  } else { 
 			  page = productService.getAllProductsPagination(pageNo, pageSize); 
 		  }
-		  if (page == null) {
-			  System.out.println("PAGE IS NULL");
-		  }
-		  else {
-			  System.out.println("PAGE IS NOT NULL");
-			  System.out.println(page.getNumber());
-		  }
+
 		  m.addAttribute("products", page.getContent());	  
 		  m.addAttribute("pageNo", page.getNumber()+1);
 		  m.addAttribute("pageSize",pageSize); 
