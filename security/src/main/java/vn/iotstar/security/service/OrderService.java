@@ -7,18 +7,27 @@ import org.springframework.data.domain.Page;
 import vn.iotstar.security.model.OrderRequest;
 import vn.iotstar.security.model.ProductOrder;
 
+import vn.iotstar.security.model.Shop;
+
+
 
 public interface OrderService {
 
-	public void saveOrder(Integer userid, OrderRequest orderRequest) throws Exception;
 
-	public List<ProductOrder> getOrdersByUser(Integer userId);
+    void saveOrder(Integer userId, OrderRequest orderRequest) throws Exception;
 
-	public ProductOrder updateOrderStatus(Integer id, String status);
+    List<ProductOrder> getOrdersByUser(Integer userId);
 
-	public List<ProductOrder> getAllOrders();
+    ProductOrder updateOrderStatus(Integer id, String status);
 
-	public ProductOrder getOrdersByOrderId(String orderId);
-	
-	public Page<ProductOrder> getAllOrdersPagination(Integer pageNo,Integer pageSize);
+    List<ProductOrder> getAllOrders();
+
+    ProductOrder getOrdersByOrderId(String orderId);
+
+    Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize);
+
+    Page<ProductOrder> getOrdersByShopPagination(Shop shop, Integer pageNo, Integer pageSize);
+
+    Page<ProductOrder> getOrdersByStatusAndShop(String status, Shop shop, Integer pageNo, Integer pageSize);
 }
+
