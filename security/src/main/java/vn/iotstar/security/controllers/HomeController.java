@@ -66,9 +66,9 @@ public class HomeController {
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
 			String email = p.getName();
-			User userDtls = userService.getUserByEmail(email);
-			m.addAttribute("user", userDtls);
-			Integer countCart = cartService.getCountCart(userDtls.getId());
+			User user = userService.getUserByEmail(email);
+			m.addAttribute("user", user);
+			Integer countCart = cartService.getCountCart(user.getId());
 			m.addAttribute("countCart", countCart);
 		}
 

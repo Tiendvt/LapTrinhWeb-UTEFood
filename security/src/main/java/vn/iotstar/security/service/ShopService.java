@@ -7,6 +7,11 @@ public interface ShopService {
     Shop getShopByOwnerEmail(String email);
 
     Shop updateShopDetails(Shop shop);
+
+    boolean doesShopExistForOwner(String email);
+
+    Shop saveShop(Shop shop);
+    
 }
 
 
