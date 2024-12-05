@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
 
@@ -30,9 +31,11 @@
 
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>Email</label> <input type="email" name="email" required
-									class="form-control col">
+								<label>Email</label>
+								<input type="email" name="email" required class="form-control col"
+									placeholder="Enter a valid email address">
 							</div>
+
 							<div class="col p-1">
 								<label>Mobile Number</label> <input type="text" name="mobileNo" required
 									class="form-control col ms-2">
@@ -51,8 +54,7 @@
 						</div>
 						<div class="mb-3 row">
 							<div class="col p-1">
-								<label>State</label> <input type="text" name="state" required
-									class="form-control col">
+								<label>State</label> <input type="text" name="state" required class="form-control col">
 							</div>
 							<div class="col p-1">
 								<label>Pincode</label> <input type="number" name="pincode" required
@@ -101,9 +103,8 @@
 							<div class="card-body">
 								<!-- <form action="/login" method="post"> -->
 								<div class="mb-3">
-									<label class="form-label">Select Payment Type</label> 
-									<select  required id="paymentType"
-										name="paymentType" class="form-control">
+									<label class="form-label">Select Payment Type</label>
+									<select required id="paymentType" name="paymentType" class="form-control">
 										<option value="">--select--</option>
 										<option value="COD">Cash On Delivery</option>
 										<option value="ONLINE">Online Payment</option>
@@ -126,12 +127,22 @@
 	<script>
 document.getElementById('orders').onsubmit = function(e) {
     var paymentType = document.getElementById('paymentType').value;
+    var emailInput = document.querySelector('[name="email"]');
+    var email = emailInput.value;
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex để kiểm tra email hợp lệ
+
     if (paymentType === "") {
         alert('Please select a payment type.');
-        e.preventDefault(); // Ngăn chặn form được gửi đi nếu chưa chọn payment type
+        e.preventDefault();
+    } else if (email === "" || !emailPattern.test(email)) {
+        alert('Please enter a valid email address.');
+        e.preventDefault();
+        emailInput.focus(); // Đặt focus vào trường email nếu có lỗi
     }
 };
 </script>
 
+
 </body>
+
 </html>
