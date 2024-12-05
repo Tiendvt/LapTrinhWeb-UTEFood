@@ -66,9 +66,9 @@ public class HomeController {
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
 			String email = p.getName();
-			User userDtls = userService.getUserByEmail(email);
-			m.addAttribute("user", userDtls);
-			Integer countCart = cartService.getCountCart(userDtls.getId());
+			User user = userService.getUserByEmail(email);
+			m.addAttribute("user", user);
+			Integer countCart = cartService.getCountCart(user.getId());
 			m.addAttribute("countCart", countCart);
 		}
 
@@ -89,8 +89,14 @@ public class HomeController {
 	}
 
 	@GetMapping("/signin")
-	public String login() {
-		return "login";
+	public String login(Principal principal) {
+		// Kiểm tra nếu người dùng hiện tại đã đăng nhập
+	    if (principal != null) {
+	        // Chuyển hướng người dùng đã đăng nhập sang trang chính
+	        return "redirect:/";
+	    }
+	    // Nếu chưa đăng nhập, hiển thị trang đăng nhập
+	    return "login";
 	}
 
 	@GetMapping("/register")
@@ -273,6 +279,10 @@ public class HomeController {
 		m.addAttribute("categories", categories);
 		return "product";
 
+	}
+	@GetMapping("/profile")
+	public String profile() {
+		return "user/profile";
 	}
 
 }
