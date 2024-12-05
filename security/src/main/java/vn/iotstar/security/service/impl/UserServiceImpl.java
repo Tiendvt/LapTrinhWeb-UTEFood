@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.repository.UserRepository;
 import vn.iotstar.security.service.UserService;
@@ -26,7 +27,23 @@ public class UserServiceImpl implements UserService{
 	public Boolean existsEmail(String email) {
 		return userRepository.existsByEmail(email);
 	}
+	public User getUserByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
 
-	
+	@Override
+	public User getUserByToken(String token) {
+		return userRepository.findByResetToken(token);
+	}
+	@Override
+	public void updateUserResetToken(String email, String resetToken) {
+		User findByEmail = userRepository.findByEmail(email);
+		findByEmail.setResetToken(resetToken);
+		userRepository.save(findByEmail);
+	}
+	@Override
+	public User updateUser(User user) {
+		return userRepository.save(user);
+	}
 	
 }
