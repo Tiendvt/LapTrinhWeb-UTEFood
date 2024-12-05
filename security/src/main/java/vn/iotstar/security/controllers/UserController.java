@@ -14,27 +14,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Cart;
+import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.OrderRequest;
+import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CartService;
+import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
+import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
+import vn.iotstar.security.util.CommonUtil;
+import vn.iotstar.security.util.OrderStatus;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+	@Autowired
+	private CategoryService categoryService;
 	@Autowired
 	private OrderService orderService;
 	@Autowired
 	private CartService cartService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private CommonUtil commonUtil;
+	@Autowired
+	private ProductService productService;
 	@GetMapping("/")
-	public String home() {
-		return "user/home";
+	public String home(Model m) {
+
+		List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
+				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
+		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
+				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+		m.addAttribute("category", allActiveCategory);
+		m.addAttribute("products", allActiveProducts);
+		return "/user/home";
 	}
 	@GetMapping("/addCart")
 	public String addToCart(@RequestParam Integer pid, @RequestParam Integer uid, HttpSession session) {
@@ -100,5 +118,32 @@ public class UserController {
 		List<ProductOrder> orders = orderService.getOrdersByUser(loginUser.getId());
 		m.addAttribute("orders", orders);
 		return "/user/my_orders";
+	}
+	@GetMapping("/update-status")
+	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+
+		OrderStatus[] values = OrderStatus.values();
+		String status = null;
+
+		for (OrderStatus orderSt : values) {
+			if (orderSt.getId().equals(st)) {
+				status = orderSt.getName();
+			}
+		}
+
+		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+		
+		try {
+			commonUtil.sendMailForProductOrder(updateOrder, status);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (!ObjectUtils.isEmpty(updateOrder)) {
+			session.setAttribute("succMsg", "Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "status not updated");
+		}
+		return "redirect:/user/user-orders";
 	}
 }
