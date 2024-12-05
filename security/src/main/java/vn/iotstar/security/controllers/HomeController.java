@@ -220,9 +220,6 @@ public class HomeController {
 			String resetToken = UUID.randomUUID().toString();
 			userService.updateUserResetToken(email, resetToken);
 
-			// Generate URL :
-			// http://localhost:8080/reset-password?token=sfgdbgfswegfbdgfewgvsrg
-
 			String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
 			Boolean sendMail = commonUtil.sendMailReset(url, email);
@@ -261,7 +258,6 @@ public class HomeController {
 			userByToken.setPassword(passwordEncoder.encode(password));
 			userByToken.setResetToken(null);
 			userService.updateUser(userByToken);
-			// session.setAttribute("succMsg", "Password change successfully");
 			m.addAttribute("msg", "Password change successfully");
 
 			return "message";
