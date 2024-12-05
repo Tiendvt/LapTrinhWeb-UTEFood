@@ -166,7 +166,7 @@ public class AdminController {
 		  m.addAttribute("isFirst",page.isFirst()); 
 		  m.addAttribute("isLast", page.isLast());
 		 
-
+		  //
 		return "admin/products";
 	}
 
