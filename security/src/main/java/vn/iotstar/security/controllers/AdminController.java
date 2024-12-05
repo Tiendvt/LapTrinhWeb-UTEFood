@@ -21,37 +21,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.ProductService;
 
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-	
+
 	@Autowired
 	private CategoryService categoryService;
-	
+
 	@Autowired
 	private ProductService productService;
-	
-    @GetMapping("/")
-    public String index() {
-        return "admin/index"; 
-    }
-    
-    @GetMapping("/loadAddProduct")
+
+	@GetMapping("/")
+	public String index() {
+		return "admin/index";
+	}
+
+	@GetMapping("/loadAddProduct")
 	public String loadAddProduct(Model m) {
 		List<Category> categories = categoryService.getAllCategory();
 		m.addAttribute("categories", categories);
 		return "admin/add_product";
 	}
-    
-    @GetMapping("/category")
+
+	@GetMapping("/category")
 	public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 		// m.addAttribute("categorys", categoryService.getAllCategory());
@@ -68,8 +66,8 @@ public class AdminController {
 
 		return "admin/category";
 	}
-    
-    @PostMapping("/saveCategory")
+
+	@PostMapping("/saveCategory")
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 
@@ -100,10 +98,10 @@ public class AdminController {
 			}
 		}
 
-		return "redirect:/admin/category";
+		return "redirect:/admin/loadAddProduct";
 	}
-    
-    @PostMapping("/saveProduct")
+
+	@PostMapping("/saveProduct")
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session) throws IOException {
 
@@ -116,8 +114,8 @@ public class AdminController {
 		if (!ObjectUtils.isEmpty(saveProduct)) {
 			File saveFile = new ClassPathResource("static/img").getFile();
 
-			Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator
-					+ imageName);
+			Path path = Paths
+					.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
 
 			// System.out.println(path);
 			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -126,38 +124,45 @@ public class AdminController {
 		} else {
 			session.setAttribute("errorMsg", "something wrong on server");
 		}
-		return "redirect:/admin/loadAddProduct";
+		return "redirect:/admin/";
 	}
-    
-    @GetMapping("/products")
+
+	@GetMapping("/products")
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
-		List<Product> products = null;
-		if (ch != null && ch.length() > 0) {
-			products = productService.searchProduct(ch);
-		} else {
-			products = productService.getAllProducts();
-		}
-		m.addAttribute("products", products);
+		/*
+		 * List<Product> products = null; if (ch != null && ch.length() > 0) { products
+		 * = productService.searchProduct(ch); } else { products =
+		 * productService.getAllProducts(); } if (products == null) {
+		 * System.out.print("null"); } m.addAttribute("products", products);
+		 */
 
 		
-		/*
-		 * Page<Product> page = null; if (ch != null && ch.length() > 0) { page =
-		 * productService.searchProductPagination(pageNo, pageSize, ch); } else { page =
-		 * productService.getAllProductsPagination(pageNo, pageSize); }
-		 * m.addAttribute("products", page.getContent());
-		 * 
-		 * m.addAttribute("pageNo", page.getNumber()); m.addAttribute("pageSize",
-		 * pageSize); m.addAttribute("totalElements", page.getTotalElements());
-		 * m.addAttribute("totalPages", page.getTotalPages()); m.addAttribute("isFirst",
-		 * page.isFirst()); m.addAttribute("isLast", page.isLast());
-		 */
+		  Page<Product> page = null; 
+		  if (ch != null && ch.length() > 0) { 
+			  page = productService.searchProductPagination(pageNo, pageSize, ch); 
+		  } else { 
+			  page = productService.getAllProductsPagination(pageNo, pageSize); 
+		  }
+		  if (page == null) {
+			  System.out.println("PAGE IS NULL");
+		  }
+		  else {
+			  System.out.println("PAGE IS NOT NULL");
+			  System.out.println(page.getNumber());
+		  }
+		  m.addAttribute("products", page.getContent());	  
+		  m.addAttribute("pageNo", page.getNumber()+1);
+		  m.addAttribute("pageSize",pageSize); 
+		  m.addAttribute("totalElements", page.getTotalElements());
+		  m.addAttribute("totalPages", page.getTotalPages());
+		  m.addAttribute("isFirst",page.isFirst()); 
+		  m.addAttribute("isLast", page.isLast());
 		 
 
 		return "admin/products";
 	}
-   
-    
+
 }
