@@ -223,6 +223,7 @@ public class AdminController {
 		return "admin/products";
 	}
 
+
 	@GetMapping("/deleteProduct/{id}")
 	public String deleteProduct(@PathVariable int id, HttpSession session) {
 		Boolean deleteProduct = productService.deleteProduct(id);
@@ -353,5 +354,6 @@ public class AdminController {
 
 		return "redirect:/admin/profile";
 	}
+
 
 }

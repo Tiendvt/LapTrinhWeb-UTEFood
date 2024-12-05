@@ -1,5 +1,10 @@
 package vn.iotstar.security.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +22,6 @@ import vn.iotstar.security.repository.ProductOrderRepository;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
             order.setPrice(cart.getProduct().getDiscountPrice());
             order.setQuantity(cart.getQuantity());
             order.setUser(cart.getUser());
-            order.setShop(cart.getProduct().getShop());
+            order.setShop(cart.getProduct().getShop()); // Ensure shop linkage
             order.setStatus(OrderStatus.IN_PROGRESS.getName());
             order.setPaymentType(orderRequest.getPaymentType());
 
@@ -99,6 +99,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public ProductOrder getOrdersByOrderId(String orderId) {
+        return orderRepository.findByOrderId(orderId);
+    }
+
+    @Override
     public Page<ProductOrder> getOrdersByShopPagination(Shop shop, Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return orderRepository.findAllByShop(shop, pageable);
@@ -109,9 +114,5 @@ public class OrderServiceImpl implements OrderService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return orderRepository.findAllByStatusAndShop(status, shop, pageable);
     }
-
-    @Override
-    public ProductOrder getOrdersByOrderId(String orderId) {
-        return orderRepository.findByOrderId(orderId);
-    }
 }
+

@@ -1,5 +1,6 @@
 package vn.iotstar.security.repository;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,5 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Inte
 
     // Fetch paginated orders by status and shop
     Page<ProductOrder> findAllByStatusAndShop(String status, Shop shop, Pageable pageable);
+
 }
