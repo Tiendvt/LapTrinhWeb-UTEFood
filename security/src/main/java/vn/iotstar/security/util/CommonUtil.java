@@ -26,18 +26,35 @@ public class CommonUtil {
 	@Autowired
 	private UserService userService;
 
-	public Boolean sendMail(String url, String reciepentEmail) throws UnsupportedEncodingException, MessagingException {
+	public Boolean sendMailReset(String url, String reciepentEmail) throws UnsupportedEncodingException, MessagingException {
 
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 
-		helper.setFrom("daspabitra55@gmail.com", "Shooping Cart");
+		helper.setFrom("phamv4356@gmail.com", "Shooping Cart");
 		helper.setTo(reciepentEmail);
 
 		String content = "<p>Hello,</p>" + "<p>You have requested to reset your password.</p>"
 				+ "<p>Click the link below to change your password:</p>" + "<p><a href=\"" + url
 				+ "\">Change my password</a></p>";
 		helper.setSubject("Password Reset");
+		helper.setText(content, true);
+		mailSender.send(message);
+		return true;
+	}
+	
+	public Boolean sendMailActive(String url, String reciepentEmail) throws UnsupportedEncodingException, MessagingException {
+
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+
+		helper.setFrom("phamv4356@gmail.com", "Shooping Cart");
+		helper.setTo(reciepentEmail);
+
+		String content = "<p>Hello,</p>" + "<p>You have requested to create your account.</p>"
+				+ "<p>Click the link below to active your account:</p>" + "<p><a href=\"" + url
+				+ "\">Active my account</a></p>";
+		helper.setSubject("Account active");
 		helper.setText(content, true);
 		mailSender.send(message);
 		return true;
@@ -68,7 +85,7 @@ public class CommonUtil {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 
-		helper.setFrom("daspabitra55@gmail.com", "Shooping Cart");
+		helper.setFrom("phamv4356@gmail.com", "Shooping Cart");
 		helper.setTo(order.getOrderAddress().getEmail());
 
 		msg=msg.replace("[[name]]",order.getOrderAddress().getFirstName());

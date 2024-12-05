@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.repository.UserRepository;
 import vn.iotstar.security.service.UserService;
+import vn.iotstar.security.util.AppConstant;
+
 @Service
 public class UserServiceImpl implements UserService{
 	@Autowired
@@ -42,7 +46,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public User getUserByToken(String token) {
+	public User getUserByResetToken(String token) {
 		return userRepository.findByResetToken(token);
 	}
 	@Override
@@ -121,5 +125,48 @@ public class UserServiceImpl implements UserService{
 
 		return dbUser;
 	}
-	
+
+	@Override
+	public void increaseFailedAttempt(User user) {
+		int attempt = user.getFailedAttempt() + 1;
+		user.setFailedAttempt(attempt);
+		userRepository.save(user);		
+	}
+
+	@Override
+	public void userAccountLock(User user) {
+		user.setAccountNonLocked(false);
+		user.setLockTime(new Date());
+		userRepository.save(user);		
+	}
+
+	@Override
+	public boolean unlockAccountTimeExpired(User user) {
+		long lockTime = user.getLockTime().getTime();
+		long unLockTime = lockTime + AppConstant.UNLOCK_DURATION_TIME;
+
+		long currentTime = System.currentTimeMillis();
+
+		if (unLockTime < currentTime) {
+			user.setAccountNonLocked(true);
+			user.setFailedAttempt(0);
+			user.setLockTime(null);
+			userRepository.save(user);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void updateUserActiveToken(String email, String activeToken) {
+		User findByEmail = userRepository.findByEmail(email);
+		findByEmail.setActiveToken(activeToken);
+		userRepository.save(findByEmail);
+		
+	}
+
+	@Override
+	public User getUserByActiveToken(String token) {
+		return userRepository.findByActiveToken(token);
+	}	
 }
