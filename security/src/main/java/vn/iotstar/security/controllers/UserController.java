@@ -43,9 +43,23 @@ public class UserController {
 	private CommonUtil commonUtil;
 	@Autowired
 	private ProductService productService;
+	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
+	@ModelAttribute
+	public void getUserDetails(Principal p, Model m) {
+		if (p != null) {
+			String email = p.getName();
+			User user = userService.getUserByEmail(email);
+			m.addAttribute("user", user);
+			Integer countCart = cartService.getCountCart(user.getId());
+			m.addAttribute("countCart", countCart);
+		}
+
+		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+		m.addAttribute("categories", allActiveCategory);
+	}
 	@GetMapping("/")
 	public String home(Model m) {
-
+			
 		List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
 				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
