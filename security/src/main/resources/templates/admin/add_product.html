@@ -14,6 +14,7 @@
 						<div class="card-header text-center ">
 							<p class="fs-4">Add Product</p>
 
+
 							<th:block th:if="${session.succMsg}">
 								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
 								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
@@ -24,6 +25,7 @@
 								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 							</th:block>
 							
+
 						</div>
 						<div class="card-body">
 							<form action="/admin/saveProduct" method="post"
