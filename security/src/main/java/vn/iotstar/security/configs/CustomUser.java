@@ -44,8 +44,9 @@ public class CustomUser implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return user.getAccountNonLocked();
+	    return (user.getAccountNonLocked() != null) ? user.getAccountNonLocked() : true; // or false
 	}
+
 
 	@Override
 	public boolean isCredentialsNonExpired() {
@@ -56,5 +57,4 @@ public class CustomUser implements UserDetails {
 	public boolean isEnabled() {
 		return user.getIsEnable();
 	}
-
 }
