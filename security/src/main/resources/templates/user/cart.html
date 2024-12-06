@@ -1,28 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
 		<div class="container-fluid mt-5 p-5">
-
 			<div class="card card-sh">
 				<div class="card-header text-center">
 					<p class="fs-4">Cart Page</p>
-					<th:block th:if="${session.succMsg}">
-						<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-					</th:block>
-
-					<th:block th:if="${session.errorMsg}">
-						<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-					</th:block>
 				</div>
 				<div class="card-body">
+
 					<table class="table">
 						<thead>
 							<tr>
@@ -35,20 +27,21 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="cart,c:${carts}">
+							<tr th:each="cart, c: ${carts}">
 								<th scope="row">[[${c.count}]]</th>
-								<td><img
-									th:src="@{'/img/product_img/'+${cart.product.image}}"
-									width="70px" height="70px"></td>
+								<td><img th:src="@{'/img/product_img/'+${cart.product.image}}" width="70px"
+										height="70px"></td>
 								<td>[[${cart.product.title}]]</td>
 								<td>[[${cart.product.discountPrice}]]</td>
-								<td class="text-center"><a
-									th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
+								<td class="text-center">
+									<a th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
 										<i class="fa-solid fa-minus"></i>
-								</a> [ [[${cart.quantity}]] ] <a
-									th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
+									</a>
+									[ [[${cart.quantity}]] ]
+									<a th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
 										<i class="fa-solid fa-plus"></i>
-								</a></td>
+									</a>
+								</td>
 								<td>[[${cart.totalPrice}]]</td>
 							</tr>
 							<tr>
@@ -56,16 +49,55 @@
 								<td class="fw-bold">Total Price</td>
 								<td class="fw-bold">&#8377; [[${totalOrderPrice}]]</td>
 							</tr>
-
 						</tbody>
 					</table>
 					<div class="text-center">
-						<a href="/user/orders" class="btn btn-warning"> Proceed Payment</a>
+						<!-- Nút bấm Proceed Payment -->
+						<button type="button" class="btn btn-warning" onclick="handleProceedPayment()">
+							Proceed Payment
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
 
+		<!-- Modal -->
+		<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="paymentModalLabel">WARNING</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Bạn chưa có đơn hàng nào trong giỏ !!</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+						<a href="/products" class="btn btn-primary">Tiếp tục mua sắm</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script th:inline="javascript">
+			function handleProceedPayment() {
+				/* Kiểm tra xem danh sách carts có rỗng không */
+				let isCartEmpty = /*[[${#lists.isEmpty(carts)}]]*/ true; // Thymeleaf sẽ thay thế giá trị này.
+
+				if (isCartEmpty) {
+					// Hiển thị modal thông báo
+					let modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+					modal.show();
+				} else {
+					// Chuyển hướng đến /user/orders
+					window.location.href = '/user/orders';
+				}
+			}
+		</script>
+
+
 	</section>
 </body>
+
 </html>
