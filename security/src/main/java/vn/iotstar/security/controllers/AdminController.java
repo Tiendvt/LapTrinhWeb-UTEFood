@@ -298,22 +298,9 @@ public class AdminController {
 		}
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
-
-//	@GetMapping("/users")
-//	public String getAllUsers(Model m, @RequestParam Integer type) {
-//		List<User> users = null;
-//		if (type == 1) {
-//			users = userService.getUsers("ROLE_USER");
-//		} else {
-//			users = userService.getUsers("ROLE_ADMIN");
-//		}
-//		m.addAttribute("userType", type);
-//		m.addAttribute("users", users);
-//		return "/admin/users";
-//	}
 	
 	@GetMapping("/users")
-	public String loadViewUsers(Model m, @RequestParam(defaultValue = "1") Integer type, 
+	public String loadViewUsers(Model m, @RequestParam Integer type, 
 	                             @RequestParam(defaultValue = "") String ch,
 	                             @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 	                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
@@ -327,7 +314,7 @@ public class AdminController {
 	        page = userService.getAllUsersPagination(role, pageNo, pageSize);
 	    }
 	    
-	    m.addAttribute("userType", type); // Ensure userType is set
+	    m.addAttribute("userType", type);
 	    System.out.println(type);
 	    m.addAttribute("users", page.getContent());
 	    m.addAttribute("pageNo", page.getNumber() + 1);
