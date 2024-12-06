@@ -45,7 +45,7 @@
                         <th:block th:unless="${product.stock > 0}">
                             <span class="badge badge-warning">Out of Stock</span>
                         </th:block>
-                        <br> Category: [[${product.category}]]<br> Policy: 7 Days Replacement & Return
+                        <br> Category: [[${product.category.name}]]<br> Policy: 7 Days Replacement & Return
                     </p>
 
                     <!-- Price -->
