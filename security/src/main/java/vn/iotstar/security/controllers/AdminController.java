@@ -60,6 +60,18 @@ public class AdminController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@ModelAttribute
+	public void getUserDetails(Principal p, Model m) {
+		if (p != null) {
+			String email = p.getName();
+			User user = userService.getUserByEmail(email);
+			m.addAttribute("user", user);
+		}
+
+		List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+		m.addAttribute("categories", allActiveCategory);
+	}
 
 	private User getLoggedInUserDetails(Principal p) {
 		String email = p.getName();
@@ -73,8 +85,6 @@ public class AdminController {
 	}
 
 	@GetMapping("/loadAddProduct")
-
-
 	public String loadAddProduct(Model m) {
 		List<Category> categories = categoryService.getAllCategory();
 		m.addAttribute("categories", categories);
@@ -106,7 +116,7 @@ public class AdminController {
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 
-		String imageName = file != null ? file.getOriginalFilename() : "default.jpg";
+		String imageName = file != null && !file.isEmpty() ? file.getOriginalFilename() : "default.jpg";
 		category.setImageName(imageName);
 
 		Boolean existCategory = categoryService.existCategory(category.getName());
@@ -121,12 +131,12 @@ public class AdminController {
 				session.setAttribute("errorMsg", "Not saved ! internal server error");
 			} else {
 
-				File saveFile = new ClassPathResource("static/product_img").getFile();
+				File saveFile = new ClassPathResource("static/img").getFile();
 
 				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
-						+ file.getOriginalFilename());
+						+ imageName);
 
-
+				System.out.println(path);
 
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
@@ -135,7 +145,7 @@ public class AdminController {
 		}
 
 
-		return "redirect:/admin/loadAddProduct";
+		return "redirect:/admin/category";
 	}
 
 	@GetMapping("/deleteCategory/{id}")
@@ -197,7 +207,13 @@ public class AdminController {
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session) throws IOException {
 
-		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
+		String msg = checkAddProduct(product);
+		if(!msg.isEmpty()) {
+			session.setAttribute("errorMsg", msg);
+			return "redirect:/admin/loadAddProduct";
+		}
+		
+		String imageName = image != null && !image.isEmpty() ? image.getOriginalFilename() : "default.jpg";
 
 		product.setImage(imageName);
 		product.setDiscount(0);
@@ -219,7 +235,7 @@ public class AdminController {
 		}
 
 
-		return "redirect:/admin/";
+		return "redirect:/admin/loadAddProduct";
 	}
 
 	@GetMapping("/products")
@@ -379,7 +395,22 @@ public class AdminController {
 		return "redirect:/admin/profile";
 	}
 
-
-
-
+	private String checkAddProduct(Product product ) {
+		if(ObjectUtils.isEmpty(product.getTitle())) {
+			return "Enter Title";
+		}	
+		else if (ObjectUtils.isEmpty(product.getCategory())) {
+			return "Select Category";		
+		}
+		else if (ObjectUtils.isEmpty(product.getDescription())) {
+			return "Enter Descirption";			
+		}
+		else if (ObjectUtils.isEmpty(product.getPrice())) {
+			return "Enter Price";
+		}
+		else if (ObjectUtils.isEmpty(product.getStock())) {
+			return "Enter Stock";
+		}
+		return "";
+	}
 }

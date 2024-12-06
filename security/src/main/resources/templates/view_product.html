@@ -45,7 +45,7 @@
                         <th:block th:unless="${product.stock > 0}">
                             <span class="badge badge-warning">Out of Stock</span>
                         </th:block>
-                        <br> Category: [[${product.category}]]<br> Policy: 7 Days Replacement & Return
+                        <br> Category: [[${product.category.name}]]<br> Policy: 7 Days Replacement & Return
                     </p>
 
                     <!-- Price -->
@@ -77,7 +77,7 @@
                             <a href="/signin" class="btn btn-primary btn-block">Add To Cart</a>
                         </th:block>
 
-<<<<<<< HEAD
+
 							<br> Category: [[${product.category }]]<br> Policy : 7
 							Days Replacement & Return
 						</p>
@@ -88,13 +88,13 @@
 							<span class="fs-6  text-success">[[${product.discount}]]%
 								off</span>
 						</p>
-=======
+
                         <th:block th:unless="${user == null}">
                             <a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"
                                class="btn btn-primamry btn-block">Add To Cart</a>
                         </th:block>
                     </th:block>
->>>>>>> 788fdfba89a28198b4b689762d1d5925ae2b386a
+
 
                     <!-- Out of Stock Button -->
                     <th:block th:unless="${product.stock > 0}">
