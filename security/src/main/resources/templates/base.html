@@ -59,8 +59,11 @@
 						<li class="nav-item" th:if="${user.role == 'ROLE_ADMIN'}"><a class="nav-link active"
 								aria-current="page" href="/admin/"><i class="fa-solid fa-house"></i> Home</a></li>
 
-						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}"><a class="nav-link active"
-								aria-current="page" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}">
+							<a class="nav-link active"
+								aria-current="page" href="/"><i class="fa-solid fa-house"></i> Home</a>
+								
+								</li>
 								<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a class="nav-link active"
 								aria-current="page" href="/vendor/"><i class="fa-solid fa-house"></i> Home</a></li>
 					</th:block>
@@ -90,7 +93,13 @@
 				        <!-- If the user is not an admin (regular user) -->
 				        <th:block th:if="${user.role == 'ROLE_USER'}">
 				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+				            <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="/user/cart">
+        <i class="fa-solid fa-cart-shopping"></i> Cart 
+        <span th:if="${countCart > 0}" class="badge bg-danger">[[${countCart}]]</span>
+    </a>
+</li>
+				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/user-orders"><i class="fa-solid fa-box"></i> My Orders</a></li>
 				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
 				        </th:block>
 				        <th:block th:if="${user.role == 'ROLE_VENDOR'}">
