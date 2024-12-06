@@ -122,9 +122,9 @@ public class UserController {
 	public String saveOrder(@ModelAttribute OrderRequest request, Principal p) throws Exception {
 		// System.out.println(request);
 		User user = getLoggedInUserDetails(p);
-		
 		orderService.saveOrder(user.getId(), request);
-
+		// THÊM CODE Ở ĐÂY ĐỂ XÓA GIỎ HÀNG KHI ĐÃ THANH TOÁN
+		cartService.clearCartByUserId(user.getId());
 		return "redirect:/user/success";
 	}
 	@GetMapping("/success")
