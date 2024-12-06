@@ -1,6 +1,3 @@
-
-
-
 package vn.iotstar.security.service.impl;
 
 import java.io.File;
@@ -21,9 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
-
-import vn.iotstar.security.model.Shop;
-
 import vn.iotstar.security.repository.CategoryRepository;
 import vn.iotstar.security.repository.ProductRepository;
 import vn.iotstar.security.service.ProductService;
@@ -168,12 +162,6 @@ public class ProductServiceImpl implements ProductService {
 //			pageProduct = productRepository.findByCategory(pageable, category);
 //		}
 		return pageProduct;
-	}
-
-	@Override
-	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize) {
-	    Pageable pageable = PageRequest.of(pageNo, pageSize);
-	    return productRepository.findByShop(shop, pageable);
 	}
 
 }

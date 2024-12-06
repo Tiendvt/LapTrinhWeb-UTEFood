@@ -55,17 +55,14 @@ public class User {
     @Column(columnDefinition = "NVARCHAR(50)")
     private String role;
 
-    private Boolean isEnable = false;
+    private Boolean isEnable;
 
-    private Boolean accountNonLocked = true;
+    private Boolean accountNonLocked;
 
-    private Integer failedAttempt = 0;
+    private Integer failedAttempt;
 
     private Date lockTime;
 
     @Column(columnDefinition = "NVARCHAR(255)")
     private String resetToken;
-    
-    @Column(columnDefinition = "NVARCHAR(255)")
-    private String activeToken;
 }

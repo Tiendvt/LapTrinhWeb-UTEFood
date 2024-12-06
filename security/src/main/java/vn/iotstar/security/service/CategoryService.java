@@ -1,4 +1,3 @@
-
 package vn.iotstar.security.service;
 
 import java.util.List;
@@ -26,4 +25,3 @@ public interface CategoryService {
 	public Page<Category> getAllCategorPagination(Integer pageNo,Integer pageSize);
 
 }
-
