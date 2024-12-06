@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendor Dashboard</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1>Welcome, Vendor</h1>
+                    <p class="text-muted">Manage your shop, products, and orders.</p>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- Shop Details -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Shop Details</h5>
+                            <th:block th:if="${shop != null}">
+                                <p><strong>Shop Name:</strong> [[${shop.name}]]</p>
+                                <p><strong>Owner:</strong> [[${shop.owner.name}]]</p>
+                                
+                                <a href="/vendor/shop-settings" class="btn btn-primary">Edit Shop</a>
+                            </th:block>
+                            <th:block th:if="${shop == null}">
+                                <p class="text-danger">No shop found.</p>
+                                <a href="/vendor/create-shop" class="btn btn-success">Create Shop</a>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Products</h5>
+                            <th:block th:if="${shop != null}">
+                                
+                                <a href="/vendor/products" class="btn btn-primary">View Products</a>
+                                <a href="/vendor/add-product" class="btn btn-success">Add Product</a>
+                            </th:block>
+                            <th:block th:if="${shop == null}">
+                                <p class="text-danger">No products available. Create your shop first.</p>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Section -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Orders</h5>
+                            <th:block th:if="${shop != null}">
+                                
+                                <a href="/vendor/orders" class="btn btn-primary">View Orders</a>
+                            </th:block>
+                            <th:block th:if="${shop == null}">
+                                <p class="text-danger">No orders available. Create your shop first.</p>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

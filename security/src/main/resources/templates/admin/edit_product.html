@@ -41,11 +41,12 @@
 								</div>
 								<div class="row">
 									<div class="mb-3 col">
-										<label>Category</label> <select class="form-control"
-											name="category">
-											<option>[[${product.category}]]</option>
-											<option th:each="c:${categories}">[[${c.name}]]</option>
-										</select>
+									    <label>Category</label>
+									    <select class="form-control" name="category.id">
+									        <option th:each="c : ${categories}" th:value="${c.id}" 
+									                th:text="${c.name}" th:selected="${product.category.id == c.id}">
+									        </option>
+									    </select>
 									</div>
 									<div class="mb-3 col">
 										<label>Enter Price</label> <input type="number" name="price"

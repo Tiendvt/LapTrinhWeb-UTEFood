@@ -14,8 +14,18 @@
 						<div class="card-header text-center ">
 							<p class="fs-4">Add Product</p>
 
-							<p th:if="${session.succMsg}" class="text-success fw-bold">[[${session.succMsg}]]</p>
-							<p th:if="${session.errorMsg}" class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+
+							<th:block th:if="${session.succMsg}">
+								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+
+							<th:block th:if="${session.errorMsg}">
+								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+							
+
 
 						</div>
 						<div class="card-body">
