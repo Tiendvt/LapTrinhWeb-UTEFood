@@ -78,6 +78,7 @@ public class AdminController {
 		m.addAttribute("categories", allActiveCategory);
 	}
 
+
 	private User getLoggedInUserDetails(Principal p) {
 		String email = p.getName();
 		User userDtls = userService.getUserByEmail(email);
@@ -231,19 +232,18 @@ public class AdminController {
 		String imageName = image != null && !image.isEmpty() ? image.getOriginalFilename() : "default.jpg";
 
 		product.setImage(imageName);
+		System.out.print("Path image Product: " + imageName);
 		product.setDiscount(0);
 		product.setDiscountPrice(product.getPrice());
 		Product saveProduct = productService.saveProduct(product);
 		if (!ObjectUtils.isEmpty(saveProduct)) {
 			File saveFile = new ClassPathResource("static/img").getFile();
-
-
-			Path path = Paths
-					.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
-
+				Path path = Paths
+						.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
+			
 
 			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
+			System.out.print("\nPath image Product: " + path);
 			session.setAttribute("succMsg", "Product Saved Success");
 		} else {
 			session.setAttribute("errorMsg", "something wrong on server");
