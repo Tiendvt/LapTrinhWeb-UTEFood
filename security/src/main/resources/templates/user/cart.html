@@ -73,7 +73,7 @@
           <!-- Add to Cart Button -->
           <th:block th:if="${product.stock > 0}">
             <th:block th:if="${user == null}">
-              <a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}" <a href="/signin" class="btn btn-primary btn-block">Add To Cart</a>
+              <a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"></a> <a href="/signin" class="btn btn-primary btn-block">Add To Cart</a>
             </th:block>
           </th:block>
 

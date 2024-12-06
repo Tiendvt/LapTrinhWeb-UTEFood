@@ -219,6 +219,26 @@ public class VendorController {
         // Update the order status in the database
         ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
 
+        if (updateOrder != null && "Delivered".equals(status)) {
+            // Get the associated product and shop from the order
+            Product product = updateOrder.getProduct();
+            Shop shop = product.getShop();
+
+            // Increment sold quantity in Product and Shop
+            product.setSold(product.getSold() + 1);
+            shop.setSold(shop.getSold() + 1);
+
+            // Update the shop's revenue
+            shop.setRevenue(shop.getRevenue() + product.getDiscountPrice());
+
+            // Save the updated Product and Shop
+            productService.saveProduct(product);
+            shopService.saveShop(shop);  // Assuming you have a `saveShop` method to persist the shop's changes
+
+            // Log or display success message
+            session.setAttribute("succMsg", "Order status updated to Delivered. Product sold and shop revenue updated.");
+        }
+
         // Send a notification email for the updated order status (if needed)
         try {
             commonUtil.sendMailForProductOrder(updateOrder, status);
@@ -226,7 +246,7 @@ public class VendorController {
             e.printStackTrace();
         }
 
-        // Check if the order was updated successfully
+        // If the order was updated successfully
         if (!ObjectUtils.isEmpty(updateOrder)) {
             session.setAttribute("succMsg", "Status Updated");
         } else {
@@ -235,6 +255,7 @@ public class VendorController {
 
         return "redirect:/vendor/orders";  // Redirect to the vendor orders page
     }
+
 
     @GetMapping("/search-order")
     public String searchOrder(@RequestParam String orderId, Model model, HttpSession session,

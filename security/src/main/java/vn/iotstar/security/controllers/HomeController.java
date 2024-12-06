@@ -114,8 +114,8 @@ public class HomeController {
 		m.addAttribute("paramValue", category);
 		m.addAttribute("categories", categories);
 
-		List<Product> product = productService.getAllActiveProducts(category);
-		m.addAttribute("products", product);
+//		List<Product> product = productService.getAllActiveProducts(category);
+//		m.addAttribute("products", product);
 		Page<Product> page = null;
 		if (StringUtils.isEmpty(ch)) {
 			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
