@@ -57,7 +57,18 @@ public class AdminController {
 		User userDtls = userService.getUserByEmail(email);
 		return userDtls;
 	}
+	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
+		@ModelAttribute
+		public void getUserDetails(Principal p, Model m) {
+			if (p != null) {
+				String email = p.getName();
+				User user = userService.getUserByEmail(email);
+				m.addAttribute("user", user);
+			}
 
+			List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+			m.addAttribute("categories", allActiveCategory);
+		}
 	@GetMapping("/")
 	public String index() {
 		return "admin/index";
@@ -181,17 +192,18 @@ public class AdminController {
 		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
 
 		product.setImage(imageName);
+		System.out.print("Path image Product: " + imageName);
 		product.setDiscount(0);
 		product.setDiscountPrice(product.getPrice());
 		Product saveProduct = productService.saveProduct(product);
 		if (!ObjectUtils.isEmpty(saveProduct)) {
 			File saveFile = new ClassPathResource("static/img").getFile();
 
-			Path path = Paths
-					.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
-
+				Path path = Paths
+						.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
+			
 			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
+			System.out.print("\nPath image Product: " + path);
 			session.setAttribute("succMsg", "Product Saved Success");
 		} else {
 			session.setAttribute("errorMsg", "something wrong on server");
