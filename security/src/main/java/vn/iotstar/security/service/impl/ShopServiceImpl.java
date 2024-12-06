@@ -8,7 +8,6 @@ import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.repository.ShopRepository;
 import vn.iotstar.security.service.ShopService;
 
-
 @Service
 @Transactional
 public class ShopServiceImpl implements ShopService {
@@ -18,11 +17,27 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop getShopByOwnerEmail(String email) {
-        return shopRepository.findByOwnerEmail(email);
+        return shopRepository.findByOwnerEmail(email); // Return null if no shop exists
     }
+
 
     @Override
     public Shop updateShopDetails(Shop shop) {
+        
         return shopRepository.save(shop);
     }
+
+    @Override
+    public boolean doesShopExistForOwner(String email) {
+        return shopRepository.existsByOwnerEmail(email);
+    }
+
+    @Override
+    public Shop saveShop(Shop shop) {
+        if (doesShopExistForOwner(shop.getOwner().getEmail())) {
+            throw new RuntimeException("A shop already exists for the owner email: " + shop.getOwner().getEmail());
+        }
+        return shopRepository.save(shop);
+    }
+
 }

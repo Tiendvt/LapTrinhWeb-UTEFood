@@ -6,23 +6,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
 import java.security.Principal;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
@@ -33,9 +40,11 @@ import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
 
 	@Autowired
 	private CategoryService categoryService;
@@ -51,6 +60,7 @@ public class AdminController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
 
 	private User getLoggedInUserDetails(Principal p) {
 		String email = p.getName();
@@ -81,9 +91,11 @@ public class AdminController {
 		return "admin/add_product";
 	}
 
+
 	@GetMapping("/category")
 	public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+
 		Page<Category> page = categoryService.getAllCategorPagination(pageNo, pageSize);
 		List<Category> categorys = page.getContent();
 		m.addAttribute("categorys", categorys);
@@ -98,11 +110,13 @@ public class AdminController {
 		return "admin/category";
 	}
 
+
 	@PostMapping("/saveCategory")
+
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 
-		String imageName = file != null ? file.getOriginalFilename() : "default.jpg";
+		String imageName = file != null && !file.isEmpty() ? file.getOriginalFilename() : "default.jpg";
 		category.setImageName(imageName);
 
 		Boolean existCategory = categoryService.existCategory(category.getName());
@@ -117,10 +131,12 @@ public class AdminController {
 				session.setAttribute("errorMsg", "Not saved ! internal server error");
 			} else {
 
-				File saveFile = new ClassPathResource("static/product_img").getFile();
+				File saveFile = new ClassPathResource("static/img").getFile();
 
 				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
-						+ file.getOriginalFilename());
+						+ imageName);
+
+				System.out.println(path);
 
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
@@ -128,7 +144,8 @@ public class AdminController {
 			}
 		}
 
-		return "redirect:/admin/loadAddProduct";
+
+		return "redirect:/admin/category";
 	}
 
 	@GetMapping("/deleteCategory/{id}")
@@ -186,10 +203,17 @@ public class AdminController {
 	}
 
 	@PostMapping("/saveProduct")
+
 	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
 			HttpSession session) throws IOException {
 
-		String imageName = image.isEmpty() ? "default.jpg" : image.getOriginalFilename();
+		String msg = checkAddProduct(product);
+		if(!msg.isEmpty()) {
+			session.setAttribute("errorMsg", msg);
+			return "redirect:/admin/loadAddProduct";
+		}
+		
+		String imageName = image != null && !image.isEmpty() ? image.getOriginalFilename() : "default.jpg";
 
 		product.setImage(imageName);
 		System.out.print("Path image Product: " + imageName);
@@ -198,10 +222,10 @@ public class AdminController {
 		Product saveProduct = productService.saveProduct(product);
 		if (!ObjectUtils.isEmpty(saveProduct)) {
 			File saveFile = new ClassPathResource("static/img").getFile();
-
 				Path path = Paths
 						.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
 			
+
 			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 			System.out.print("\nPath image Product: " + path);
 			session.setAttribute("succMsg", "Product Saved Success");
@@ -209,13 +233,16 @@ public class AdminController {
 			session.setAttribute("errorMsg", "something wrong on server");
 		}
 
-		return "redirect:/admin/";
+
+		return "redirect:/admin/loadAddProduct";
 	}
 
 	@GetMapping("/products")
+
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+
 
 		Page<Product> page = null;
 		if (ch != null && ch.length() > 0) {
@@ -271,16 +298,41 @@ public class AdminController {
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
 
+//	@GetMapping("/users")
+//	public String getAllUsers(Model m, @RequestParam Integer type) {
+//		List<User> users = null;
+//		if (type == 1) {
+//			users = userService.getUsers("ROLE_USER");
+//		} else {
+//			users = userService.getUsers("ROLE_ADMIN");
+//		}
+//		m.addAttribute("userType", type);
+//		m.addAttribute("users", users);
+//		return "/admin/users";
+//	}
+	
 	@GetMapping("/users")
-	public String getAllUsers(Model m, @RequestParam Integer type) {
-		List<User> users = null;
-		if (type == 1) {
-			users = userService.getUsers("ROLE_USER");
+	public String loadViewUsers(Model m, @RequestParam Integer type, @RequestParam(defaultValue = "") String ch,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		
+		String role = (type == 1) ? "ROLE_USER" : "ROLE_ADMIN";		
+		Page<User> page = null;
+		if (ch != null && ch.length() > 0) {
+			page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
 		} else {
-			users = userService.getUsers("ROLE_ADMIN");
+			page = userService.getAllUsersPagination(role, pageNo, pageSize);
 		}
+		
 		m.addAttribute("userType", type);
-		m.addAttribute("users", users);
+		m.addAttribute("users", page.getContent());
+		m.addAttribute("pageNo", page.getNumber() + 1);
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+		
 		return "/admin/users";
 	}
 
@@ -367,5 +419,22 @@ public class AdminController {
 		return "redirect:/admin/profile";
 	}
 
-
+	private String checkAddProduct(Product product ) {
+		if(ObjectUtils.isEmpty(product.getTitle())) {
+			return "Enter Title";
+		}	
+		else if (ObjectUtils.isEmpty(product.getCategory())) {
+			return "Select Category";		
+		}
+		else if (ObjectUtils.isEmpty(product.getDescription())) {
+			return "Enter Descirption";			
+		}
+		else if (ObjectUtils.isEmpty(product.getPrice())) {
+			return "Enter Price";
+		}
+		else if (ObjectUtils.isEmpty(product.getStock())) {
+			return "Enter Stock";
+		}
+		return "";
+	}
 }

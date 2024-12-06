@@ -1,63 +1,86 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+    <meta charset="ISO-8859-1">
+    <title>Login Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Tạo flexbox để canh giữa toàn bộ trang */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        /* Tăng chiều cao card để kéo dài form */
+        .card {
+            width: 100%;
+            max-width: 300px; /* Giới hạn chiều rộng của card */
+            height: 800px; /* Đặt chiều cao card */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            height: 200px; /* Kéo dài phần đầu của card */
+        }
+
+        .card-body {
+            flex-grow: 1; /* Đảm bảo phần body chiếm phần còn lại */
+        }
+
+        /* Tăng cường khoảng cách cho các phần tử trong form */
+        .form-label {
+            font-weight: bold;
+        }
+
+
+        .btn {
+            font-weight: bold;    
+			}
+			/* test*/
+    </style>
 </head>
 <body>
-	<section>
+    <section>
+        <div class="container mt-5 p-5">
+            <div class="row">
+                <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
+                    <div class="card-header text-center">
+                        <p class="fs-4">Login</p>
+                        <div th:if="${param.error}" class="alert bg-primary text-center">
+                            <th:block th:if="${session.SPRING_SECURITY_LAST_EXCEPTION!=null}">
+                                [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
+                            </th:block>
+                        </div>
+                        <div th:if="${param.logout}" class="alert alert-success">
+                            Logout Successfully
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form action="/login" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Enter Your Email</label>
+                                <input required class="form-control" name="username" type="email">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Enter Your Password</label>
+                                <input required class="form-control" name="password" type="password">
+                            </div>
+							<button type="submit" class="btn btn-primary text-white col-md-12">Login</button>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="/forgot-password" class="text-decoration-none">Forgot Password</a><br>
+                        Don't have an account? <a href="/register" class="text-decoration-none">Create an account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-		<div class="container mt-5 p-5">
-			<div class="row">
-				<div class="col-md-6 p-5">
-					<img alt="" src="img/ecom.png" width="100%" height="400px">
-				</div>
-				<div class="col-md-6 mt-3 p-5">
-					<div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-header">
-							<p class="fs-4 text-center">Login</p>
-							<div th:if="${param.error}"
-								class="alert alert-danger text-center">
-
-								<th:block
-									th:if="${session.SPRING_SECURITY_LAST_EXCEPTION!=null}">
-									[[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
-								</th:block>
-
-
-
-							</div>
-
-							<div th:if="${param.logout}" class="alert alert-success">
-								Logout Sucessfully</div>
-						</div>
-						<div class="card-body">
-							<form action="/login" method="post">
-								<div class="mb-3">
-									<label class="form-label">Email</label> <input required
-										class="form-control" name="username" type="email">
-								</div>
-
-								<div class="mb-3">
-									<label class="form-label">Password</label> <input required
-										class="form-control" name="password" type="password">
-								</div>
-								<button type="submit"
-									class="btn bg-primary text-white col-md-12">Login</button>
-							</form>
-						</div>
-
-						<div class="card-footer text-center">
-							<a href="/forgot-password" class="text-decoration-none">Forgot Password</a><br>
-							Don't have an account ? <a href="/register" class="text-decoration-none">Create
-								one </a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-	</section>
 </body>
 </html>

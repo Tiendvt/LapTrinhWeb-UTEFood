@@ -1,67 +1,102 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
-
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Insert title here</title>
+  <meta charset="ISO-8859-1">
+  <title>Cart Page</title>
+  <!-- Bootstrap CSS Link -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- FontAwesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
 </head>
-
 <body>
-	<section>
-		<div class="container-fluid mt-5 p-5">
-			<div class="card card-sh">
-				<div class="card-header text-center">
-					<p class="fs-4">Cart Page</p>
-				</div>
-				<div class="card-body">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="/">
+              <i class="fa fa-shopping-cart"></i> UTE FOOD SHOP
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav me-auto">
+                  <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                  <li class="nav-item"><a class="nav-link" href="/product">Product</a></li>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+                          Category
+                      </a>
+                      <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="/category/food">Food</a></li>
+                          <li><a class="dropdown-item" href="/category/drinks">Drinks</a></li>
+                      </ul>
+                  </li>
+              </ul>
+              <ul class="navbar-nav">
+                  <li class="nav-item"><a class="nav-link" href="/user/profile">Profile</a></li>
+                  <li class="nav-item"><a class="nav-link" href="/user/cart">Cart</a></li>
+                  <li class="nav-item"><a class="nav-link" href="/login">Logout</a></li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+  
+  <section>
+    <!-- Giao diện giỏ hàng -->
+    <div class="container-fluid mt-5 p-5">
+      <div class="card card-sh">
+        <div class="card-header text-center">
+          <p class="fs-4">Cart Page</p>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sl No</th>
+                <th scope="col">Image</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Price</th>
+                <th scope="col" class="text-center">Quantity</th>
+                <th scope="col">Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="cart, c: ${carts}">
+                <th scope="row">[[${c.count}]]</th>
+                <td><img th:src="@{'/img/product_img/'+${cart.product.image}}" width="70px" height="70px"></td>
+                <td>[[${cart.product.title}]]</td>
+                <td>[[${cart.product.discountPrice}]]</td>
+                <td class="text-center">
+                  <a th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
+                    <i class="fa-solid fa-minus"></i>
+                  </a>
+                  [ [[${cart.quantity}]] ]
+                  <a th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
+                    <i class="fa-solid fa-plus"></i>
+                  </a>
+                </td>
+                <td>[[${cart.totalPrice}]]</td>
+              </tr>
+              <tr th:if="${carts.size() == 0}">
+                <td colspan="6" class="text-center text-danger">Your cart is empty!</td>
+              </tr>
+              <tr th:if="${carts.size() > 0}">
+                <td colspan="4"></td>
+                <td class="fw-bold">Total Price</td>
+                <td class="fw-bold">&#8377; [[${totalOrderPrice}]]</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">
+            <!-- Nút bấm Proceed Payment -->
+            <button type="button" class="btn btn-warning" onclick="handleProceedPayment()">
+              Proceed Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-					<table class="table">
-						<thead>
-							<tr>
-								<th scope="col">Sl No</th>
-								<th scope="col">Image</th>
-								<th scope="col">Product Name</th>
-								<th scope="col">Price</th>
-								<th scope="col" class="text-center">Quantity</th>
-								<th scope="col">Total Price</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="cart, c: ${carts}">
-								<th scope="row">[[${c.count}]]</th>
-								<td><img th:src="@{'/img/product_img/'+${cart.product.image}}" width="70px"
-										height="70px"></td>
-								<td>[[${cart.product.title}]]</td>
-								<td>[[${cart.product.discountPrice}]]</td>
-								<td class="text-center">
-									<a th:href="@{'/user/cartQuantityUpdate?sy=de&cid='+${cart.id}}">
-										<i class="fa-solid fa-minus"></i>
-									</a>
-									[ [[${cart.quantity}]] ]
-									<a th:href="@{'/user/cartQuantityUpdate?sy=in&cid='+${cart.id}}">
-										<i class="fa-solid fa-plus"></i>
-									</a>
-								</td>
-								<td>[[${cart.totalPrice}]]</td>
-							</tr>
-							<tr>
-								<td colspan="4"></td>
-								<td class="fw-bold">Total Price</td>
-								<td class="fw-bold">&#8377; [[${totalOrderPrice}]]</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="text-center">
-						<!-- Nút bấm Proceed Payment -->
-						<button type="button" class="btn btn-warning" onclick="handleProceedPayment()">
-							Proceed Payment
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Modal -->
+   <!-- Modal -->
 		<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
