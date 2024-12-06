@@ -66,39 +66,25 @@
         <div class="p-3">
           <table class="table table-bordered table-striped">
             <thead class="table-light">
-              <tr>
-                <th scope="col">Sl No</th>
-                <th scope="col">Image</th>
-                <th scope="col">Title</th>
-                <th scope="col">Category</th>
-                <th scope="col">Price</th>
-                <th scope="col">Discount</th>
-                <th scope="col">Discount Price</th>
-                <th scope="col">Status</th>
-                <th scope="col">Stock</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="p,c:${products}">
-                <th scope="row">[[${c.count}]]</th>
-                <td><img th:src="@{'/img/product_img/'+${p.image}}" width="70px" height="70px"></td>
-                <td>[[${p.title}]]</td>
-                <td>[[${p.category.name}]]</td>
-                <td>[[${p.price}]]</td>
-                <td>[[${p.discount}]]</td>
-                <td>[[${p.discountPrice}]]</td>
-                <td>[[${p.isActive}]]</td>
-                <td>[[${p.stock}]]</td>
-                <td>
-                  <a th:href="@{'/admin/editProduct/'+${p.id}}" class="btn btn-sm btn-primary">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                  </a> 
-                  <a th:href="@{'/admin/deleteProduct/'+${p.id}}" class="btn btn-sm btn-danger">
-                    <i class="fa-solid fa-trash"></i> Delete
-                  </a>
-                </td>
-              </tr>
+				<tr th:each="p, c : ${products}">
+				  <th scope="row" th:text="${c.count}"></th>
+				  <td><img th:src="@{'/img/product_img/' + ${p.image}}" width="70px" height="70px"></td>
+				  <td th:text="${p.title}"></td>
+				  <td th:text="${p.category.name}"></td>
+				  <td th:text="${p.price}"></td>
+				  <td th:text="${p.discount}"></td>
+				  <td th:text="${p.discountPrice}"></td>
+				  <td th:text="${p.isActive}"></td>
+				  <td th:text="${p.stock}"></td>
+				  <td>
+				    <a th:href="@{'/admin/editProduct/' + ${p.id}}" class="btn btn-sm btn-primary">
+				      <i class="fa-solid fa-pen-to-square"></i> Edit
+				    </a>
+				    <a th:href="@{'/admin/deleteProduct/' + ${p.id}}" class="btn btn-sm btn-danger">
+				      <i class="fa-solid fa-trash"></i> Delete
+				    </a>
+				  </td>
+				</tr>
             </tbody>
           </table>
 
