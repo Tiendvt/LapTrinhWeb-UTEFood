@@ -1,13 +1,91 @@
 @charset "ISO-8859-1";
 
+/* Hiệu ứng bóng đổ cho card */
 .card-sh {
-	box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease-in-out;
 }
 
+.card-sh:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Hiệu ứng bóng đổ cho div category */
 .cat-div {
-	box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    transition: box-shadow 0.3s ease-in-out;
 }
 
+.cat-div:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Cải tiến hiệu ứng lỗi */
 .error {
-	color: red;
+    color: rgb(227, 0, 0);
+    font-weight: bold;
+    text-transform: uppercase;
+    animation: errorAnimation 1s ease-in-out infinite;
+}
+
+/* Hiệu ứng động khi có lỗi */
+@keyframes errorAnimation {
+    0% {
+        color: rgb(227, 0, 0);
+        transform: scale(1.1);
+    }
+    50% {
+        color: darkred;
+        transform: scale(1);
+    }
+    100% {
+        color: rgb(219, 0, 0);
+        transform: scale(1.1);
+    }
+}
+
+/* Hiệu ứng cho nút Login */
+.btn {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.btn:hover {
+    background-color: rgb(219, 0, 0) !important;  /* Màu đỏ tươi */
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Hiệu ứng khi rê chuột vào ảnh */
+img {
+    transition: transform 0.4s ease-in-out;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+}
+
+img:hover {
+    transform: scale(1.1);
+}
+
+/* Nền tĩnh */
+body {
+    background: linear-gradient(120deg, rgb(255, 255, 255), rgb(255, 255, 255));
+    overflow: hidden;
+}
+
+/* Hiệu ứng khi nội dung trang xuất hiện */
+.container {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
