@@ -39,7 +39,20 @@
                 <th:block th:if="${session.errorMsg}">
                     <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
                     <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-                </th:block>
+                </th:block>             
+                <!-- Search Form -->
+		        <div class="col-md-4 p-3">
+		          <form th:action="@{'/admin/users?type=' + ${userType} + '&ch=' + ${ch}}" method="get">
+		            <div class="row">
+		              <div class="col">
+		                <input type="text" class="form-control" name="ch" placeholder="Search User">
+		              </div>
+		              <div class="col">
+		                <button class="btn btn-primary col">Search</button>
+		              </div>
+		            </div>
+		          </form>
+		        </div>
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped">
