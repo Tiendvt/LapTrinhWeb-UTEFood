@@ -299,16 +299,41 @@ public class AdminController {
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
 
+//	@GetMapping("/users")
+//	public String getAllUsers(Model m, @RequestParam Integer type) {
+//		List<User> users = null;
+//		if (type == 1) {
+//			users = userService.getUsers("ROLE_USER");
+//		} else {
+//			users = userService.getUsers("ROLE_ADMIN");
+//		}
+//		m.addAttribute("userType", type);
+//		m.addAttribute("users", users);
+//		return "/admin/users";
+//	}
+	
 	@GetMapping("/users")
-	public String getAllUsers(Model m, @RequestParam Integer type) {
-		List<User> users = null;
-		if (type == 1) {
-			users = userService.getUsers("ROLE_USER");
+	public String loadViewUsers(Model m, @RequestParam Integer type, @RequestParam(defaultValue = "") String ch,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		
+		String role = (type == 1) ? "ROLE_USER" : "ROLE_ADMIN";		
+		Page<User> page = null;
+		if (ch != null && ch.length() > 0) {
+			page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
 		} else {
-			users = userService.getUsers("ROLE_ADMIN");
+			page = userService.getAllUsersPagination(role, pageNo, pageSize);
 		}
+		
 		m.addAttribute("userType", type);
-		m.addAttribute("users", users);
+		m.addAttribute("users", page.getContent());
+		m.addAttribute("pageNo", page.getNumber() + 1);
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+		
 		return "/admin/users";
 	}
 
