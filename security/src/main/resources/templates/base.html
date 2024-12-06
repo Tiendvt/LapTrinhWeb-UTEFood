@@ -61,6 +61,8 @@
 
 						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}"><a class="nav-link active"
 								aria-current="page" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+								<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a class="nav-link active"
+								aria-current="page" href="/vendor/"><i class="fa-solid fa-house"></i> Home</a></li>
 					</th:block>
 
 					<li class="nav-item"><a class="nav-link active" aria-current="page" href="/products">Product</a>
@@ -69,7 +71,7 @@
 					<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button"
 							data-bs-toggle="dropdown" aria-expanded="false"> Category </a>
 						<ul class="dropdown-menu">
-							<li th:each="c:${categorys}"><a class="dropdown-item"
+							<li th:each="c:${categories}"><a class="dropdown-item"
 									th:href="@{'/products?category='+${c.name}}">[[${c.name}]]</a></li>
 						</ul>
 					</li>
@@ -89,6 +91,10 @@
 				        <th:block th:if="${user.role == 'ROLE_USER'}">
 				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
 				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+				        </th:block>
+				        <th:block th:if="${user.role == 'ROLE_VENDOR'}">
+				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/vendor/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
 				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
 				        </th:block>
 				    </th:block>
