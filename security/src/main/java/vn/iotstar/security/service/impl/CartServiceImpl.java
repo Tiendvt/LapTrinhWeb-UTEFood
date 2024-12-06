@@ -102,4 +102,11 @@ public class CartServiceImpl implements CartService {
 
 	}
 
+	@Override
+	public void clearCartByUserId(Integer userId) {
+
+		cartRepository.deleteByUserId(userId);
+		
+	}
+
 }
