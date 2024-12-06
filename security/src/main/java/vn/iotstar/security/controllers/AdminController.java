@@ -30,15 +30,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
+import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
+import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
+import vn.iotstar.security.util.OrderStatus;
 
 
 @Controller
@@ -60,6 +62,9 @@ public class AdminController {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private OrderService orderService;
 	
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
@@ -299,6 +304,87 @@ public class AdminController {
 		return "redirect:/admin/editProduct/" + product.getId();
 	}
 	
+	@GetMapping("/orders")
+	public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+
+		Page<ProductOrder> page = orderService.getAllOrdersPagination(pageNo, pageSize);
+		m.addAttribute("orders", page.getContent());
+		m.addAttribute("srch", false);
+
+		m.addAttribute("pageNo", page.getNumber()+1);
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+
+		return "/admin/orders";
+	}
+	
+	@PostMapping("/update-order-status")
+	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
+
+		OrderStatus[] values = OrderStatus.values();
+		String status = null;
+
+		for (OrderStatus orderSt : values) {
+			if (orderSt.getId().equals(st)) {
+				status = orderSt.getName();
+			}
+		}
+
+		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+
+		try {
+			commonUtil.sendMailForProductOrder(updateOrder, status);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (!ObjectUtils.isEmpty(updateOrder)) {
+			session.setAttribute("succMsg", "Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "status not updated");
+		}
+		return "redirect:/admin/orders";
+	}
+	
+	@GetMapping("/search-order")
+	public String searchProduct(@RequestParam String orderId, Model m, HttpSession session,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+
+		if (orderId != null && orderId.length() > 0) {
+
+			ProductOrder order = orderService.getOrdersByOrderId(orderId.trim());
+
+			if (ObjectUtils.isEmpty(order)) {
+				session.setAttribute("errorMsg", "Incorrect orderId");
+				m.addAttribute("orderDtls", null);
+			} else {
+				m.addAttribute("orderDtls", order);
+			}
+
+			m.addAttribute("srch", true);
+		} else {
+
+			Page<ProductOrder> page = orderService.getAllOrdersPagination(pageNo, pageSize);
+			m.addAttribute("orders", page);
+			m.addAttribute("srch", false);
+
+			m.addAttribute("pageNo", page.getNumber());
+			m.addAttribute("pageSize", pageSize);
+			m.addAttribute("totalElements", page.getTotalElements());
+			m.addAttribute("totalPages", page.getTotalPages());
+			m.addAttribute("isFirst", page.isFirst());
+			m.addAttribute("isLast", page.isLast());
+
+		}
+		return "/admin/orders";
+
+	}
+	
 	@GetMapping("/users")
 	public String loadViewUsers(Model m, @RequestParam Integer type, 
 	                             @RequestParam(defaultValue = "") String ch,
@@ -315,7 +401,6 @@ public class AdminController {
 	    }
 	    
 	    m.addAttribute("userType", type);
-	    System.out.println(type);
 	    m.addAttribute("users", page.getContent());
 	    m.addAttribute("pageNo", page.getNumber() + 1);
 	    m.addAttribute("pageSize", pageSize);
