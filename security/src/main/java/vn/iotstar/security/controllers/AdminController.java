@@ -313,28 +313,31 @@ public class AdminController {
 //	}
 	
 	@GetMapping("/users")
-	public String loadViewUsers(Model m, @RequestParam Integer type, @RequestParam(defaultValue = "") String ch,
-			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-		
-		String role = (type == 1) ? "ROLE_USER" : "ROLE_ADMIN";		
-		Page<User> page = null;
-		if (ch != null && ch.length() > 0) {
-			page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
-		} else {
-			page = userService.getAllUsersPagination(role, pageNo, pageSize);
-		}
-		
-		m.addAttribute("userType", type);
-		m.addAttribute("users", page.getContent());
-		m.addAttribute("pageNo", page.getNumber() + 1);
-		m.addAttribute("pageSize", pageSize);
-		m.addAttribute("totalElements", page.getTotalElements());
-		m.addAttribute("totalPages", page.getTotalPages());
-		m.addAttribute("isFirst", page.isFirst());
-		m.addAttribute("isLast", page.isLast());
-		
-		return "/admin/users";
+	public String loadViewUsers(Model m, @RequestParam(defaultValue = "1") Integer type, 
+	                             @RequestParam(defaultValue = "") String ch,
+	                             @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+	                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+	    
+	    String role = (type == 1) ? "ROLE_USER" : "ROLE_ADMIN";        
+	    Page<User> page = null;
+	    if (ch != null && !ch.isEmpty()) {
+	        page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
+	        System.out.println(role);
+	    } else {
+	        page = userService.getAllUsersPagination(role, pageNo, pageSize);
+	    }
+	    
+	    m.addAttribute("userType", type); // Ensure userType is set
+	    System.out.println(type);
+	    m.addAttribute("users", page.getContent());
+	    m.addAttribute("pageNo", page.getNumber() + 1);
+	    m.addAttribute("pageSize", pageSize);
+	    m.addAttribute("totalElements", page.getTotalElements());
+	    m.addAttribute("totalPages", page.getTotalPages());
+	    m.addAttribute("isFirst", page.isFirst());
+	    m.addAttribute("isLast", page.isLast());
+	    
+	    return "/admin/users";
 	}
 
 	@GetMapping("/updateSts")
