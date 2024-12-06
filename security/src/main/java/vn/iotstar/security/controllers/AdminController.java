@@ -120,7 +120,13 @@ public class AdminController {
 
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
-
+		
+		String msg = checkCategory(category);
+		if(!msg.isEmpty()) {
+			session.setAttribute("errorMsg", msg);
+			return "redirect:/admin/category";
+		}
+		
 		String imageName = file != null && !file.isEmpty() ? file.getOriginalFilename() : "default.jpg";
 		category.setImageName(imageName);
 
@@ -140,8 +146,6 @@ public class AdminController {
 
 				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "category_img" + File.separator
 						+ imageName);
-
-				System.out.println(path);
 
 				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
@@ -176,6 +180,12 @@ public class AdminController {
 	public String updateCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 
+		String msg = checkCategory(category);
+		if(!msg.isEmpty()) {
+			session.setAttribute("errorMsg", msg);
+			return "redirect:/admin/loadEditCategory/" + category.getId();
+		}
+		
 		Category oldCategory = categoryService.getCategoryById(category.getId());
 		String imageName = file.isEmpty() ? oldCategory.getImageName() : file.getOriginalFilename();
 
@@ -511,6 +521,13 @@ public class AdminController {
 		else if (ObjectUtils.isEmpty(product.getStock())) {
 			return "Enter Stock";
 		}
+		return "";
+	}
+	
+	private String checkCategory(Category category) {
+		if(ObjectUtils.isEmpty(category.getName())) {
+			return "Enter Category Name";
+		}	
 		return "";
 	}
 }
