@@ -52,7 +52,7 @@
 }
 
 .btn:hover {
-    background-color: rgb(219, 0, 0) !important;  /* Màu đỏ tươi */
+    background-color: rgb(0, 0, 0) !important;  /* Màu đỏ tươi */
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }

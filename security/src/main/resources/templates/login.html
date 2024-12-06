@@ -17,8 +17,8 @@
         /* Tăng chiều cao card để kéo dài form */
         .card {
             width: 100%;
-            max-width: 400px; /* Giới hạn chiều rộng của card */
-            height: 500px; /* Đặt chiều cao card */
+            max-width: 300px; /* Giới hạn chiều rộng của card */
+            height: 800px; /* Đặt chiều cao card */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -50,7 +50,7 @@
                 <div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
                     <div class="card-header text-center">
                         <p class="fs-4">Login</p>
-                        <div th:if="${param.error}" class="alert alert-danger text-center">
+                        <div th:if="${param.error}" class="alert bg-primary text-center">
                             <th:block th:if="${session.SPRING_SECURITY_LAST_EXCEPTION!=null}">
                                 [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
                             </th:block>
@@ -69,12 +69,12 @@
                                 <label class="form-label">Enter Your Password</label>
                                 <input required class="form-control" name="password" type="password">
                             </div>
-                            <button type="submit" class="btn bg-danger text-white col-md-12">Login</button>
+							<button type="submit" class="btn btn-primary text-white col-md-12">Login</button>
                         </form>
                     </div>
                     <div class="card-footer text-center">
                         <a href="/forgot-password" class="text-decoration-none">Forgot Password</a><br>
-                        Don't have an account? <a href="#" class="text-decoration-none">Create one</a>
+                        Don't have an account? <a href="/register" class="text-decoration-none">Create an account</a>
                     </div>
                 </div>
             </div>
