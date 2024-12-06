@@ -66,9 +66,9 @@ public class HomeController {
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
 			String email = p.getName();
-			User userDtls = userService.getUserByEmail(email);
-			m.addAttribute("user", userDtls);
-			Integer countCart = cartService.getCountCart(userDtls.getId());
+			User user = userService.getUserByEmail(email);
+			m.addAttribute("user", user);
+			Integer countCart = cartService.getCountCart(user.getId());
 			m.addAttribute("countCart", countCart);
 		}
 
@@ -89,8 +89,14 @@ public class HomeController {
 	}
 
 	@GetMapping("/signin")
-	public String login() {
-		return "login";
+	public String login(Principal principal) {
+		// Kiểm tra nếu người dùng hiện tại đã đăng nhập
+	    if (principal != null) {
+	        // Chuyển hướng người dùng đã đăng nhập sang trang chính
+	        return "redirect:/";
+	    }
+	    // Nếu chưa đăng nhập, hiển thị trang đăng nhập
+	    return "login";
 	}
 
 	@GetMapping("/register")
@@ -139,8 +145,8 @@ public class HomeController {
 	}
 
 	@PostMapping("/saveUser")
-	public String saveUser(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
-			throws IOException {
+	public String saveUser(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session, HttpServletRequest request)
+			throws IOException, UnsupportedEncodingException, MessagingException {
 
 		Boolean existsEmail = userService.existsEmail(user.getEmail());
 
@@ -161,7 +167,18 @@ public class HomeController {
 //					System.out.println(path);
 					Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 				}
-				session.setAttribute("succMsg", "Register successfully");
+				
+				String email = saveUser.getEmail();
+				String activeToken = UUID.randomUUID().toString();
+				userService.updateUserActiveToken(email, activeToken);
+				String url = CommonUtil.generateUrl(request) + "/active-account?token=" + activeToken;
+				Boolean sendMail = commonUtil.sendMailActive(url, email);
+				
+				if (!sendMail) {
+					session.setAttribute("errorMsg", "Something wrong on server ! Email not send");
+				} 
+				
+				session.setAttribute("succMsg", "Register successfully. Please check your email..Account active link sent");
 			} else {
 				session.setAttribute("errorMsg", "something wrong on server");
 			}
@@ -169,6 +186,25 @@ public class HomeController {
 
 		return "redirect:/register";
 	}
+	
+	@GetMapping("/active-account")
+	public String showActiveAccount(@RequestParam String token, HttpSession session, Model m) {
+
+		User userByActiveToken = userService.getUserByActiveToken(token);
+
+		if (userByActiveToken == null) {
+			m.addAttribute("errorMsg", "Your link is invalid or expired !!");
+			return "message";
+		} else {
+			userByActiveToken.setActiveToken(null);
+			userByActiveToken.setIsEnable(true);
+			userService.updateUser(userByActiveToken);
+			m.addAttribute("msg", "Account active successfully");
+
+			return "message";
+		}
+	}
+
 
 //	Forgot Password Code 
 
@@ -190,17 +226,14 @@ public class HomeController {
 			String resetToken = UUID.randomUUID().toString();
 			userService.updateUserResetToken(email, resetToken);
 
-			// Generate URL :
-			// http://localhost:8080/reset-password?token=sfgdbgfswegfbdgfewgvsrg
-
 			String url = CommonUtil.generateUrl(request) + "/reset-password?token=" + resetToken;
 
-			Boolean sendMail = commonUtil.sendMail(url, email);
+			Boolean sendMail = commonUtil.sendMailReset(url, email);
 
 			if (sendMail) {
 				session.setAttribute("succMsg", "Please check your email..Password Reset link sent");
 			} else {
-				session.setAttribute("errorMsg", "Somethong wrong on server ! Email not send");
+				session.setAttribute("errorMsg", "Something wring on server ! Email not send");
 			}
 		}
 
@@ -210,9 +243,9 @@ public class HomeController {
 	@GetMapping("/reset-password")
 	public String showResetPassword(@RequestParam String token, HttpSession session, Model m) {
 
-		User userByToken = userService.getUserByToken(token);
+		User userByResetToken = userService.getUserByResetToken(token);
 
-		if (userByToken == null) {
+		if (userByResetToken == null) {
 			m.addAttribute("msg", "Your link is invalid or expired !!");
 			return "message";
 		}
@@ -221,10 +254,9 @@ public class HomeController {
 	}
 
 	@PostMapping("/reset-password")
-	public String resetPassword(@RequestParam String token, @RequestParam String password, HttpSession session,
-			Model m) {
-
-		User userByToken = userService.getUserByToken(token);
+	public String resetPassword(@RequestParam String token, @RequestParam String password, HttpSession session,Model m) {
+		
+		User userByToken = userService.getUserByResetToken(token);
 		if (userByToken == null) {
 			m.addAttribute("errorMsg", "Your link is invalid or expired !!");
 			return "message";
@@ -232,7 +264,6 @@ public class HomeController {
 			userByToken.setPassword(passwordEncoder.encode(password));
 			userByToken.setResetToken(null);
 			userService.updateUser(userByToken);
-			// session.setAttribute("succMsg", "Password change successfully");
 			m.addAttribute("msg", "Password change successfully");
 
 			return "message";
@@ -248,6 +279,10 @@ public class HomeController {
 		m.addAttribute("categories", categories);
 		return "product";
 
+	}
+	@GetMapping("/profile")
+	public String profile() {
+		return "user/profile";
 	}
 
 }

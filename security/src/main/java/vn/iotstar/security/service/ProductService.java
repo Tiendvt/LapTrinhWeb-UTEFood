@@ -6,7 +6,12 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+
+
+
 import vn.iotstar.security.model.Product;
+import vn.iotstar.security.model.Shop;
+
 
 public interface ProductService {
 
@@ -32,5 +37,7 @@ public interface ProductService {
 
 	public Page<Product> searchActiveProductPagination(Integer pageNo, Integer pageSize, String category, String ch);
 
+	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
 }
+
 

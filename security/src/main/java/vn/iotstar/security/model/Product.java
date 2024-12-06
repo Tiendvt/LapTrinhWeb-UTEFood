@@ -37,13 +37,17 @@ public class Product {
     private Double price;
 
     private int stock;
-
+    
     @Column(columnDefinition = "NVARCHAR(255)")
     private String image;
-
+    
+    private int sold=0;
     private int discount;
     
     private Double discountPrice;
     
     private Boolean isActive;
+    @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
 }
