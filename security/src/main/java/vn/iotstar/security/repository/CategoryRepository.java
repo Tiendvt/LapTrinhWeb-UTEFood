@@ -1,3 +1,4 @@
+
 package vn.iotstar.security.repository;
 
 import java.util.List;
@@ -16,3 +17,4 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 	public Category findByName(String name); 
 
 }
+

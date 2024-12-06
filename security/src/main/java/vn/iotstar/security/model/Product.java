@@ -30,20 +30,24 @@ public class Product {
     @Column(length = 4000, columnDefinition = "NVARCHAR(4000)")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Many products can belong to one category
-    @JoinColumn(name = "category_id") // Foreign key column for the relationship
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "category_id") 
     private Category category;
 
     private Double price;
 
     private int stock;
-
+    
     @Column(columnDefinition = "NVARCHAR(255)")
     private String image;
-
+    
+    private int sold=0;
     private int discount;
     
     private Double discountPrice;
     
     private Boolean isActive;
+    @ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
 }
