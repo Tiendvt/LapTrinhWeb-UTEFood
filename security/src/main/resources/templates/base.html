@@ -26,15 +26,18 @@
 		.navbar-nav .nav-link {
 			color: #ffffff !important;
 		}
+
 		html {
-		    scroll-behavior: smooth; /* Hiệu ứng cuộn mượt mà */
+			scroll-behavior: smooth;
+			/* Hiệu ứng cuộn mượt mà */
 		}
 
 		body {
-		    overflow-y: scroll; /* Cho phép cuộn dọc */
-		    height: 100%; /* Đảm bảo chiều cao đầy đủ */
+			overflow-y: scroll;
+			/* Cho phép cuộn dọc */
+			height: 100%;
+			/* Đảm bảo chiều cao đầy đủ */
 		}
-
 	</style>
 </head>
 
@@ -52,7 +55,8 @@
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<th:block th:if="${user == null}">
 						<li class="nav-item"><a class="nav-link active" aria-current="page" href="/"><i
-									class="fa-solid fa-house"></i> Home</a></li>
+									class="fa-solid fa-house"></i>
+								Home</a></li>
 					</th:block>
 
 					<th:block th:unless="${user == null}">
@@ -61,7 +65,7 @@
 
 						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}"><a class="nav-link active"
 								aria-current="page" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
-								<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a class="nav-link active"
+						<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a class="nav-link active"
 								aria-current="page" href="/vendor/"><i class="fa-solid fa-house"></i> Home</a></li>
 					</th:block>
 
@@ -79,31 +83,40 @@
 
 				<!-- Navbar items for logged-in users -->
 				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-				    <!-- If the user is logged in -->
-				    <th:block th:if="${user != null}">
-				        <!-- If the user is an admin -->
-				        <th:block th:if="${user.role == 'ROLE_ADMIN'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				        
-				        <!-- If the user is not an admin (regular user) -->
-				        <th:block th:if="${user.role == 'ROLE_USER'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				        <th:block th:if="${user.role == 'ROLE_VENDOR'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/vendor/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				    </th:block>
+					<!-- If the user is logged in -->
+					<th:block th:if="${user != null}">
+						<!-- If the user is an admin -->
+						<th:block th:if="${user.role == 'ROLE_ADMIN'}">
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/profile"><i
+										class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i
+										class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
 
-				    <!-- If the user is not logged in -->
-				    <th:block th:if="${user == null}">
-				        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/signin"><i class="fa-solid fa-right-to-bracket"></i> LOGIN</a></li>
-				        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/register">REGISTER</a></li>
-				    </th:block>
+						<!-- If the user is not an admin (regular user) -->
+						<th:block th:if="${user.role == 'ROLE_USER'}">
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/profile"><i
+										class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/cart"><i
+										class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i
+										class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
+						<th:block th:if="${user.role == 'ROLE_VENDOR'}">
+							<li class="nav-item"><a class="nav-link active" aria-current="page"
+									href="/vendor/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i
+										class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
+					</th:block>
+
+					<!-- If the user is not logged in -->
+					<th:block th:if="${user == null}">
+						<li class="nav-item"><a class="nav-link active" aria-current="page" href="/signin"><i
+									class="fa-solid fa-right-to-bracket"></i> LOGIN</a></li>
+						<li class="nav-item"><a class="nav-link active" aria-current="page"
+								href="/register">REGISTER</a></li>
+					</th:block>
 				</ul>
 			</div>
 		</div>
@@ -114,8 +127,9 @@
 
 	<!-- Start Footer -->
 	<div class="container-fluid p-1 bg-primary text-center text-white" style="margin-top: 150px">
-		<p>Địa chỉ: 01 Đ. Võ Văn Ngân, Linh Chiểu, Thủ Đức, Hồ Chí Minh, Việt Nam. Tổng đài hỗ trợ: 0123456789 - Email: admin@utefoodshop.com
-</p>
+		<p>Địa chỉ: 01 Đ. Võ Văn Ngân, Linh Chiểu, Thủ Đức, Hồ Chí Minh, Việt Nam. Tổng đài hỗ trợ: 0123456789 - Email:
+			admin@utefoodshop.com
+		</p>
 		<p>Chịu Trách Nhiệm Quản Lý : Nhóm 16</p>
 		<p>utefoodshop.com</p>
 	</div>
