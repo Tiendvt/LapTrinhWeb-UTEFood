@@ -391,7 +391,7 @@ public class AdminController {
 	                             @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 	                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 	    
-	    String role = (type == 1) ? "ROLE_USER" : "ROLE_ADMIN";        
+	    String role = (type == 1) ? "ROLE_ADMIN" : (type == 2) ? "ROLE_VENDOR" : "ROLE_USER";        
 	    Page<User> page = null;
 	    if (ch != null && !ch.isEmpty()) {
 	        page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
