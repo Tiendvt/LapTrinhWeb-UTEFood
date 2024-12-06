@@ -5,17 +5,54 @@
 	<meta charset="UTF-8">
 	<title>Register</title>
 </head>
+<style>
+        /* Tạo flexbox để canh giữa toàn bộ trang */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+			font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        /* Tăng chiều cao card để kéo dài form */
+        .card {
+            width: 100%;
+            max-width: 300px; /* Giới hạn chiều rộng của card */
+            height: 800px; /* Đặt chiều cao card */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            height: 200px; /* Kéo dài phần đầu của card */
+        }
+
+        .card-body {
+            flex-grow: 1; /* Đảm bảo phần body chiếm phần còn lại */
+        }
+
+        /* Tăng cường khoảng cách cho các phần tử trong form */
+        .form-label {
+            font-weight: bold;
+        }
+
+
+        .btn {
+            font-weight: bold;    
+			}
+			/* test*/
+    </style>
 <body>
 	<section>
-		<div class="container mt-5 p-5">
-			<div class="row">
-				<div class="col-md-5 p-5">
-					<img alt="E-commerce logo" th:src="@{/img/register_back.jpg}" width="100%" height="400px">
-				</div>
-				<div class="col-md-7 p-2">
-					<div class="card shadow p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-header text-center">
-							<p class="fs-4 text-center">Register</p>
+	    <div class="container mt-5 p-5">
+	        <div class="row">
+				<div class="card shadow p-3 mb-5 bg-body-tertiary rounded mx-auto" style="max-width: 400px;">
+	                <div class="card-header text-center">
+	                    <p class="fs-4">Register</p>
 							<!-- Success message -->
 							<th:block th:if="${session.succMsg}">
 								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
