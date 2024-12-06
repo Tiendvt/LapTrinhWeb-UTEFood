@@ -30,8 +30,7 @@ public class Shop {
 
     @Column(columnDefinition = "NVARCHAR(255)")
     private String logo;
-    
-    private int sold=0;
+
     @Column(nullable = false)
     private Boolean isActive = true;
 }

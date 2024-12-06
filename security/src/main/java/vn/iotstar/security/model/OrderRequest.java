@@ -14,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "order_request")
+@Table(name = "orders")
 public class OrderRequest {
     
     @Id

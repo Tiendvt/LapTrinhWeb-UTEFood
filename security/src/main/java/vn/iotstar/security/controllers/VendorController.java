@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -51,8 +50,6 @@ public class VendorController {
 
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
 	private CommonUtil commonUtil;
     // Vendor Dashboard
@@ -287,58 +284,19 @@ public class VendorController {
     }
 
     @PostMapping("/update-shop")
-    public String updateShop(@ModelAttribute Shop shop, @RequestParam("file") MultipartFile logo,
-                             HttpSession session, Model m, Principal principal) {
-
-        // Retrieve the existing shop for the logged-in user
+    public String updateShop(@ModelAttribute Shop shop, Principal principal) {
         Shop existingShop = shopService.getShopByOwnerEmail(principal.getName());
 
-        // Validate the shop name (similar to product validation)
-        if (shop.getName() == null || shop.getName().isEmpty()) {
-            session.setAttribute("errorMsg", "Shop name cannot be empty.");
-            return "redirect:/vendor/shop-settings";  // Redirect back to shop settings page if validation fails
-        }
-
-        // Retain the ID of the existing shop (update the existing record)
+        // Retain the ID of the existing shop (you want to update the existing record, not create a new one)
         shop.setId(existingShop.getId());
 
-        // Ensure the owner_id is set explicitly
+        // Ensure owner_id is set explicitly (in case it is missing)
         User loggedInUser = userService.getUserByEmail(principal.getName());
         shop.setOwner(loggedInUser);  // Set the owner to the logged-in user
 
-        // Handle logo file upload if available
-        if (!logo.isEmpty()) {
-            try {
-                String logoName = logo.getOriginalFilename();
-                shop.setLogo(logoName);
-
-                // Save the logo file to the appropriate folder
-                File saveFile = new ClassPathResource("static/img").getFile();
-                Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "shop_img" + File.separator + logoName);
-
-                if (!Files.exists(path.getParent())) {
-                    Files.createDirectories(path.getParent());
-                }
-
-                Files.copy(logo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                session.setAttribute("errorMsg", "Error uploading logo. Please try again.");
-                e.printStackTrace();
-                return "redirect:/vendor/shop-settings";  // Redirect if there is an error
-            }
-        }
-
         // Save the updated shop details
-        Shop updatedShop = shopService.updateShopDetails(shop);
+        shopService.updateShopDetails(shop);
 
-        // Set success or error message based on the outcome
-        if (updatedShop != null) {
-            session.setAttribute("succMsg", "Shop updated successfully.");
-        } else {
-            session.setAttribute("errorMsg", "Failed to update shop. Please try again.");
-        }
-
-        // Redirect to the shop settings page after update
         return "redirect:/vendor/shop-settings";
     }
 
@@ -397,57 +355,5 @@ public class VendorController {
         }
 
         return "redirect:/vendor/";
-    }
-    @GetMapping("/profile")
-    public String profile(Principal principal, Model model, HttpSession session) {
-        // Get the logged-in user details based on the principal (authenticated vendor)
-        User loggedInUserDetails = userService.getUserByEmail(principal.getName());
-        model.addAttribute("user", loggedInUserDetails);
-        return "vendor/profile";  // Vendor profile page
-    }
-
-    // Update Vendor Profile
-    @PostMapping("/update-profile")
-    public String updateProfile(@ModelAttribute User user, @RequestParam MultipartFile img, HttpSession session) {
-        // Update the user's profile and handle the profile image upload
-        User updatedUserProfile = userService.updateUserProfile(user, img);
-
-        if (ObjectUtils.isEmpty(updatedUserProfile)) {
-            session.setAttribute("errorMsg", "Profile not updated");
-        } else {
-            session.setAttribute("succMsg", "Profile Updated");
-        }
-
-        // Redirect back to the vendor's profile page after updating
-        return "redirect:/vendor/profile";
-    }
-
-    // Change Vendor Password
-    @PostMapping("/change-password")
-    public String changePassword(@RequestParam String newPassword, @RequestParam String currentPassword, 
-                                 Principal principal, HttpSession session) {
-        // Get the logged-in user details based on the principal (authenticated vendor)
-        User loggedInUserDetails = userService.getUserByEmail(principal.getName());
-
-        // Check if the current password matches the stored password
-        boolean matches = passwordEncoder.matches(currentPassword, loggedInUserDetails.getPassword());
-
-        if (matches) {
-            // If passwords match, encode the new password and update it
-            String encodedPassword = passwordEncoder.encode(newPassword);
-            loggedInUserDetails.setPassword(encodedPassword);
-            User updatedUser = userService.updateUser(loggedInUserDetails);
-
-            if (ObjectUtils.isEmpty(updatedUser)) {
-                session.setAttribute("errorMsg", "Password not updated. Error in server");
-            } else {
-                session.setAttribute("succMsg", "Password updated successfully");
-            }
-        } else {
-            session.setAttribute("errorMsg", "Current password is incorrect");
-        }
-
-        // Redirect back to the profile page after attempting to change the password
-        return "redirect:/vendor/profile";
     }
 }

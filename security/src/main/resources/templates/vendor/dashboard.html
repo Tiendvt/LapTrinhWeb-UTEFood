@@ -21,12 +21,9 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Shop Details</h5>
                             <th:block th:if="${shop != null}">
-                                <!-- Shop logo display -->
-                                <th:block th:if="${shop.logo}">
-                                    <img th:src="@{'/img/shop_img/' + ${shop.logo}}" alt="Shop Logo" class="img-thumbnail" style="width: 100px; height: 100px;">
-                                </th:block>
                                 <p><strong>Shop Name:</strong> [[${shop.name}]]</p>
                                 <p><strong>Owner:</strong> [[${shop.owner.name}]]</p>
+                                
                                 <a href="/vendor/shop-settings" class="btn btn-primary">Edit Shop</a>
                             </th:block>
                             <th:block th:if="${shop == null}">
@@ -43,6 +40,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Products</h5>
                             <th:block th:if="${shop != null}">
+                                
                                 <a href="/vendor/products" class="btn btn-primary">View Products</a>
                                 <a href="/vendor/add-product" class="btn btn-success">Add Product</a>
                             </th:block>
@@ -59,6 +57,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Orders</h5>
                             <th:block th:if="${shop != null}">
+                                
                                 <a href="/vendor/orders" class="btn btn-primary">View Orders</a>
                             </th:block>
                             <th:block th:if="${shop == null}">
