@@ -42,11 +42,11 @@
 		<div class="container">
 			<div class="row">
 				<p class="text-center fs-4">Category</p>
-				<div class="col-md-2" th:each="c:${category}">
+				<div class="col-md-2" th:each="c:${categories}">
 					<div
 						class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded ">
 						<div class="card-body text-center">
-							<img th:src="@{'img/category_img/'+${c.imageName}}" width="65%" height="140px"><br>
+							<img th:src="@{'/img/category_img/'+${c.imageName}}" width="65%" height="140px"><br>
 							<a th:href="@{'/products?category='+${c.name}}" class="text-decoration-none">[[${c.name}]]</a>
 						</div>
 					</div>
@@ -120,7 +120,7 @@
 				<div class="col-md-3" th:each="p:${products}">
 					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
 						<div class="card-body text-center">
-							<img alt="" th:src="@{'img/product_img/'+${p.image}}" class="" width="65%"
+							<img alt="" th:src="@{'/img/product_img/'+${p.image}}" class="" width="65%"
 								height="140px">
 							<p class="text-center"><a th:href="@{'/product/'+${p.id}}" class="text-decoration-none">[[${p.title}]]</a></p>
 						</div>
@@ -128,35 +128,7 @@
 				</div>
 
 
-			<!-- 	<div class="col-md-3">
-					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-body text-center">
-							<img alt="" src="img/product_img/laptop.jpg" class="" width="65%"
-								height="140px">
-							<p class="text-center">HP Laptop</p>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-md-3">
-					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-body text-center">
-							<img alt="" src="img/product_img/laptop.jpg" class="" width="65%"
-								height="140px">
-							<p class="text-center">HP Laptop</p>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-md-3">
-					<div class="card shadow-sm p-3 mb-5 bg-body-tertiary rounded">
-						<div class="card-body text-center">
-							<img alt="" src="img/product_img/laptop.jpg" class="" width="65%"
-								height="140px">
-							<p class="text-center">HP Laptop</p>
-						</div>
-					</div>
-				</div> -->
+		
 
 			</div>
 		</div>
