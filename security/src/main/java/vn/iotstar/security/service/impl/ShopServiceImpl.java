@@ -23,9 +23,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop updateShopDetails(Shop shop) {
-        if (!shopRepository.existsById(shop.getId())) {
-            throw new RuntimeException("Shop with ID " + shop.getId() + " does not exist.");
-        }
+        
         return shopRepository.save(shop);
     }
 
