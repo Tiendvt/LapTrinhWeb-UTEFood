@@ -100,6 +100,27 @@
                                     </div>
                                 </div>
 
+<<<<<<< HEAD
+								<div class="mb-3">
+									<label>Enter Description</label>
+									<textarea rows="3" cols="" class="form-control"
+										name="description">[[${product.description}]]</textarea>
+								</div>
+								<div class="row">
+									<div class="mb-3 col">
+									    <label>Category</label>
+									    <select class="form-control" name="category.id">
+									        <option th:each="c : ${categories}" th:value="${c.id}" 
+									                th:text="${c.name}" th:selected="${product.category.id == c.id}">
+									        </option>
+									    </select>
+									</div>
+									<div class="mb-3 col">
+										<label>Enter Price</label> <input type="number" name="price"
+											th:value="${product.price}" class="form-control">
+									</div>
+								</div>
+=======
                                 <div class="mb-3">
                                     <label>Status</label>
                                     <div class="form-check">
@@ -113,6 +134,7 @@
                                         <label class="form-check-label" for="flexRadioDefault2">Inactive</label>
                                     </div>
                                 </div>
+>>>>>>> 788fdfba89a28198b4b689762d1d5925ae2b386a
 
                                 <div class="row">
                                     <div class="mb-3 col">

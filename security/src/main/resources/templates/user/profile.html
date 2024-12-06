@@ -31,6 +31,73 @@
 						<table class="table table-borderless">
 							<tbody>
 								<tr>
+<<<<<<< HEAD
+									<th scope="row">Name</th>
+									<td>:</td>
+									<td><input type="text" name="name" class="form-control"
+										th:value="${user.name}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Mobile Number</th>
+									<td>:</td>
+									<td><input type="text" name="mobileNumber"
+										class="form-control" th:value="${user.mobileNumber}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Email</th>
+									<td>:</td>
+									<td><input type="text" name="" class="form-control"
+										readonly th:value="${user.email}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Address</th>
+									<td>:</td>
+									<td><input type="text" name="address" class="form-control"
+										th:value="${user.address}"></td>
+								</tr>
+								<tr>
+									<th scope="row">City</th>
+									<td>:</td>
+									<td><input type="text" name="city" class="form-control"
+										th:value="${user.city}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Province</th>
+									<td>:</td>
+									<td><input type="text" name="province" class="form-control"
+										th:value="${user.province}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Pincode</th>
+									<td>:</td>
+									<td><input type="text" name="pincode" class="form-control"
+										th:value="${user.pincode}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Image</th>
+									<td>:</td>
+									<td><input type="file" name="img" class="form-control"
+										value=""></td>
+								</tr>
+								<tr>
+									<th scope="row">Role</th>
+									<td>:</td>
+									<td><input type="text" name="" class="form-control"
+										readonly th:value="${user.role}"></td>
+								</tr>
+								<tr>
+									<th scope="row">Account Status</th>
+									<td>:</td>
+									<td><input type="text" name="" class="form-control"
+										readonly th:value="${user.isEnable}"> <input
+										type="hidden" th:value="${user.id}" name="id"></td>
+								</tr>
+
+								<tr>
+									<td></td>
+									<td class="text-center">
+										<button class="btn btn-sm bg-primary text-light">Update</button>
+=======
 									<th>Name</th>
 									<td><input type="text" name="name" class="form-control" th:value="${user.name}">
 									</td>
@@ -73,11 +140,57 @@
 								<tr>
 									<td colspan="2" class="text-center">
 										<button type="submit" class="btn btn-primary w-75">Update Profile</button>
+>>>>>>> 788fdfba89a28198b4b689762d1d5925ae2b386a
 									</td>
 								</tr>
 							</tbody>
 						</table>
+<<<<<<< HEAD
+
+					</div>
+
+				</div>
+				<hr>
+				<div class="col-md-10 offset-md-1 mt-1">
+					<div class="row">
+						<p class="text-center fs-3">Change Password</p>
+						<div class="col-md-6 offset-md-3">
+							<table class="table table-borderless">
+
+								<tbody>
+									<form action="/user/change-password" method="post">
+										<tr>
+											<th scope="row">Current Password</th>
+
+											<td><input type="text" name="currentPassword" class="form-control"></td>
+										</tr>
+
+										<tr>
+											<th scope="row">New Password</th>
+
+											<td><input type="text" name="newPassword" class="form-control" required></td>
+										</tr>
+
+										<tr>
+											<th scope="row">Confirm Password</th>
+
+											<td><input type="text" name="confirmPassword" class="form-control" ></td>
+										</tr>
+										<tr>
+											<td></td>
+											<td class="text-center">
+												<button class="btn btn-sm bg-primary text-light col-md-4">Update</button>
+											</td>
+
+										</tr>
+									</form>
+								</tbody>
+							</table>
+						</div>
+					</div>
+=======
 					</form>
+>>>>>>> 788fdfba89a28198b4b689762d1d5925ae2b386a
 				</div>
 
 				<!-- Right: Change Password -->
