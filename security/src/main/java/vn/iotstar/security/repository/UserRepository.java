@@ -2,6 +2,8 @@ package vn.iotstar.security.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	public User findByResetToken(String token);
 	public List<User> findByRole(String role);
 	public User findByActiveToken(String token);
+	Page<User> findByRoleAndEmailContainingIgnoreCaseOrNameContainingIgnoreCase(String role, String ch, String ch2, Pageable pageable);
+	Page<User> findByRole(String role, Pageable pageable);
 }

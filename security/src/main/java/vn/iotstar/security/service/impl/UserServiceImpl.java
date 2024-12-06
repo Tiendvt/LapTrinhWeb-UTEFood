@@ -11,6 +11,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -168,5 +171,20 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public User getUserByActiveToken(String token) {
 		return userRepository.findByActiveToken(token);
-	}	
+	}
+
+	@Override
+	public Page<User> searchUsersPagination(String role, Integer pageNo, Integer pageSize, String ch) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		return userRepository.findByRoleAndEmailContainingIgnoreCaseOrNameContainingIgnoreCase(role, ch, ch, pageable);
+	}
+
+	@Override
+	public Page<User> getAllUsersPagination(String role, Integer pageNo, Integer pageSize) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		return userRepository.findByRole(role, pageable);
+	}
+	
+	
+
 }
