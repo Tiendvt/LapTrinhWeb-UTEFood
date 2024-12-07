@@ -516,6 +516,18 @@ public class AdminController {
 		}
 		return "redirect:/admin/users?type=" + type;
 	}
+	
+	@GetMapping("/updateRole")
+	public String updateUserAccountStatus(@RequestParam String role, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
+		Boolean f = userService.updateAccountRole(id, role);
+		if (f) {
+			session.setAttribute("succMsg", "Account Role Updated");
+		} else {
+			session.setAttribute("errorMsg", "Something wrong on server");
+		}
+		return "redirect:/admin/users?type=" + type;
+	}
 
 	@GetMapping("/add-admin")
 	public String loadAdminAdd() {
