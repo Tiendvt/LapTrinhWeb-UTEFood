@@ -44,8 +44,13 @@
                     <td th:text="${order.price}"></td>
                     <td th:text="${order.status}"></td>
                     <td>
-                        <a th:if="${order.status == 'Delivered'}" th:href="@{'/user/review-order/' + ${order.id}}" class="btn btn-sm btn-primary">Review</a>
-                        <a th:if="${order.status != 'Cancelled'}" th:href="@{'/user/cancel-order/' + ${order.id}}" class="btn btn-sm btn-danger">Cancel</a>
+                          <!-- Kiểm tra trạng thái đánh giá -->
+            <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and reviewStatus[order.id]}" 
+               class="btn btn-sm btn-secondary disabled">Reviewed</a>
+            <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and !reviewStatus[order.id] and order.status == 'Delivered'}"
+               th:href="@{'/user/review-order/' + ${order.id}}" 
+               class="btn btn-sm btn-primary">Review</a>
+                        <a th:if="${order.status != 'Cancelled' and order.status != 'Delivered'}" th:href="@{'/user/cancel-order/' + ${order.id}}" class="btn btn-sm btn-danger">Cancel</a>
                     </td>
                 </tr>
             </tbody>

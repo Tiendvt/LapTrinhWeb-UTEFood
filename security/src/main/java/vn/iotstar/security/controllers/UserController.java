@@ -1,7 +1,9 @@
 package vn.iotstar.security.controllers;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +30,7 @@ import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
+import vn.iotstar.security.service.ReviewService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
@@ -44,8 +47,10 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private CommonUtil commonUtil;
-	@Autowired
-	private ProductService productService;
+		@Autowired
+		private ProductService productService;
+		@Autowired
+		private ReviewService reviewService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
@@ -140,7 +145,14 @@ public class UserController {
 	public String myOrder(Model m, Principal p) {
 		User loginUser = getLoggedInUserDetails(p);
 		List<ProductOrder> orders = orderService.getOrdersByUser(loginUser.getId());
+		 // Kiểm tra trạng thái đánh giá cho từng đơn hàng
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewService.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
 		m.addAttribute("orders", orders);
+		m.addAttribute("reviewStatus", reviewStatus); // Truyền thông tin trạng thái đánh giá vào giao diện
 		m.addAttribute("activeTab", "all");
 		
 		return "/user/my_orders";
@@ -160,7 +172,7 @@ public class UserController {
 	        case "PRODUCT_PACKED":
 	        case "OUT_FOR_DELIVERY":
 	        case "DELIVERED":
-
+	        	
 	        case "CANCELLED":
 	        case "SUCCESS":
 	            orders = orderService.getOrdersByStatusAndUser(status, loginUser.getId());
@@ -168,9 +180,15 @@ public class UserController {
 	        default:
 	            throw new IllegalArgumentException("Invalid status: " + status);
 	    }
-
+	 // Tính toán trạng thái đánh giá
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewService.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
 	    model.addAttribute("orders", orders);
-	    System.out.print("orders: " + orders.size() );
+	   // System.out.print("orders: " + orders.size() );
+	    model.addAttribute("reviewStatus", reviewStatus);
 	    model.addAttribute("activeTab", status.toLowerCase());
 	    return "/user/my_orders"; // Đảm bảo file my_orders.html tồn tại
 	}
