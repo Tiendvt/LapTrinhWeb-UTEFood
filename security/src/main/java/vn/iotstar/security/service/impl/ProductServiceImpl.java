@@ -186,4 +186,10 @@ public class ProductServiceImpl implements ProductService {
 	    return productRepository.findByShop(shop, pageable);
 	}
 
+	@Override
+	public List<Product> getProductsByCategory(String category) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

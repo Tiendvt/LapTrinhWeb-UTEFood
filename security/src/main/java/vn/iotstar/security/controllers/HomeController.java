@@ -284,5 +284,15 @@ public class HomeController {
 	public String profile() {
 		return "user/profile";
 	}
+	@GetMapping("/view_product")
+	public String viewProduct(@RequestParam("category") String category, Model model) {
+	    // Truyền dữ liệu sản phẩm của danh mục vào model
+	    List<Product> products = productService.getProductsByCategory(category);
+	    model.addAttribute("products", products);
+	    model.addAttribute("category", category);
+
+	    return "view_product"; // Tên file view_product.html hoặc JSP
+	}
+
 
 }
