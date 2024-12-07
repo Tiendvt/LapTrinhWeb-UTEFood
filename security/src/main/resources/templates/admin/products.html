@@ -48,21 +48,33 @@
           <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
         </th:block>
 
-        <!-- Search Form -->
-        <div class="col-md-4 p-3">
-          <form action="/admin/products" method="get">
-            <div class="row">
-              <div class="col">
-                <input type="text" class="form-control" name="ch" placeholder="Search Products">
-              </div>
-              <div class="col">
-                <button class="btn btn-primary col">Search</button>
-              </div>
-            </div>
-          </form>
-        </div>
+			<!-- Search and Category Form in One Row -->
+			<div class="row p-3">
+			  <form action="/admin/products" method="get" class="d-flex align-items-center">
+			    <!-- Search Input -->
+			    <div class="col-3">
+			      <input type="text" class="form-control" name="ch" placeholder="Search Products">
+			    </div>
+			    <!-- Category Dropdown -->
+			    <div class="col-1 mx-2">
+			      <label for="type" class="visually-hidden">number</label>
+			      <select class="form-control" id="type" name="type">
+			        <option value="1">All</option>
+			        <option value="2">Products</option>
+			        <option value="3">Category</option>
+			        <option value="4">Shop</option>
+			        <!-- Add category options here -->
+			      </select>
+			    </div>
+			    <!-- Search Button -->
+			    <div class="col-auto">
+			      <button class="btn btn-primary">Search</button>
+			    </div>
+			  </form>
+			</div>
 
-        <!-- Product Table -->
+
+				<!-- Product Table -->
         <div class="p-3">
           <table class="table table-bordered table-striped">
             <thead class="table-light">

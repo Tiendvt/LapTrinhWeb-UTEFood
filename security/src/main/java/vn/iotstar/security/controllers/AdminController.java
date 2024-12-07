@@ -254,15 +254,15 @@ public class AdminController {
 	}
 
 	@GetMapping("/products")
-
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
+			@RequestParam(defaultValue = "1") String type,
 			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
 
 		Page<Product> page = null;
 		if (ch != null && ch.length() > 0) {
-			page = productService.searchProductPagination(pageNo, pageSize, ch);
+			page = productService.searchProductPagination(pageNo, pageSize, ch, Integer.parseInt(type));
 		} else {
 			page = productService.getAllProductsPagination(pageNo, pageSize);
 		}
