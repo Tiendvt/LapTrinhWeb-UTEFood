@@ -89,3 +89,49 @@ body {
         transform: translateY(0);
     }
 }
+.btn-light {
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.btn-light:hover {
+    background-color: #f8f9fa;
+}
+/* Heart icon enhancements */
+/* Removes the default border around the button */
+.heart button {
+    border: none;
+    background: none;
+    padding: 0; /* Remove padding for a cleaner look */
+}
+
+/* Smooth transition for color change when hovering */
+.heart i {
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for color and scaling */
+}
+
+/* When hovering over the heart icon, change color and scale it */
+.heart i:hover {
+    color: red; /* Change color to red on hover */
+    transform: scale(1.2); /* Slightly enlarge the icon on hover */
+}
+
+/* Define the default color of the heart icon */
+.heart i.fas {
+    color: red; /* Red color for solid heart (favorited) */
+}
+
+.heart i.far {
+    color: #ccc; /* Grey color for outline heart (not favorited) */
+}
+
+/* Optional: Change color when the heart is favorited (btn-danger) */
+.heart button.btn-danger i {
+    color: red; /* Red color when the heart is favorited */
+}
+/* Optional: Customize the favorite count */
+#favorite-count {
+    font-size: 1rem; /* Adjust font size for the count */
+    color: #333; /* Change text color */
+    font-weight: bold; /* Make the count text bold */
+}

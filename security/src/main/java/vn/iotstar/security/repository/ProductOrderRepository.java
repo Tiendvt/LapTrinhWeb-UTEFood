@@ -28,5 +28,6 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Inte
 
     // Fetch paginated orders by status and shop
     Page<ProductOrder> findAllByStatusAndShop(String status, Shop shop, Pageable pageable);
+    List<ProductOrder> findByStatusAndUserId(String status, Integer userId);
 
 }

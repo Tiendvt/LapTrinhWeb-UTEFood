@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -140,7 +141,56 @@ public class UserController {
 		User loginUser = getLoggedInUserDetails(p);
 		List<ProductOrder> orders = orderService.getOrdersByUser(loginUser.getId());
 		m.addAttribute("orders", orders);
+		m.addAttribute("activeTab", "all");
+		
 		return "/user/my_orders";
+	}
+	@GetMapping("/user-orders/{status}")
+	public String getOrdersByStatus(@PathVariable String status, Model model, Principal principal) {
+		User loginUser = getLoggedInUserDetails(principal);
+	    List<ProductOrder> orders;
+
+	    // Xử lý trạng thái tương ứng với các từ khóa mới
+	    switch (status.toUpperCase()) {
+	        case "ALL":
+	            orders = orderService.getOrdersByUser(loginUser.getId());
+	            break;
+	        case "IN PROGRESS":
+	        case "ORDER_RECEIVED":
+	        case "PRODUCT_PACKED":
+	        case "OUT_FOR_DELIVERY":
+	        case "DELIVERED":
+
+	        case "CANCELLED":
+	        case "SUCCESS":
+	            orders = orderService.getOrdersByStatusAndUser(status, loginUser.getId());
+	            break;
+	        default:
+	            throw new IllegalArgumentException("Invalid status: " + status);
+	    }
+
+	    model.addAttribute("orders", orders);
+	    System.out.print("orders: " + orders.size() );
+	    model.addAttribute("activeTab", status.toLowerCase());
+	    return "/user/my_orders"; // Đảm bảo file my_orders.html tồn tại
+	}
+	@GetMapping("/review-order/{orderId}")
+	public String reviewOrder(@PathVariable Integer orderId, Model model) {
+		System.out.print("orderID: "+orderId);
+	    ProductOrder order = orderService.getOrderById(orderId);
+	    System.out.print("Bình thường ");
+	    if (order == null || !"Delivered".equalsIgnoreCase(order.getStatus())) {
+	        throw new RuntimeException("Order not found or not eligible for review");
+	    }
+	    model.addAttribute("order", order);
+	    return "user/review_orders"; // Tên file HTML chứa form đánh giá
+	}
+	@PostMapping("/review-order")
+	public String submitReview(@RequestParam Integer orderId,
+	                           @RequestParam String comment,
+	                           @RequestParam("files") MultipartFile[] files) {
+	    orderService.submitReview(orderId, comment, files);
+	    return "redirect:/user/user-orders/delivered"; // Quay lại tab "Completed"
 	}
 	@GetMapping("/update-status")
 	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
