@@ -147,7 +147,7 @@
                         </div>
                     </div>
                 </th:block>
-                <th:block th:unless="${#lists.isEmpty(productsSoldMoreThan10)}">
+                <th:block th:if="${#lists.isEmpty(productsSoldMoreThan10)}">
                     <p class="fs-4 text-center mt-4 text-danger">No products found</p>
                 </th:block>
             </div>

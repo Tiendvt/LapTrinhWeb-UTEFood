@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(cart.getQuantity());
             order.setUser(cart.getUser());
             order.setShop(cart.getProduct().getShop()); // Ensure shop linkage
-            order.setStatus(OrderStatus.IN_PROGRESS.getName());
+            order.setStatus(OrderStatus.NEW_ORDER.getName());
             order.setPaymentType(orderRequest.getPaymentType());
 
             OrderAddress address = new OrderAddress();
