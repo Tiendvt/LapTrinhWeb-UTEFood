@@ -198,5 +198,8 @@ public class ProductServiceImpl implements ProductService {
             product.setDiscountPrice(product.getPrice() - discountAmount);
         }
     }
-
+    @Override
+	public List<Product> getProductsSoldMoreThan10() {
+        return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
+    }
 }

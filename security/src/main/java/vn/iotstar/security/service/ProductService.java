@@ -42,6 +42,8 @@ public interface ProductService {
 	void applyPromotion(Product product);
 
 	List<Product> getDiscountedProducts();
+
+	List<Product> getProductsSoldMoreThan10();
 }
 
 
