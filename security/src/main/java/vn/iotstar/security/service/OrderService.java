@@ -28,5 +28,6 @@ public interface OrderService {
     Page<ProductOrder> getOrdersByShopPagination(Shop shop, Integer pageNo, Integer pageSize);
 
     Page<ProductOrder> getOrdersByStatusAndShop(String status, Shop shop, Integer pageNo, Integer pageSize);
+    
+    List<ProductOrder> getOrdersByStatus(String status);
 }
-

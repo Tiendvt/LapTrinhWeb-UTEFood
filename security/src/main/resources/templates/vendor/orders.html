@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
 		<div class="container-fluid mt-5 p-1">
 			<div class="row">
 				<p class="text-center fs-3 mt-2">All Orders</p>
 				<hr>
-				<a href="/admin/" class="text-decoration-none"><i
-					class="fa-solid fa-arrow-left"></i> Back</a>
+				<a href="/admin/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
 				<th:block th:if="${session.succMsg}">
 					<p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
@@ -23,19 +23,14 @@
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
 				</th:block>
 				<div class="col-md-4 p-4">
-
-					<form action="/vendor/search-order" method="get">
-						<div class="row">
-							<div class="col">
-								<input type="text" class="form-control " name="orderId"
-									placeholder="Enter order id">
-							</div>
-							<div class="col">
-								<button class="btn btn-primary col">Search</button>
-							</div>
+					<form action="/vendor/search-order" method="get" class="p-3 rounded-pill shadow-lg"
+						style="background-color: #f8f9fa; border: none;">
+						<div class="input-group input-group-lg">
+							<input type="text" class="form-control border-0 rounded-start-pill" name="orderId"
+								placeholder="Enter order id" style="background-color: #f8f9fa;">
+							<button class="btn btn-primary rounded-end-pill px-4" type="submit">Search</button>
 						</div>
 					</form>
-
 				</div>
 				<div class="col-md-12 ps-4 pe-4">
 
@@ -94,7 +89,8 @@
 													<div class="col">
 														<th:block
 															th:if="${orderDtls.status=='Cancelled' || orderDtls.status=='Delivered'}">
-															<button class="btn btn-primary btn-sm col disabled">Update</button>
+															<button
+																class="btn btn-primary btn-sm col disabled">Update</button>
 														</th:block>
 														<th:block
 															th:unless="${orderDtls.status=='Cancelled' || orderDtls.status=='Delivered'}">
@@ -151,9 +147,9 @@
 												</div>
 												<input th:value="${o.id}" name="id" type="hidden">
 												<div class="col">
-													<th:block
-														th:if="${o.status=='Cancelled' || o.status=='Delivered'}">
-														<button class="btn btn-primary btn-sm col disabled">Update</button>
+													<th:block th:if="${o.status=='Cancelled' || o.status=='Delivered'}">
+														<button
+															class="btn btn-primary btn-sm col disabled">Update</button>
 													</th:block>
 													<th:block
 														th:unless="${o.status=='Cancelled' || o.status=='Delivered'}">
@@ -174,24 +170,19 @@
 
 								<nav aria-label="Page navigation example">
 									<ul class="pagination">
-										<li class="page-item"
-											th:classappend="${isFirst} ? 'disabled':''"><a
-											class="page-link"
-											th:href="@{'/vendor/orders?pageNo='+${pageNo-1}}"
-											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-										</a></li>
+										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''"><a
+												class="page-link" th:href="@{'/vendor/orders?pageNo='+${pageNo-1}}"
+												aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+											</a></li>
 
-										<li th:each="i:${#numbers.sequence(1,totalPages)}"
-											class="page-item" th:classappend="${pageNo+1==i}?'active':''"
-											]]><a class="page-link"
-											th:href="@{'/vendor/orders?pageNo='+${i-1}}">[[${i}]]</a></li>
+										<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item"
+											th:classappend="${pageNo+1==i}?'active':''" ]]><a class="page-link"
+												th:href="@{'/vendor/orders?pageNo='+${i-1}}">[[${i}]]</a></li>
 
-										<li class="page-item"
-											th:classappend="${isLast} ? 'disabled':''"><a
-											class="page-link"
-											th:href="@{'/vendor/orders?pageNo='+${pageNo+1}}"
-											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-										</a></li>
+										<li class="page-item" th:classappend="${isLast} ? 'disabled':''"><a
+												class="page-link" th:href="@{'/vendor/orders?pageNo='+${pageNo+1}}"
+												aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+											</a></li>
 									</ul>
 								</nav>
 							</div>
@@ -204,4 +195,5 @@
 		</div>
 	</section>
 </body>
+
 </html>

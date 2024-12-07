@@ -1,6 +1,3 @@
-
-
-
 package vn.iotstar.security.service.impl;
 
 import java.io.File;
@@ -133,9 +130,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch) {
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, int type) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(ch, ch, pageable);
+		
+		switch (type) {
+	    case 2:
+	        return productRepository.findByTitleContainingIgnoreCase(ch, pageable);
+	    case 3:
+	        return productRepository.findByCategory_NameContainingIgnoreCase(ch, pageable);
+	    case 4:
+	        return productRepository.findByShop_NameContainingIgnoreCase(ch, pageable);
+	    default:
+	        return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCaseOrShop_NameContainingIgnoreCase(ch, ch, ch, pageable);
+		}
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public interface ProductService {
 
 	public Page<Product> getAllActiveProductPagination(Integer pageNo, Integer pageSize, String category);
 
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch);
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, int type);
 
 	public Page<Product> getAllProductsPagination(Integer pageNo, Integer pageSize);
 
@@ -41,5 +41,3 @@ public interface ProductService {
 
 	public List<Product> getProductsByCategory(String category);
 }
-
-

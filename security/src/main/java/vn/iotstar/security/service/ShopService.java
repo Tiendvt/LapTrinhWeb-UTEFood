@@ -1,5 +1,7 @@
 package vn.iotstar.security.service;
 
+import java.util.List;
+
 import vn.iotstar.security.model.Shop;
 
 public interface ShopService {
@@ -12,8 +14,6 @@ public interface ShopService {
 
     Shop saveShop(Shop shop);
     void updateShopSoldAndRevenue(Integer shopId, Double revenue);
+    
+    List<Shop> getAll();
 }
-
-
-
-
