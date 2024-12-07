@@ -114,5 +114,10 @@ public class OrderServiceImpl implements OrderService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return orderRepository.findAllByStatusAndShop(status, shop, pageable);
     }
+
+	@Override
+	public List<ProductOrder> getOrdersByStatus(String status) {
+		return orderRepository.findAllByStatus(status);
+	}
 }
 
