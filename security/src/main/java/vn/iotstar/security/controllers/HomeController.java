@@ -83,6 +83,10 @@ public class HomeController {
 				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
 				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+	
+		List<Product> productsSoldMoreThan10 = productService.getProductsSoldMoreThan10();
+		// Add these products to the model to display them in the view
+		m.addAttribute("productsSoldMoreThan10", productsSoldMoreThan10);
 		m.addAttribute("category", allActiveCategory);
 		m.addAttribute("products", allActiveProducts);
 		return "index";

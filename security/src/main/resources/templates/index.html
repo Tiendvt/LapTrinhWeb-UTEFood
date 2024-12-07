@@ -138,32 +138,32 @@
 			</div>
 			<!-- End Category Module -->
 
-			<div class="container mt-5">
-				<p class="text-center fs-3 fw-bold mb-4">Products Sold More Than 10</p>
-				<div class="row">
-					<th:block th:each="product : ${productsSoldMoreThan10}">
-						<div class="col-md-4 col-sm-6 mt-3">
-							<div class="card shadow-sm rounded overflow-hidden">
-								<img th:src="@{'/img/product_img/' + ${product.image}}" class="card-img-top"
-									alt="Product Image">
-								<div class="card-body text-center">
-									<h5 class="card-title text-dark fw-semibold">[[${product.title}]]</h5>
-									<p class="card-text product-price text-success fw-bold">$[[${product.price}]]</p>
-									<p class="card-text text-muted">Sold: [[${product.sold}]] units</p>
-									<a th:href="@{'/product/' + ${product.id}}"
-										class="btn btn-primary btn-lg w-100">View Product</a>
-								</div>
-							</div>
-						</div>
-					</th:block>
+			<div class="container mt-5"> 
+			    <p class="text-center fs-3 fw-bold mb-4">Products Sold More Than 10</p>
+			    <div class="row">
+			        <th:block th:each="product : ${productsSoldMoreThan10}">
+			            <div class="col-md-4 col-sm-6 mt-3">
+			                <div class="card shadow-sm rounded overflow-hidden">
+			                    <img th:src="@{'/img/product_img/' + ${product.image}}" class="card-img-top"
+			                        alt="Product Image">
+			                    <div class="card-body text-center">
+			                        <h5 class="card-title text-dark fw-semibold">[[${product.title}]]</h5>
+			                        <p class="card-text product-price text-success fw-bold">$[[${product.price}]]</p>
+			                        <p class="card-text text-muted">Sold: [[${product.sold}]] units</p>
+			                        <a th:href="@{'/product/' + ${product.id}}"
+			                            class="btn btn-primary btn-lg w-100">View Product</a>
+			                    </div>
+			                </div>
+			            </div>
+			        </th:block>
 
-					<!-- If no products are found -->
-					<th:block th:if="${#lists.isEmpty(productsSoldMoreThan10)}">
-						<div class="col-12">
-							<p class="fs-4 text-center mt-4 text-danger">No products found</p>
-						</div>
-					</th:block>
-				</div>
+			        <!-- If no products are found -->
+			        <th:block th:if="${#lists.isEmpty(productsSoldMoreThan10)}">
+			            <div class="col-12">
+			                <p class="fs-4 text-center mt-4 text-danger">No products found</p>
+			            </div>
+			        </th:block>
+			    </div>
 			</div>
 			<!-- End Products Sold More Than 10 -->
 	</section>

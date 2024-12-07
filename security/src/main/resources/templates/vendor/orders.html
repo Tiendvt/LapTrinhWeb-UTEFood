@@ -12,7 +12,7 @@
 			<div class="row">
 				<p class="text-center fs-3 mt-2">All Orders</p>
 				<hr>
-				<a href="/admin/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
+				<a href="/vendor/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
 				<th:block th:if="${session.succMsg}">
 					<p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
 					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
