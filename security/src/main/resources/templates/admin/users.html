@@ -28,9 +28,11 @@
             <div class="card-header text-center">
                 <p class="fs-4" th:if="${userType==1}">Users</p>
                 <p class="fs-4" th:if="${userType==2}">Admin</p>
-                <a th:if="${userType==1}" th:href="@{'/admin/users?type=2'}" class="btn btn-sm btn-secondary">Switch to Admin</a>
-                <a th:if="${userType==2}" th:href="@{'/admin/users?type=1'}" class="btn btn-sm btn-secondary">Switch to Users</a>
-
+                <!-- Switch Buttons -->
+                <div class="d-flex justify-content-center">
+                    <a th:if="${userType==1}" th:href="@{'/admin/users?type=2'}" class="btn btn-outline-secondary switch-btn">Switch to Admin</a>
+                    <a th:if="${userType==2}" th:href="@{'/admin/users?type=1'}" class="btn btn-outline-secondary switch-btn">Switch to Users</a>
+                </div>
                 <!-- Success and Error Messages -->
                 <th:block th:if="${session.succMsg}">
                     <p class="text-success fw-bold">[[${session.succMsg}]]</p>
@@ -41,18 +43,13 @@
                     <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                 </th:block>             
                 <!-- Search Form -->
-		        <div class="col-md-4 p-3">
-		          <form th:action="@{'/admin/users?type=' + ${userType} + '&ch=' + ${ch}}" method="get">
-		            <div class="row">
-		              <div class="col">
-		                <input type="text" class="form-control" name="ch" placeholder="Search User">
-		              </div>
-		              <div class="col">
-		                <button class="btn btn-primary col">Search</button>
-		              </div>
-		            </div>
-		          </form>
-		        </div>
+                <div class="col-md-4 p-3">
+                    <form th:action="@{/admin/users}" method="get" class="d-flex">
+                        <input type="hidden" name="type" th:value="${userType}">
+                        <input type="text" class="form-control me-2" name="ch" placeholder="Search User" th:value="${ch}">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </form>
+                </div>    
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped">

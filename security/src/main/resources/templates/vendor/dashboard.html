@@ -27,6 +27,8 @@
                                 </th:block>
                                 <p><strong>Shop Name:</strong> [[${shop.name}]]</p>
                                 <p><strong>Owner:</strong> [[${shop.owner.name}]]</p>
+                                <p><strong>Sold:</strong> [[${shop.sold}]]</p> <!-- Display sold count -->
+                                <p><strong>Revenue:</strong> &#8377;[[${shop.revenue}]]</p> <!-- Display revenue -->
                                 <a href="/vendor/shop-settings" class="btn btn-primary">Edit Shop</a>
                             </th:block>
                             <th:block th:if="${shop == null}">

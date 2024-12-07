@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public Page<User> searchUsersPagination(String role, Integer pageNo, Integer pageSize, String ch) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		return userRepository.findByRoleAndEmailContainingIgnoreCaseOrNameContainingIgnoreCase(role, ch, ch, pageable);
+		return userRepository.findByRoleAndEmailContainingIgnoreCaseOrRoleAndNameContainingIgnoreCase(role, ch, role, ch, pageable);
 	}
 
 	@Override
