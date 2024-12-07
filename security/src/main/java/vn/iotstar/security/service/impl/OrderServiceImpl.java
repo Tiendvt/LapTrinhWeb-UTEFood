@@ -1,7 +1,9 @@
 package vn.iotstar.security.service.impl;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -153,6 +155,15 @@ public class OrderServiceImpl implements OrderService {
 	public ProductOrder getOrderById(Integer id) {
 		System.out.print("orderid: "+orderRepository.findById(id));
 		return orderRepository.findById(id).orElse(null);
+	}
+	@Override
+	public Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders) {
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewRepository.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
+	    return reviewStatus;
 	}
 }
 

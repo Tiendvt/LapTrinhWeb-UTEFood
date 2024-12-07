@@ -56,5 +56,8 @@ public class ProductOrder {
 	@JoinColumn(name = "shop_id")
 	private Shop shop;
 
+	// Liên kết với bảng Review
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Review review;
 
 }

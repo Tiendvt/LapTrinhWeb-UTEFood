@@ -1,6 +1,7 @@
 package vn.iotstar.security.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,5 +33,7 @@ public interface OrderService {
     List<ProductOrder> getOrdersByStatusAndUser(String status, Integer userId);
     ProductOrder getOrderById(Integer id);
     void submitReview(Integer orderId, String comment, MultipartFile[] files);
+    Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
+        
 }
 

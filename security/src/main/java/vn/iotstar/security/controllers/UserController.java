@@ -1,7 +1,9 @@
 package vn.iotstar.security.controllers;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Cart;
@@ -23,11 +25,13 @@ import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.OrderRequest;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Review;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
+import vn.iotstar.security.service.ReviewService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
@@ -44,8 +48,10 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private CommonUtil commonUtil;
-	@Autowired
-	private ProductService productService;
+		@Autowired
+		private ProductService productService;
+		@Autowired
+		private ReviewService reviewService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
@@ -140,7 +146,14 @@ public class UserController {
 	public String myOrder(Model m, Principal p) {
 		User loginUser = getLoggedInUserDetails(p);
 		List<ProductOrder> orders = orderService.getOrdersByUser(loginUser.getId());
+		 // Kiểm tra trạng thái đánh giá cho từng đơn hàng
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewService.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
 		m.addAttribute("orders", orders);
+		m.addAttribute("reviewStatus", reviewStatus); // Truyền thông tin trạng thái đánh giá vào giao diện
 		m.addAttribute("activeTab", "all");
 		
 		return "/user/my_orders";
@@ -160,7 +173,7 @@ public class UserController {
 	        case "PRODUCT_PACKED":
 	        case "OUT_FOR_DELIVERY":
 	        case "DELIVERED":
-
+	        	
 	        case "CANCELLED":
 	        case "SUCCESS":
 	            orders = orderService.getOrdersByStatusAndUser(status, loginUser.getId());
@@ -168,9 +181,15 @@ public class UserController {
 	        default:
 	            throw new IllegalArgumentException("Invalid status: " + status);
 	    }
-
+	 // Tính toán trạng thái đánh giá
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewService.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
 	    model.addAttribute("orders", orders);
-	    System.out.print("orders: " + orders.size() );
+	   // System.out.print("orders: " + orders.size() );
+	    model.addAttribute("reviewStatus", reviewStatus);
 	    model.addAttribute("activeTab", status.toLowerCase());
 	    return "/user/my_orders"; // Đảm bảo file my_orders.html tồn tại
 	}
@@ -178,7 +197,7 @@ public class UserController {
 	public String reviewOrder(@PathVariable Integer orderId, Model model) {
 		System.out.print("orderID: "+orderId);
 	    ProductOrder order = orderService.getOrderById(orderId);
-	    System.out.print("Bình thường ");
+	    //System.out.print("Bình thường ");
 	    if (order == null || !"Delivered".equalsIgnoreCase(order.getStatus())) {
 	        throw new RuntimeException("Order not found or not eligible for review");
 	    }
@@ -258,4 +277,49 @@ public class UserController {
 
 		return "redirect:/user/profile";
 	}
+	@GetMapping("/cancel-order/{id}")
+	public String cancelOrder(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+	    ProductOrder order = orderService.getOrderById(id);
+	    
+	    if (order == null || "Cancelled".equals(order.getStatus()) || 
+	        "Delivered".equals(order.getStatus()) || 
+	        "Order Confirmed".equals(order.getStatus()) || 
+	        "In Transit".equals(order.getStatus())) {
+	        redirectAttributes.addFlashAttribute("errorMsg", "Order cannot be cancelled.");
+	        return "redirect:/user/user-orders";
+	    }
+	    
+	    order.setStatus(OrderStatus.CANCELLED.getName());
+	    orderService.updateOrderStatus(order.getId(), OrderStatus.CANCELLED.getName());
+	    redirectAttributes.addFlashAttribute("succMsg", "Order cancelled successfully.");
+	    
+	    return "redirect:/user/user-orders";
+	}
+
+    @GetMapping("/edit-review/{orderId}")
+    public String editReview(@PathVariable Integer orderId, Model model) {
+        ProductOrder order = orderService.getOrderById(orderId);
+
+        if (order == null || !"Delivered".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Order not found or not eligible for review");
+        }
+
+        Review review = reviewService.getReviewByOrderId(orderId); // Fetch review from database
+        System.out.print("review objeect: " + review.getComment());
+        model.addAttribute("order", order);
+        model.addAttribute("review", review); // Pass review data to the view
+
+        return "user/edit_review_orders"; // Use the same review_order.html template
+    }
+
+    @PostMapping("/update-review")
+    public String updateReview(@RequestParam Integer reviewId,
+                               @RequestParam String comment,
+                               @RequestParam("files") MultipartFile[] files,
+                               RedirectAttributes redirectAttributes) {
+        reviewService.updateReview(reviewId, comment, files); // Call service to update review
+        redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
+        return "redirect:/user/user-orders";
+    }
+
 }

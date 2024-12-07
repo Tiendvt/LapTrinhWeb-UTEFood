@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-
+    <meta charset="ISO-8859-1">
+    <title>My Orders</title>
 </head>
 <body>
-	<section>
+<section>
     <div class="container mt-5 p-5">
         <h2 class="text-center">My Orders</h2>
+        
+        <!-- Thông báo -->
+        <div class="container mt-3">
+            <div th:if="${succMsg}" class="alert alert-success">
+                <span th:text="${succMsg}"></span>
+            </div>
+            <div th:if="${errorMsg}" class="alert alert-danger">
+                <span th:text="${errorMsg}"></span>
+            </div>
+        </div>
+
+        <!-- Tabs trạng thái đơn hàng -->
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activeTab == 'all'} ? 'active'" th:href="@{/user/user-orders}">All</a>
@@ -25,6 +35,7 @@
             </li>
         </ul>
 
+        <!-- Bảng đơn hàng -->
         <table class="table table-bordered mt-4">
             <thead>
                 <tr>
@@ -44,8 +55,21 @@
                     <td th:text="${order.price}"></td>
                     <td th:text="${order.status}"></td>
                     <td>
-                        <a th:if="${order.status == 'Delivered'}" th:href="@{'/user/review-order/' + ${order.id}}" class="btn btn-sm btn-primary">Review</a>
-                        <a th:if="${order.status != 'Cancelled'}" th:href="@{'/user/cancel-order/' + ${order.id}}" class="btn btn-sm btn-danger">Cancel</a>
+                        <!-- Nút Show Review hoặc Review -->
+                        <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and reviewStatus[order.id]}"
+                           th:href="@{'/user/edit-review/' + ${order.id}}" 
+                           class="btn btn-sm btn-secondary">Show Review</a>
+                        <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and !reviewStatus[order.id] and order.status == 'Delivered'}"
+                           th:href="@{'/user/review-order/' + ${order.id}}" 
+                           class="btn btn-sm btn-primary">Review</a>
+
+                        <!-- Nút Cancel -->
+                        <a th:if="${order.status != 'Cancelled' and order.status != 'Delivered'}"
+                           th:classappend="${order.status == 'Order Confirmed' or order.status == 'In Transit'} ? 'disabled' : ''"
+                           th:href="@{'/user/cancel-order/' + ${order.id}}"
+                           class="btn btn-sm btn-danger">
+                            Cancel
+                        </a>
                     </td>
                 </tr>
             </tbody>
