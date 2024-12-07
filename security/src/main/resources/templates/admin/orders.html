@@ -99,7 +99,7 @@
                                 <th:block th:unless="${#lists.isEmpty(orders)}">
                                     <tr th:each="o:${orders}">
                                         <th scope="row">[[${o.orderId}]]</th>
-                                        <td>Name: [[${o.orderAddress.firstName + ' ' + o.orderAddress.lastName}]]<br> Email: [[${o.orderAddress.email}]] <br> Mobno: [[${o.orderAddress.mobileNo}]] <br> Address: [[${o.orderAddress.address}]] <br> City: [[${o.orderAddress.city}]] <br> State: [[${o.orderAddress.state}]], [[${o.orderAddress.pincode}]]</td>
+                                        <td>Name: [[${o.orderAddress.firstName + ' ' + o.orderAddress.lastName}]]<br> Email: [[${o.orderAddress.email}]] <br> Mobno: [[${o.orderAddress.mobileNo}]] <br> Address: [[${o.orderAddress.address}]] <br> City: [[${o.orderAddress.city}]] <br> State: [[${o.orderAddress.province}]], [[${o.orderAddress.pincode}]]</td>
                                         <td>[[${o.orderDate}]]</td>
                                         <td>[[${o.product.title}]]</td>
                                         <td>Quantity: [[${o.quantity}]] <br> Price: [[${o.price}]] <br> Total Price: [[${o.quantity * o.price}]]</td>
