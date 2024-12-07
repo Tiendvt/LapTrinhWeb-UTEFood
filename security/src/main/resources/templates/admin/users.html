@@ -26,11 +26,18 @@
     <div class="container-fluid mt-5 p-5">
         <div class="card card-sh">
             <div class="card-header text-center">
-                <p class="fs-4" th:if="${userType==1}">Users</p>
-                <p class="fs-4" th:if="${userType==2}">Admin</p>
-                <a th:if="${userType==1}" th:href="@{'/admin/users?type=2'}" class="btn btn-sm btn-secondary">Switch to Admin</a>
-                <a th:if="${userType==2}" th:href="@{'/admin/users?type=1'}" class="btn btn-sm btn-secondary">Switch to Users</a>
-
+                <p class="fs-4" th:if="${userType==1}">Admin</p>
+                <p class="fs-4" th:if="${userType==2}">Vendor</p>
+                <p class="fs-4" th:if="${userType==3}">User</p>
+                <!-- Switch Buttons -->
+				<div class="d-flex justify-content-center">
+				    <a th:if="${userType == 1}" th:href="@{'/admin/users?type=2'}" class="btn btn-outline-secondary switch-btn me-2">Switch to Vendor</a>
+				    <a th:if="${userType == 1}" th:href="@{'/admin/users?type=3'}" class="btn btn-outline-secondary switch-btn me-2">Switch to User</a>
+				    <a th:if="${userType == 2}" th:href="@{'/admin/users?type=1'}" class="btn btn-outline-secondary switch-btn me-2">Switch to Admin</a>
+				    <a th:if="${userType == 2}" th:href="@{'/admin/users?type=3'}" class="btn btn-outline-secondary switch-btn me-2">Switch to User</a>
+				    <a th:if="${userType == 3}" th:href="@{'/admin/users?type=1'}" class="btn btn-outline-secondary switch-btn me-2">Switch to Admin</a>
+				    <a th:if="${userType == 3}" th:href="@{'/admin/users?type=2'}" class="btn btn-outline-secondary switch-btn">Switch to Vendor</a>
+				</div>
                 <!-- Success and Error Messages -->
                 <th:block th:if="${session.succMsg}">
                     <p class="text-success fw-bold">[[${session.succMsg}]]</p>
@@ -41,18 +48,13 @@
                     <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
                 </th:block>             
                 <!-- Search Form -->
-		        <div class="col-md-4 p-3">
-		          <form th:action="@{'/admin/users?type=' + ${userType} + '&ch=' + ${ch}}" method="get">
-		            <div class="row">
-		              <div class="col">
-		                <input type="text" class="form-control" name="ch" placeholder="Search User">
-		              </div>
-		              <div class="col">
-		                <button class="btn btn-primary col">Search</button>
-		              </div>
-		            </div>
-		          </form>
-		        </div>
+                <div class="col-md-4 p-3">
+                    <form th:action="@{/admin/users}" method="get" class="d-flex">
+                        <input type="hidden" name="type" th:value="${userType}">
+                        <input type="text" class="form-control me-2" name="ch" placeholder="Search User" th:value="${ch}">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </form>
+                </div>    
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped">
@@ -69,47 +71,55 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="u,c:${users}">
-                            <th scope="row">[[${c.count}]]</th>
-                            <td><img th:src="@{'/img/profile_img/' + ${u.profileImage}}" width="70px" height="70px" class="img-fluid"></td>
-                            <td>[[${u.name}]]</td>
-                            <td>[[${u.email}]]</td>
-                            <td>[[${u.mobileNumber}]]</td>
-                            <td>[[${u.address + ',' + u.city + ',' + u.province + ',' + u.pincode}]]</td>
-                            <td>[[${u.isEnable}]]</td>
-                            <td>
-                                <a th:href="@{'/admin/updateSts?status=true&id=' + ${u.id} + '&type=' + ${userType}}" 
-                                   class="btn btn-sm btn-primary status-button">Active</a>
-                                <a th:href="@{'/admin/updateSts?status=false&id=' + ${u.id} + '&type=' + ${userType}}" 
-                                   class="btn btn-sm btn-danger status-button">Inactive</a>
-                            </td>
-                        </tr>
+                        <th:block th:if="${#lists.isEmpty(users)}">
+                            <tr>
+                                <td colspan="8" class="text-center text-danger">No users available.</td>
+                            </tr>
+                        </th:block>
+                        <th:block th:unless="${#lists.isEmpty(users)}">
+                            <tr th:each="u,c:${users}">
+                                <th scope="row">[[${c.count}]]</th>
+                                <td><img th:src="@{'/img/profile_img/' + ${u.profileImage}}" width="70px" height="70px" class="img-fluid"></td>
+                                <td>[[${u.name}]]</td>
+                                <td>[[${u.email}]]</td>
+                                <td>[[${u.mobileNumber}]]</td>
+                                <td>[[${u.address + ',' + u.city + ',' + u.province + ',' + u.pincode}]]</td>
+                                <td>[[${u.isEnable}]]</td>
+                                <td>
+                                    <a th:href="@{'/admin/updateSts?status=true&id=' + ${u.id} + '&type=' + ${userType}}" 
+                                       class="btn btn-sm btn-primary status-button">Active</a>
+                                    <a th:href="@{'/admin/updateSts?status=false&id=' + ${u.id} + '&type=' + ${userType}}" 
+                                       class="btn btn-sm btn-danger status-button">Inactive</a>
+                                </td>
+                            </tr>
+                        </th:block>
                     </tbody>
                 </table>
-                <div class="row">
-                    <div class="col-md-4">Total Users: [[${totalElements}]]</div>
-                    <div class="col-md-6">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination">
-                                <li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
-                                    <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo-1}}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item" 
-                                    th:classappend="${pageNo+1==i}?'active':''">
-                                    <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${i-1}}">[[${i}]]</a>
-                                </li>
-                                <li class="page-item" th:classappend="${isLast} ? 'disabled':''">
-                                    <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo+1}}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                <th:block th:if="${!#lists.isEmpty(users)}">
+                    <div class="row">
+                        <div class="col-md-4">Total Users: [[${totalElements}]]</div>
+                        <div class="col-md-6">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+                                        <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo-1}}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item" 
+                                        th:classappend="${pageNo+1==i}?'active':''">
+                                        <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${i-1}}">[[${i}]]</a>
+                                    </li>
+                                    <li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+                                        <a class="page-link" th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo+1}}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </th:block>
         </div>
     </div>
 </section>

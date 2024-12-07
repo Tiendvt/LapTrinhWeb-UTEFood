@@ -133,9 +133,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch) {
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, int type) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(ch, ch, pageable);
+		
+		switch (type) {
+	    case 2:
+	        return productRepository.findByTitleContainingIgnoreCase(ch, pageable);
+	    case 3:
+	        return productRepository.findByCategory_NameContainingIgnoreCase(ch, pageable);
+	    case 4:
+	        return productRepository.findByShop_NameContainingIgnoreCase(ch, pageable);
+	    default:
+	        return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCaseOrShop_NameContainingIgnoreCase(ch, ch, ch, pageable);
+		}
 	}
 
 	@Override
@@ -175,5 +185,21 @@ public class ProductServiceImpl implements ProductService {
 	    Pageable pageable = PageRequest.of(pageNo, pageSize);
 	    return productRepository.findByShop(shop, pageable);
 	}
+	@Override
+	public List<Product> getDiscountedProducts() {
+        return productRepository.findByDiscountGreaterThan(0);
+    }
 
+    // Apply promotion logic (update discount price based on discount field)
+    @Override
+	public void applyPromotion(Product product) {
+        if (product.getDiscount() > 0) {
+            double discountAmount = product.getPrice() * (product.getDiscount() / 100.0);
+            product.setDiscountPrice(product.getPrice() - discountAmount);
+        }
+    }
+    @Override
+	public List<Product> getProductsSoldMoreThan10() {
+        return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
+    }
 }

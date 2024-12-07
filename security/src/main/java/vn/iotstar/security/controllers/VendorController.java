@@ -56,12 +56,33 @@ public class VendorController {
     @Autowired
 	private CommonUtil commonUtil;
     // Vendor Dashboard
+    private User getLoggedInUserDetails(Principal p) {
+		String email = p.getName();
+		User userDtls = userService.getUserByEmail(email);
+		return userDtls;
+	}
+	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
+		@ModelAttribute
+		public void getUserDetails(Principal p, Model m) {
+			if (p != null) {
+				String email = p.getName();
+				User user = userService.getUserByEmail(email);
+				m.addAttribute("user", user);
+			}
+
+			List<Category> allActiveCategory = categoryService.getAllActiveCategory();
+			m.addAttribute("categories", allActiveCategory);
+		}
     @GetMapping("/")
     public String vendorDashboard(Principal principal, Model model) {
+
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+
         model.addAttribute("shop", shop);
+
         return "vendor/dashboard";
     }
+
 
     // View Products
     @GetMapping("/products")
@@ -203,8 +224,7 @@ public class VendorController {
 
 
     @PostMapping("/update-order-status")
-    public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session, Principal principal) {
-
+    public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
         // Get the status from the OrderStatus enum
         OrderStatus[] values = OrderStatus.values();
         String status = null;
@@ -219,6 +239,22 @@ public class VendorController {
         // Update the order status in the database
         ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
 
+        if (updateOrder != null && "Delivered".equals(status)) {
+            // Get the associated product and shop from the order
+            Product product = updateOrder.getProduct();
+            Shop shop = product.getShop();
+
+            // Increment sold quantity in Product
+            product.setSold(product.getSold() + 1);
+            productService.saveProduct(product);  // Update the product
+
+            // Update shop sold and revenue without saving the entire shop
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice());
+
+            // Log or display success message
+            session.setAttribute("succMsg", "Order status updated to Delivered. Product sold and shop revenue updated.");
+        }
+
         // Send a notification email for the updated order status (if needed)
         try {
             commonUtil.sendMailForProductOrder(updateOrder, status);
@@ -226,8 +262,8 @@ public class VendorController {
             e.printStackTrace();
         }
 
-        // Check if the order was updated successfully
-        if (!ObjectUtils.isEmpty(updateOrder)) {
+        // If the order was updated successfully
+        if (updateOrder != null) {
             session.setAttribute("succMsg", "Status Updated");
         } else {
             session.setAttribute("errorMsg", "Status not updated");
@@ -449,5 +485,34 @@ public class VendorController {
 
         // Redirect back to the profile page after attempting to change the password
         return "redirect:/vendor/profile";
+    }
+    @GetMapping("/discounted-products")
+    public String viewDiscountedProducts(Principal principal, Model model,
+                                          @RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        // Retrieve the shop associated with the logged-in vendor
+        Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+
+        // Retrieve the products for the shop
+        Page<Product> products = productService.getProductsByShop(shop, pageNo, pageSize);
+
+        // Pass the products to the view
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPages", products.getTotalPages());
+
+        return "vendor/discounted_products"; 
+    }
+    // Apply promotion to a specific product (set discount)
+    @PostMapping("/product/{id}/apply-promotion")
+    public String applyPromotionToProduct(@PathVariable Integer id, @RequestParam int discount, Principal principal) {
+        Product product = productService.getProductById(id);
+        if (product != null && discount > 0) {
+            product.setDiscount(discount);  // Set the discount for the product
+            productService.applyPromotion(product);  // Apply the promotion (calculate discount price)
+            productService.saveProduct(product);  // Save the updated product
+        }
+        return "redirect:/vendor/discounted-products";  // Redirect to the page showing discounted products
     }
 }

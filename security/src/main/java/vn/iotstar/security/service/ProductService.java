@@ -31,13 +31,19 @@ public interface ProductService {
 
 	public Page<Product> getAllActiveProductPagination(Integer pageNo, Integer pageSize, String category);
 
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch);
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, int type);
 
 	public Page<Product> getAllProductsPagination(Integer pageNo, Integer pageSize);
 
 	public Page<Product> searchActiveProductPagination(Integer pageNo, Integer pageSize, String category, String ch);
 
 	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
+
+	void applyPromotion(Product product);
+
+	List<Product> getDiscountedProducts();
+
+	List<Product> getProductsSoldMoreThan10();
 }
 
 

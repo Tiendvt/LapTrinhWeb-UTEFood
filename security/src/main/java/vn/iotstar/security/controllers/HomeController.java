@@ -83,15 +83,25 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String index(Model m) {
+	    // Fetch all active categories
+	    List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
+	            .sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 
-		List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
-				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
-		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
-				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
-		m.addAttribute("category", allActiveCategory);
-		m.addAttribute("products", allActiveProducts);
-		return "index";
+	    // Fetch all active products (limit to 8 products)
+	    List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
+	            .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+
+	    // Fetch products that have sold more than 10 units
+	    List<Product> productsSoldMoreThan10 = productService.getProductsSoldMoreThan10();
+
+	    // Add these products to the model to display them in the view
+	    m.addAttribute("productsSoldMoreThan10", productsSoldMoreThan10);
+	    m.addAttribute("category", allActiveCategory);
+	    m.addAttribute("products", allActiveProducts);
+
+	    return "index";
 	}
+
 
 	@GetMapping("/signin")
 	public String login(Principal principal) {

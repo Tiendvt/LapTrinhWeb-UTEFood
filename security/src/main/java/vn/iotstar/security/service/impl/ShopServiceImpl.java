@@ -40,4 +40,10 @@ public class ShopServiceImpl implements ShopService {
         return shopRepository.save(shop);
     }
 
+
+    @Transactional
+    @Override
+    public void updateShopSoldAndRevenue(Integer shopId, Double revenue) {
+        shopRepository.updateShopSoldAndRevenue(shopId, revenue);
+    }
 }
