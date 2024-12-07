@@ -34,6 +34,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 			Pageable pageable);
 
 	Page<Product> findByShop(Shop shop, Pageable pageable);
+	List<Product> findByDiscountGreaterThan(int discount);
 }
 
 

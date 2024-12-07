@@ -81,6 +81,9 @@ public class UserController {
 		} else {
 			session.setAttribute("succMsg", "Product added to cart");
 		}
+		 // Cập nhật số lượng sản phẩm trong giỏ
+        int cartItemCount = cartService.getCountCart(uid);
+        session.setAttribute("cartItemCount", cartItemCount);
 		return "redirect:/product/" + pid;
 	}
 	@GetMapping("/cart")
@@ -93,7 +96,8 @@ public class UserController {
 			Double totalOrderPrice = carts.get(carts.size() - 1).getTotalOrderPrice();
 			m.addAttribute("totalOrderPrice", totalOrderPrice);
 		}
-		return "/user/cart";
+		
+		return "user/cart";
 	}
 	private User getLoggedInUserDetails(Principal p) {
 		String email = p.getName();
@@ -123,7 +127,8 @@ public class UserController {
 		// System.out.println(request);
 		User user = getLoggedInUserDetails(p);
 		orderService.saveOrder(user.getId(), request);
-
+		// THÊM CODE Ở ĐÂY ĐỂ XÓA GIỎ HÀNG KHI ĐÃ THANH TOÁN
+		cartService.clearCartByUserId(user.getId());
 		return "redirect:/user/success";
 	}
 	@GetMapping("/success")

@@ -32,7 +32,7 @@ $(function(){
 			},
 			confirmpassword: {
 				required: true,
-				space: true,
+				//space: true,
 				equalTo: '#pass'
 
 			},
@@ -44,7 +44,7 @@ $(function(){
 
 			city: {
 				required: true,
-				space: true
+				//space: true
 
 			},
 			state: {
@@ -98,8 +98,7 @@ $(function(){
 			},
 
 			city: {
-				required: 'city must be required',
-				space: 'space not allowed'
+				
 
 			},
 			state: {
@@ -150,13 +149,13 @@ $orders.validate({
 			},
 			address: {
 				required: true,
-				all: true
+				//all: true
 
 			},
 
 			city: {
 				required: true,
-				space: true
+				//space: true
 
 			},
 			province: {

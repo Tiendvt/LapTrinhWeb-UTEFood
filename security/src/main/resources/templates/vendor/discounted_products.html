@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
+<body>
+    <section class="container mt-5">
+        <h2 class="text-center mb-4">Discounted Products</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div th:each="product : ${products}" class="col">
+                <div class="card h-100 shadow-lg rounded-3">
+                    <!-- Product Image -->
+                    <img th:src="@{'/img/product_img/' + ${product.image}}" alt="Product Image" class="card-img-top rounded-3" style="height: 250px; " />
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate" title="[[${product.title}]]">[[${product.title}]]</h5>
+                        <p class="card-text">
+                            <strong>Original Price:</strong> &#8377; [[${product.price}]]<br>
+                            <strong>Discount:</strong> [[${product.discount}]]%<br>
+                            <strong>Discounted Price:</strong> &#8377; [[${product.discountPrice}]]
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Apply Discount Form -->
+                            <form th:action="@{/vendor/product/{id}/apply-promotion(id=${product.id})}" method="post" class="w-100">
+                                <div class="input-group">
+                                    <input type="number" name="discount" min="1" max="100" th:value="${product.discount}" class="form-control" placeholder="Set Discount" required />
+                                    <button type="submit" class="btn btn-success">Apply</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination Links -->
+        <div th:if="${totalPages > 1}" class="mt-4">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li th:class="'page-item' + ${pageNo == 0 ? ' disabled' : ''}">
+                        <a class="page-link" th:href="@{/vendor/discounted-products?pageNo=0&pageSize=${pageSize}}">First</a>
+                    </li>
+                    <li th:class="'page-item' + ${pageNo == 0 ? ' disabled' : ''}">
+                        <a class="page-link" th:href="@{/vendor/discounted-products?pageNo=${pageNo - 1}&pageSize=${pageSize}}">Previous</a>
+                    </li>
+                    <li th:class="'page-item' + ${pageNo == totalPages - 1 ? ' disabled' : ''}">
+                        <a class="page-link" th:href="@{/vendor/discounted-products?pageNo=${pageNo + 1}&pageSize=${pageSize}}">Next</a>
+                    </li>
+                    <li th:class="'page-item' + ${pageNo == totalPages - 1 ? ' disabled' : ''}">
+                        <a class="page-link" th:href="@{/vendor/discounted-products?pageNo=${totalPages - 1}&pageSize=${pageSize}}">Last</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</body>
+
+</html>

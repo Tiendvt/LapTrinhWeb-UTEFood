@@ -27,6 +27,8 @@
                                 </th:block>
                                 <p><strong>Shop Name:</strong> [[${shop.name}]]</p>
                                 <p><strong>Owner:</strong> [[${shop.owner.name}]]</p>
+                                <p><strong>Sold:</strong> [[${shop.sold}]]</p> <!-- Display sold count -->
+                                <p><strong>Revenue:</strong> &#8377;[[${shop.revenue}]]</p> <!-- Display revenue -->
                                 <a href="/vendor/shop-settings" class="btn btn-primary">Edit Shop</a>
                             </th:block>
                             <th:block th:if="${shop == null}">
@@ -67,6 +69,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-4">
+                
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Manage Discounts</h5>
+                            <th:block th:if="${shop != null}">
+                                <a href="/vendor/discounted-products" class="btn btn-warning">Manage Discounts</a>
+                            </th:block>
+                            <th:block th:if="${shop == null}">
+                                <p class="text-danger">No products available to apply discounts. Create your shop first.</p>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     </section>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Apply Promotion</title>
+</head>
+<body>
+    <h2>Apply Promotion to Product</h2>
+    <form th:action="@{/vendor/product/{id}/apply-promotion(id=${product.id})}" method="post">
+        <div>
+            <label for="discount">Discount Percentage:</label>
+            <input type="number" id="discount" name="discount" min="0" max="100" required />
+        </div>
+        <button type="submit">Apply Promotion</button>
+    </form>
+</body>
+</html>

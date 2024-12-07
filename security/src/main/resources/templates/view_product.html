@@ -76,10 +76,9 @@
                         <th:block th:if="${user == null}">
                             <a href="/signin" class="btn btn-primary btn-block">Add To Cart</a>
                         </th:block>
-
                         <th:block th:unless="${user == null}">
                             <a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"
-                               class="btn btn-primamry btn-block">Add To Cart</a>
+                               class="btn btn-primary btn-block">Add To Cart</a>
                         </th:block>
                     </th:block>
 
