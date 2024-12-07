@@ -182,11 +182,21 @@ public class ProductServiceImpl implements ProductService {
 	    Pageable pageable = PageRequest.of(pageNo, pageSize);
 	    return productRepository.findByShop(shop, pageable);
 	}
-
 	@Override
-	public List<Product> getProductsByCategory(String category) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public List<Product> getDiscountedProducts() {
+        return productRepository.findByDiscountGreaterThan(0);
+    }
 
+    // Apply promotion logic (update discount price based on discount field)
+    @Override
+	public void applyPromotion(Product product) {
+        if (product.getDiscount() > 0) {
+            double discountAmount = product.getPrice() * (product.getDiscount() / 100.0);
+            product.setDiscountPrice(product.getPrice() - discountAmount);
+        }
+    }
+    @Override
+	public List<Product> getProductsSoldMoreThan10() {
+        return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
+    }
 }
