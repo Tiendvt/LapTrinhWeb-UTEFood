@@ -61,15 +61,14 @@
                                             <form action="/admin/update-order-status" method="post">
                                                 <div class="row">
                                                     <div class="col">
-                                                        <select class="form-control" name="st">
-                                                            <option>--select--</option>
-                                                            <option value="1">In Progress</option>
-                                                            <option value="2">Order Received</option>
-                                                            <option value="3">Product Packed</option>
-                                                            <option value="4">Out for Delivery</option>
-                                                            <option value="5">Delivered</option>
-                                                            <option value="6">Cancelled</option>
-                                                        </select>
+                                                       <select class="form-control" name="st">
+    <option value="1">New Order</option>
+    <option value="2">Order Confirmed</option>
+    <option value="3">In Transit</option>
+    <option value="4">Delivered</option>
+    <option value="5">Canceled</option>
+    <option value="6">Returned - Refunded</option>
+</select>
                                                     </div>
                                                     <input th:value="${orderDtls.id}" name="id" type="hidden">
                                                     <div class="col">
@@ -108,15 +107,15 @@
                                             <form action="/admin/update-order-status" method="post">
                                                 <div class="row">
                                                     <div class="col">
-                                                        <select class="form-control" name="st">
-                                                            <option>--select--</option>
-                                                            <option value="1">In Progress</option>
-                                                            <option value="2">Order Received</option>
-                                                            <option value="3">Product Packed</option>
-                                                            <option value="4">Out for Delivery</option>
-                                                            <option value="5">Delivered</option>
-                                                            <option value="6">Cancelled</option>
-                                                        </select>
+                                                     <select class="form-control" name="st">
+    <option value="1">New Order</option>
+    <option value="2">Order Confirmed</option>
+    <option value="3">In Transit</option>
+    <option value="4">Delivered</option>
+    <option value="5">Canceled</option>
+    <option value="6">Returned - Refunded</option>
+</select>
+
                                                     </div>
                                                     <input th:value="${o.id}" name="id" type="hidden">
                                                     <div class="col">

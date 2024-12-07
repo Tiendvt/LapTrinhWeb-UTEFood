@@ -336,13 +336,17 @@ public class AdminController {
 	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
+		System.out.print(values);
 		String status = null;
 
 		for (OrderStatus orderSt : values) {
 			if (orderSt.getId().equals(st)) {
+				System.out.print("orderSt ID:" + orderSt.getId());
 				status = orderSt.getName();
+				System.out.print("status:" + status);
 			}
 		}
+		
 
 		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
 

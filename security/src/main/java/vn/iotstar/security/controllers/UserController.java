@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Cart;
@@ -25,6 +25,7 @@ import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.OrderRequest;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Review;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
@@ -196,7 +197,7 @@ public class UserController {
 	public String reviewOrder(@PathVariable Integer orderId, Model model) {
 		System.out.print("orderID: "+orderId);
 	    ProductOrder order = orderService.getOrderById(orderId);
-	    System.out.print("Bình thường ");
+	    //System.out.print("Bình thường ");
 	    if (order == null || !"Delivered".equalsIgnoreCase(order.getStatus())) {
 	        throw new RuntimeException("Order not found or not eligible for review");
 	    }
@@ -276,4 +277,49 @@ public class UserController {
 
 		return "redirect:/user/profile";
 	}
+	@GetMapping("/cancel-order/{id}")
+	public String cancelOrder(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+	    ProductOrder order = orderService.getOrderById(id);
+	    
+	    if (order == null || "Cancelled".equals(order.getStatus()) || 
+	        "Delivered".equals(order.getStatus()) || 
+	        "Order Confirmed".equals(order.getStatus()) || 
+	        "In Transit".equals(order.getStatus())) {
+	        redirectAttributes.addFlashAttribute("errorMsg", "Order cannot be cancelled.");
+	        return "redirect:/user/user-orders";
+	    }
+	    
+	    order.setStatus(OrderStatus.CANCELLED.getName());
+	    orderService.updateOrderStatus(order.getId(), OrderStatus.CANCELLED.getName());
+	    redirectAttributes.addFlashAttribute("succMsg", "Order cancelled successfully.");
+	    
+	    return "redirect:/user/user-orders";
+	}
+
+    @GetMapping("/edit-review/{orderId}")
+    public String editReview(@PathVariable Integer orderId, Model model) {
+        ProductOrder order = orderService.getOrderById(orderId);
+
+        if (order == null || !"Delivered".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Order not found or not eligible for review");
+        }
+
+        Review review = reviewService.getReviewByOrderId(orderId); // Fetch review from database
+        System.out.print("review objeect: " + review.getComment());
+        model.addAttribute("order", order);
+        model.addAttribute("review", review); // Pass review data to the view
+
+        return "user/edit_review_orders"; // Use the same review_order.html template
+    }
+
+    @PostMapping("/update-review")
+    public String updateReview(@RequestParam Integer reviewId,
+                               @RequestParam String comment,
+                               @RequestParam("files") MultipartFile[] files,
+                               RedirectAttributes redirectAttributes) {
+        reviewService.updateReview(reviewId, comment, files); // Call service to update review
+        redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
+        return "redirect:/user/user-orders";
+    }
+
 }

@@ -28,7 +28,7 @@ public class Review {
     @ManyToOne
     private ProductOrder order;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String comment;
 
     @ElementCollection
