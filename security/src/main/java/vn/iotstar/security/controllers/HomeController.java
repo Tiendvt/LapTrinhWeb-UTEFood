@@ -34,8 +34,10 @@ import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.User;
+import vn.iotstar.security.repository.FavoriteProductRepository;
 import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
+import vn.iotstar.security.service.FavoriteService;
 import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
@@ -61,7 +63,10 @@ public class HomeController {
 
 	@Autowired
 	private CartService cartService;
-
+	@Autowired
+	private FavoriteProductRepository favoriteProductRepository;
+	@Autowired
+	private FavoriteService favoriteService;
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
@@ -148,9 +153,21 @@ public class HomeController {
 	}
 
 	@GetMapping("/product/{id}")
-	public String product(@PathVariable int id, Model m) {
-		Product productById = productService.getProductById(id);
-		m.addAttribute("product", productById);
+	public String product(@PathVariable int id, Model m, Principal principal) {
+		Product product = productService.getProductById(id);
+	    m.addAttribute("product", product);
+	    boolean isFavorite = false;
+	    if (principal != null) {
+	        User user = userService.getUserByEmail(principal.getName());
+	        
+	        	isFavorite = favoriteProductRepository.existsByUserIdAndProductId(user.getId(), id);
+
+	    } 
+	 // Count the number of users who have favorited this product
+	    int favoriteCount = favoriteService.countByProductId(product.getId());
+	    
+	        m.addAttribute("isFavorite", isFavorite);
+	        m.addAttribute("favoriteCount", favoriteCount);
 		return "view_product";
 	}
 

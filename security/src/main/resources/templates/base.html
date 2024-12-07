@@ -139,12 +139,82 @@ body {
 		<p>utefood.shop</p>
 	</div>
 	<!-- End Footer -->
+ <!-- Add a placeholder for page-specific JavaScript -->
+ 
+	<!-- Scripts  -->
+	<!-- Script cho favorite:  -->
+	
+       <script>
+    function toggleFavorite(productId) {
+        console.log("Button clicked! Product ID: " + productId);  // Debugging log
+        fetch(`/favorites/product/toggle?productId=${productId}`, {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(response => response.text())
+        .then(status => {
+            console.log("Response from server: " + status);  // Debugging log
+            const favoriteBtn = document.getElementById('favorite-btn');
+            const heartIcon = favoriteBtn.querySelector('i');
+			const favoriteCount = document.getElementById('favorite-count');
+            if (status === 'added') {
+                favoriteBtn.classList.add('btn-danger');  // Red heart
+                heartIcon.classList.add('fas');  // Solid heart
+                favoriteCount.innerText = parseInt(favoriteCount.innerText) + 1;  // Increment count
+            } else if (status === 'removed') {
+                favoriteBtn.classList.remove('btn-danger');  // Grey heart
+                heartIcon.classList.remove('fas');  // Outline heart
+                heartIcon.classList.add('far');  // Outline heart
+                favoriteCount.innerText = parseInt(favoriteCount.innerText) - 1;  // Decrement count
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+    <!-- Script cho render ảnh đánh giá trước khi gửi:  -->
+<script>
+    document.getElementById('files').addEventListener('change', function(event) {
+        const previewContainer = document.getElementById('preview');
+        previewContainer.innerHTML = ''; // Xóa nội dung cũ
 
-	<!-- Scripts -->
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileReader = new FileReader();
+
+            // Kiểm tra loại file
+            if (file.type.startsWith('image/')) {
+                fileReader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '200px';
+                    img.style.margin = '10px';
+                    previewContainer.appendChild(img);
+                };
+            } else if (file.type.startsWith('video/')) {
+                fileReader.onload = function(e) {
+                    const video = document.createElement('video');
+                    video.src = e.target.result;
+                    video.controls = true;
+                    video.style.maxWidth = '200px';
+                    video.style.margin = '10px';
+                    previewContainer.appendChild(video);
+                };
+            } else {
+                const message = document.createElement('p');
+                message.textContent = `${file.name} is not a supported file type.`;
+                previewContainer.appendChild(message);
+            }
+
+            fileReader.readAsDataURL(file); // Đọc file dưới dạng URL
+        }
+    });
+</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+
 	<script type="text/javascript" src="js/script.js"></script>
 	<script type="text/javascript" src="../js/script.js"></script>
 	<script
