@@ -30,5 +30,6 @@ public interface OrderService {
     Page<ProductOrder> getOrdersByStatusAndShop(String status, Shop shop, Integer pageNo, Integer pageSize);
     
     List<ProductOrder> getOrdersByStatus(String status);
+
 }
 

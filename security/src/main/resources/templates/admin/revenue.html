@@ -110,20 +110,19 @@
 				</div>
 				
 				<!-- Search Form -->
-                <div class="mt-4 d-flex justify-content-center">
-                    <div class="col-md-4">
-                        <form action="/admin/revenue" method="get">
-                            <div class="row">
-                                <div class="col">
-                                    <input type="text" class="form-control" name="year" placeholder="Enter year for monthly revenue">
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-primary col">Search</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+
+				<div class="mt-4 d-flex justify-content-center">
+				    <div class="col-md-6">
+				        <form action="/admin/revenue" method="get" class="p-3 rounded-pill shadow-lg" style="background-color: #f8f9fa; border: none;">
+				            <div class="input-group input-group-lg">
+				                <input type="text" class="form-control border-0 rounded-start-pill" 
+				                       name="year" placeholder="Enter year for monthly revenue" style="background-color: #f8f9fa;">
+				                <button class="btn btn-primary rounded-end-pill px-4" type="submit">Search</button>
+				            </div>
+				        </form>
+				    </div>
+				</div>
+
 				
 				<!-- Revenue Table -->
 				<div class="mt-4 revenue-table-container d-flex justify-content-center">
@@ -150,4 +149,5 @@
         </div>
     </section>
 </body>
+
 </html>

@@ -115,9 +115,9 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllByStatusAndShop(status, shop, pageable);
     }
 
+
 	@Override
 	public List<ProductOrder> getOrdersByStatus(String status) {
 		return orderRepository.findAllByStatus(status);
 	}
 }
-

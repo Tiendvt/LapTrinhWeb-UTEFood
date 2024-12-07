@@ -39,7 +39,9 @@ public interface ProductService {
 
 	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
 
-	public List<Product> getProductsByCategory(String category);
+	void applyPromotion(Product product);
+
+	List<Product> getDiscountedProducts();
+
+	List<Product> getProductsSoldMoreThan10();
 }
-
-
