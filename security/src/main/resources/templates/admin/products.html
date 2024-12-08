@@ -132,41 +132,41 @@
 						<div class="row">
 							<!-- Tổng số sản phẩm căn giữa -->
 							<div class="col-md-12 text-center mb-3 fs-4">
-							    <strong>Total Products: [[${totalElements}]]</strong>
+								<strong>Total Products: [[${totalElements}]]</strong>
 							</div>
 							<!-- Phần phân trang -->
 							<div class="col-md-12">
 								<nav aria-label="Page navigation example">
 									<ul class="pagination justify-content-center">
-										<!-- Nút Previous -->
-										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}"
+										<li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
+											<a class="page-link" th:href="@{'/admin/products?pageNo=' + ${pageNo - 1}}"
 												aria-label="Previous">
 												<span aria-hidden="true">&laquo;</span>
 											</a>
 										</li>
-										<!-- Các trang -->
-										<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
-											th:classappend="${pageNo+1 == i} ? 'active' : ''">
+
+										<li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item active"
+											th:classappend="${pageNo + 1 == i} ? 'active' : ''">
 											<a class="page-link"
-												th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
+												th:href="@{'/admin/products?pageNo=' + ${i - 1}}">[[${i}]]</a>
 										</li>
-										<!-- Nút Next -->
-										<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}"
+
+										<li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
+											<a class="page-link" th:href="@{'/admin/products?pageNo=' + ${pageNo + 1}}"
 												aria-label="Next">
 												<span aria-hidden="true">&raquo;</span>
 											</a>
 										</li>
 									</ul>
 								</nav>
-							</div>
-						</div>
 					</th:block>
-					``
-
 				</div>
 			</div>
+			</th:block>
+			``
+
+		</div>
+		</div>
 		</div>
 	</section>
 </body>
