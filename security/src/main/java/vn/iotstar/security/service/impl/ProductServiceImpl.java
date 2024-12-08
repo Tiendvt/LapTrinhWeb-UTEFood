@@ -216,5 +216,21 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
     }
 
+	@Override
+	public Boolean deleteProductByCategory(Category category) {
+		List<Product> listProduct = productRepository.findByCategory(category);
+		
+		for (Product product : listProduct) {
+			deleteProduct(product.getId());
+		}
+		
+		listProduct = productRepository.findByCategory(category);
+		
+		if(ObjectUtils.isEmpty(listProduct)) {
+			return true;
+		}
+		return false;
+	}
+
 }
 
