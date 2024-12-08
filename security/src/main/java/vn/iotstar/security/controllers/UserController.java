@@ -155,7 +155,7 @@ public class UserController {
 	        // Save the order details before redirecting (if needed for tracking)
 	        orderService.saveOrder(user.getId(), request);
 
-	        // Redirect to VNPay
+	        
 	        return "redirect:" + vnpayUrl;
 	    } else if ("COD".equalsIgnoreCase(request.getPaymentType())) {
 	        // Process Cash on Delivery (COD)
@@ -402,7 +402,10 @@ public class UserController {
         model.addAttribute("transactionId", transactionId);
 
         // Check payment status
-        if ("00".equals(paymentStatus)) { // "00" indicates success
+        if ("00".equals(paymentStatus)) {
+        	// "00" indicates success
+        	// Clear the cart after successful order placement
+            //cartService.clearCartByUserId(user.getId());
             return "user/ordersuccess"; // Redirect to success page
         } else {
             return "user/orderfail"; // Redirect to failure page
