@@ -1,6 +1,3 @@
-
-
-
 package vn.iotstar.security.service.impl;
 
 import java.io.File;
@@ -202,4 +199,6 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProductsSoldMoreThan10() {
         return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
     }
+
 }
+

@@ -6,25 +6,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
 import java.security.Principal;
-
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
 import org.springframework.web.bind.annotation.PathVariable;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,10 +38,12 @@ import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
+import vn.iotstar.security.service.ShopService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
@@ -65,6 +71,10 @@ public class AdminController {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+    private ShopService shopService;
+
 	
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
@@ -399,6 +409,79 @@ public class AdminController {
 
 	}
 	
+	@GetMapping("/revenue")
+	public String loadViewRevenue(Model m, @RequestParam(required = false) String year) {
+
+		 if (year == null || year.isEmpty()) {
+		        year = String.valueOf(Year.now().getValue());
+		    }
+		
+	    double totalRevenue = 0;
+	    int totalProduct = 0;
+	    String totalOrders = "0";
+	    String totalDeliveredOrders = "0";
+
+	    List<Shop> listShop = shopService.getAll();
+	    if (!listShop.isEmpty()) {
+	        for (Shop shop : listShop) {
+	            totalRevenue += shop.getRevenue();
+	        }
+	    }
+
+	    List<ProductOrder> allOrders = orderService.getAllOrders();
+	    totalOrders = String.valueOf(allOrders.size());
+
+	    List<ProductOrder> allDeliveredOrders = orderService.getOrdersByStatus("Delivered");
+	    if (!allDeliveredOrders.isEmpty()) {
+	        totalDeliveredOrders = String.valueOf(allDeliveredOrders.size());
+
+	        for (ProductOrder productOrder : allOrders) {
+	            totalProduct += productOrder.getQuantity();
+	        }
+
+	        // Use TreeMap with custom Comparator (corrected)
+	        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+	            @Override
+	            public int compare(String monthYear1, String monthYear2) {
+	                try {
+	                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+	                    Date date1 = format.parse(monthYear1);
+	                    Date date2 = format.parse(monthYear2); 
+	                    return date1.compareTo(date2);
+	                } catch (ParseException e) {
+	                    e.printStackTrace();
+	                    return 0;
+	                }
+	            }
+	        });
+
+	        for (ProductOrder productOrder : allOrders) {
+	            LocalDate orderDate = productOrder.getOrderDate();
+	            if (orderDate.getYear() == Integer.parseInt(year)) {
+	                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
+	                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
+	            }
+	        }
+
+	        for (Month month : Month.values()) {
+	            String monthYear = month.toString() + " " + String.valueOf(year);
+	            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+	        }
+
+	        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+	    }
+
+	    DecimalFormat df = new DecimalFormat("#,##0");
+	    String formattedTotalRevenue = df.format(totalRevenue);
+
+	    m.addAttribute("totalOrders", totalOrders);
+	    m.addAttribute("totalDeliveredOrders", totalDeliveredOrders);
+	    m.addAttribute("totalProductsSold", String.valueOf(totalProduct));
+	    m.addAttribute("totalRevenue", formattedTotalRevenue);
+	    m.addAttribute("year", year);
+	    return "admin/revenue";
+	}
+	
 	@GetMapping("/users")
 	public String loadViewUsers(Model m, @RequestParam Integer type, 
 	                             @RequestParam(defaultValue = "") String ch,
@@ -432,6 +515,18 @@ public class AdminController {
 		Boolean f = userService.updateAccountStatus(id, status);
 		if (f) {
 			session.setAttribute("succMsg", "Account Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "Something wrong on server");
+		}
+		return "redirect:/admin/users?type=" + type;
+	}
+	
+	@GetMapping("/updateRole")
+	public String updateUserAccountStatus(@RequestParam String role, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
+		Boolean f = userService.updateAccountRole(id, role);
+		if (f) {
+			session.setAttribute("succMsg", "Account Role Updated");
 		} else {
 			session.setAttribute("errorMsg", "Something wrong on server");
 		}

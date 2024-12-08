@@ -30,10 +30,16 @@ public interface OrderService {
     Page<ProductOrder> getOrdersByShopPagination(Shop shop, Integer pageNo, Integer pageSize);
 
     Page<ProductOrder> getOrdersByStatusAndShop(String status, Shop shop, Integer pageNo, Integer pageSize);
+
+    
+    List<ProductOrder> getOrdersByStatus(String status);
+
+
     List<ProductOrder> getOrdersByStatusAndUser(String status, Integer userId);
     ProductOrder getOrderById(Integer id);
     void submitReview(Integer orderId, String comment, MultipartFile[] files);
     Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
         
+
 }
 
