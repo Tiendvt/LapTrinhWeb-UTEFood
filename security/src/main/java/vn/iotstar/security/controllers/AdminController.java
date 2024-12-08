@@ -374,31 +374,17 @@ public class AdminController {
 		 if (year == null || year.isEmpty()) {
 		        year = String.valueOf(Year.now().getValue());
 		    }
-		 
-		 
-		
-	    double totalRevenue = 0;
-	    int totalProduct = 0;
-	    String totalOrders = "0";
-	    String totalDeliveredOrders = "0";
-
-	    List<Shop> listShop = shopService.getAll();
-	    if (!listShop.isEmpty()) {
-	        for (Shop shop : listShop) {
-	            totalRevenue += shop.getRevenue();
-	        }
-	    }
-
-	    List<ProductOrder> allOrders = orderService.getAllOrders();
-	    totalOrders = String.valueOf(allOrders.size());
+    
+	    String totalRevenue = orderService.getTotalRevenue();
+	    String totalOrders = String.valueOf(orderService.getAllOrders().size());
+	    String totalDeliveredOrders = String.valueOf(orderService.getOrdersByStatus("Delivered").size());
+	    String totalSoldProduct = "0";
+	    Map<String, Double> monthlyRevenueMap;
 
 	    List<ProductOrder> allDeliveredOrders = orderService.getOrdersByStatus("Delivered");
 	    if (!allDeliveredOrders.isEmpty()) {
-	        totalDeliveredOrders = String.valueOf(allDeliveredOrders.size());
-
-	        for (ProductOrder productOrder : allDeliveredOrders) {
-	            totalProduct += productOrder.getQuantity();
-	        }
+	        
+	    	totalSoldProduct = productService.getTotalSoldProduct(allDeliveredOrders);
 	        
 	        
 	        try {
@@ -407,52 +393,20 @@ public class AdminController {
 		        	m.addAttribute("year", null);
 		        }
 		        else {
-		        	// Use TreeMap with custom Comparator (corrected)
-			        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
-			            @Override
-			            public int compare(String monthYear1, String monthYear2) {
-			                try {
-			                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
-			                    Date date1 = format.parse(monthYear1);
-			                    Date date2 = format.parse(monthYear2); 
-			                    return date1.compareTo(date2);
-			                } catch (ParseException e) {
-			                    e.printStackTrace();
-			                    return 0;
-			                }
-			            }
-			        });
-
-			        for (ProductOrder productOrder : allOrders) {
-			            LocalDate orderDate = productOrder.getOrderDate();
-			            if (orderDate.getYear() == Integer.parseInt(year)) {
-			                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
-			                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
-			            }
-			        }
-
-			        for (Month month : Month.values()) {
-			            String monthYear = month.toString() + " " + String.valueOf(year);
-			            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
-			        }
+		        	monthlyRevenueMap = orderService.getMonthlyRevenue(allDeliveredOrders, yearInt);
 
 			        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
 			        m.addAttribute("year", year);
 		        }
 			 } catch (NumberFormatException e) {
 				 m.addAttribute("year", null);
-			 }
-
-	        
+			 }	        
 	    }
-
-	    DecimalFormat df = new DecimalFormat("#,##0");
-	    String formattedTotalRevenue = df.format(totalRevenue);
 
 	    m.addAttribute("totalOrders", totalOrders);
 	    m.addAttribute("totalDeliveredOrders", totalDeliveredOrders);
-	    m.addAttribute("totalProductsSold", String.valueOf(totalProduct));
-	    m.addAttribute("totalRevenue", formattedTotalRevenue);
+	    m.addAttribute("totalProductsSold", totalSoldProduct);
+	    m.addAttribute("totalRevenue", totalRevenue);
 	    return "admin/revenue";
 	}
 	
