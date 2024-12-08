@@ -15,18 +15,24 @@ import vn.iotstar.security.util.AppConstant;
 public class FileStorageService  {
 	
     public String storeFile(MultipartFile file) {
-        try {
-        	 Path uploadPath = Paths.get(AppConstant.uploadDir);
-             if (!Files.exists(uploadPath)) {
-                 Files.createDirectories(uploadPath); // Tạo thư mục nếu chưa tồn tại
-             }
+//    	if (file == null || file.isEmpty()) {
+//            throw new RuntimeException("Invalid file: File is empty or null");
+//        }
+    	try {
+            // Tạo thư mục nếu chưa tồn tại
+            Path uploadPath = Paths.get(AppConstant.uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
 
-             // Đường dẫn lưu file
-             Path filePath = uploadPath.resolve(file.getOriginalFilename());
-             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-             
-             // Trả về đường dẫn file
-             return filePath.toString();
+            // Đường dẫn lưu file
+            String fileName = file.getOriginalFilename();
+            System.out.print("file name: " + fileName+"\n");
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Trả về đường dẫn tương đối để sử dụng trong giao diện
+            return "/uploads/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file", e);
         }
