@@ -85,41 +85,42 @@
 					</div>
 
 					<!-- Pagination -->
-					<div class="row">
-						<div class="col-md-4">
-							<p>Total Products: [[${totalElements}]]</p>
-						</div>
-						<div class="col-md-4">
-							<th:block th:if="${productsSize > 0}">
-								<nav aria-label="Page navigation example">
-									<ul class="pagination justify-content-center">
-										<li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
-											<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo - 1}}"
-												aria-label="Previous">
-												<span aria-hidden="true">&laquo;</span>
-											</a>
-										</li>
+					<th:block th:if="${!#lists.isEmpty(products)}">
+						<div class="row">
+							<!-- Tổng số sản phẩm căn giữa -->
+							<div class="col-md-12 text-center mb-3 fs-4">
+								<strong>Total Products: [[${totalElements}]]</strong>
+							</div>
+							<div class="col-md-12">
+								<th:block th:if="${productsSize > 0}">
+									<nav aria-label="Page navigation example">
+										<ul class="pagination justify-content-center">
+											<li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
+												<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo - 1}}"
+													aria-label="Previous">
+													<span aria-hidden="true">&laquo;</span>
+												</a>
+											</li>
 
-										<li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item"
-											th:classappend="${pageNo + 1 == i} ? 'active' : ''">
-											<a class="page-link"
-												th:href="@{'/products?pageNo=' + ${i - 1}}">[[${i}]]</a>
-										</li>
+											<li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item"
+												th:classappend="${pageNo + 1 == i} ? 'active' : ''">
+												<a class="page-link"
+													th:href="@{'/products?pageNo=' + ${i - 1}}">[[${i}]]</a>
+											</li>
 
-										<li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
-											<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo + 1}}"
-												aria-label="Next">
-												<span aria-hidden="true">&raquo;</span>
-											</a>
-										</li>
-									</ul>
-								</nav>
-							</th:block>
+											<li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
+												<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo + 1}}"
+													aria-label="Next">
+													<span aria-hidden="true">&raquo;</span>
+												</a>
+											</li>
+										</ul>
+									</nav>
+								</th:block>
+							</div>
 						</div>
-					</div>
-				</div>
+						</th:block>
 			</div>
-		</div>
 	</section>
 
 	<!-- Add Bootstrap JS and dependencies -->
