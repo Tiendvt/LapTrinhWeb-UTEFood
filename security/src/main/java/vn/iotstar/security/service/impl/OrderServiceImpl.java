@@ -68,6 +68,7 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(cart.getQuantity());
             order.setUser(cart.getUser());
             order.setShop(cart.getProduct().getShop()); // Ensure shop linkage
+            order.setName(cart.getProduct().getTitle());
             
             if("ONLINE".equalsIgnoreCase(orderRequest.getPaymentType())){
             	order.setStatus(OrderStatus.ONLINE.getName());

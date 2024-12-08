@@ -54,7 +54,7 @@
                                         <th scope="row">[[${orderDtls.orderId}]]</th>
                                         <td>Name: [[${orderDtls.orderAddress.firstName + ' ' + orderDtls.orderAddress.lastName}]]<br> Email: [[${orderDtls.orderAddress.email}]] <br> Mobno: [[${orderDtls.orderAddress.mobileNo}]] <br> Address: [[${orderDtls.orderAddress.address}]] <br> City: [[${orderDtls.orderAddress.city}]] <br> State: [[${orderDtls.orderAddress.state}]], [[${orderDtls.orderAddress.pincode}]]</td>
                                         <td>[[${orderDtls.orderDate}]]</td>
-                                        <td>[[${orderDtls.product.title}]]</td>
+                                        <td>[[${orderDtls.name}]]</td>
                                         <td>Quantity: [[${orderDtls.quantity}]] <br> Price: [[${orderDtls.price}]] <br> Total Price: [[${orderDtls.quantity * orderDtls.price}]]</td>
                                         <td>[[${orderDtls.status}]]</td>
                                         <td>
@@ -100,7 +100,7 @@
                                         <th scope="row">[[${o.orderId}]]</th>
                                         <td>Name: [[${o.orderAddress.firstName + ' ' + o.orderAddress.lastName}]]<br> Email: [[${o.orderAddress.email}]] <br> Mobno: [[${o.orderAddress.mobileNo}]] <br> Address: [[${o.orderAddress.address}]] <br> City: [[${o.orderAddress.city}]] <br> State: [[${o.orderAddress.province}]], [[${o.orderAddress.pincode}]]</td>
                                         <td>[[${o.orderDate}]]</td>
-                                        <td>[[${o.product.title}]]</td>
+                                        <td>[[${o.name}]]</td>
                                         <td>Quantity: [[${o.quantity}]] <br> Price: [[${o.price}]] <br> Total Price: [[${o.quantity * o.price}]]</td>
                                         <td>[[${o.status}]]</td>
                                         <td>
