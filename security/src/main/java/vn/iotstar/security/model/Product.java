@@ -13,6 +13,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -22,32 +29,49 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id; // ID sản phẩm (khóa chính)
 
-    @Column(length = 500, columnDefinition = "NVARCHAR(500)")
-    private String title;
+    @Column(length = 500, columnDefinition = "NVARCHAR(500)", nullable = false)
+    private String title; // Tên sản phẩm
 
     @Column(length = 4000, columnDefinition = "NVARCHAR(4000)")
-    private String description;
+    private String description; // Mô tả sản phẩm
 
-    @ManyToOne(fetch = FetchType.LAZY) 
-    @JoinColumn(name = "category_id") 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id") // Khóa ngoại đến bảng Category
     private Category category;
 
-    private Double price;
+    @Column(nullable = false)
+    private Double price; // Giá sản phẩm
 
-    private int stock;
-    
+    private int stock; // Số lượng trong kho
+
     @Column(columnDefinition = "NVARCHAR(255)")
-    private String image;
-    
-    private int sold=0;
-    private int discount;
-    
-    private Double discountPrice;
-    
-    private Boolean isActive;
+    private String image; // Đường dẫn ảnh sản phẩm
+
+    @Column(nullable = false)
+    private int sold = 0; // Số lượng đã bán
+
+    @Column(nullable = false)
+    private int discount = 0; // Mức giảm giá (%)
+
+    @Column(nullable = false)
+    private Double discountPrice; // Giá sau khi giảm giá
+
+    @Column(nullable = false)
+    private Boolean isActive = true; // Trạng thái sản phẩm (true = còn hoạt động)
+
     @ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shop_id")
-	private Shop shop;
+    @JoinColumn(name = "shop_id") // Khóa ngoại đến bảng Shop
+    private Shop shop;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private Date createdDate; // Ngày tạo sản phẩm
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdDate = new Date(); // Gán ngày tạo tự động khi lưu mới
+    }
 }
+

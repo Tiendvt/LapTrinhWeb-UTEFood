@@ -202,4 +202,20 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProductsSoldMoreThan10() {
         return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
     }
+
+	@Override
+	public Page<Product> getProductsByCriteria(String criteria, Pageable pageable) {
+		switch (criteria.toUpperCase()) {
+        case "NEWEST":
+            return productRepository.findNewestProducts(pageable);
+        case "BEST_SELLING":
+            return productRepository.findBestSellingProducts(pageable);
+        case "TOP_RATED":
+            return productRepository.findTopRatedProducts(pageable);
+        case "FAVORITE":
+            return productRepository.findMostFavoriteProducts(pageable);
+        default:
+            throw new IllegalArgumentException("Invalid criteria: " + criteria);
+    }
+	}
 }

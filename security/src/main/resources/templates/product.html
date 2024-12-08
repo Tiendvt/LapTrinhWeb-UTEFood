@@ -13,20 +13,34 @@
 <body>
 <section>
     <!-- Search Bar -->
-    <div class="container-fluid bg-primary p-4 mt-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <form action="/products" method="get">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="ch" th:value="${param.ch}" placeholder="Search for products">
-                        <button class="btn btn-light text-dark ms-3 col-md-2">
-                            <i class="fa-solid fa-magnifying-glass"></i> Search
-                        </button>
-                    </div>
-                </form>
-            </div>
+    <!-- Search Bar -->
+<div class="container-fluid bg-primary p-4 mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <form action="/products" method="get">
+                <div class="input-group">
+                    <!-- Search Input -->
+                    <input type="text" class="form-control" name="ch" th:value="${param.ch}" placeholder="Search for products">
+                    
+                    <!-- Filter Criteria -->
+                    <select class="form-select" name="criteria" th:value="${param.criteria}">
+                        <option value="DEFAULT">-- Filter --</option>
+                        <option value="NEWEST" th:selected="${param.criteria == 'NEWEST'}">Newest</option>
+                        <option value="BEST_SELLING" th:selected="${param.criteria == 'BEST_SELLING'}">Best Selling</option>
+                        <option value="FAVORITE" th:selected="${param.criteria == 'FAVORITE'}">Most Favorite</option>
+                        <option value="TOP_RATED" th:selected="${param.criteria == 'TOP_RATED'}">Top Rated</option>
+                    </select>
+
+                    <!-- Search Button -->
+                    <button class="btn btn-light text-dark">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
 
     <!-- Product Categories Sidebar -->
     <div class="container-fluid mt-1">
