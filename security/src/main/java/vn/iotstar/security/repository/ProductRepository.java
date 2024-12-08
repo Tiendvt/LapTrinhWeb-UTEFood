@@ -35,7 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 			String ch2, Pageable pageable);
 
 	Page<Product> findByShop(Shop shop, Pageable pageable);
-
+	Page<Product> findByShopAndTitleContainingIgnoreCase(Shop shop, String searchQuery, Pageable pageable);
 	List<Product> findByDiscountGreaterThan(int discount);
 	List<Product> findBySoldGreaterThanOrderBySoldDesc(int soldCount);
 }

@@ -38,7 +38,7 @@ public interface ProductService {
 
 	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
 
-
+	
 	void applyPromotion(Product product);
 
 	List<Product> getDiscountedProducts();
@@ -48,4 +48,5 @@ public interface ProductService {
 	public Boolean deleteProductByCategory(Category category);
 	
 	String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders);
+	Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize);
 }

@@ -146,25 +146,35 @@
 						</table>
 						<th:block th:if="${!#lists.isEmpty(users)}">
 							<div class="row">
-								<div class="col-md-4">Total Users: [[${totalElements}]]</div>
-								<div class="col-md-6">
+								<!-- Hiển thị tổng số người dùng -->
+								<div class="col-md-12 text-center mb-3 fs-4">
+									<strong>Total Products: [[${totalElements}]]</strong>
+								</div>
+								<!-- Pagination -->
+								<div class="col-md-12">
 									<nav aria-label="Page navigation example">
-										<ul class="pagination">
-											<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
+										<ul class="pagination justify-content-center">
+											<!-- Nút Previous -->
+											<li class="page-item" th:classappend="${pageNo == 1} ? 'disabled':''">
 												<a class="page-link"
-													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo-1}}"
+													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo - 1}}"
 													aria-label="Previous">
 													<span aria-hidden="true">«</span>
 												</a>
 											</li>
-											<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item"
-												th:classappend="${pageNo+1==i}?'active':''">
+
+											<!-- Các trang -->
+											<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
+												th:classappend="${pageNo == i} ? 'active':''">
 												<a class="page-link"
-													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${i-1}}">[[${i}]]</a>
+													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${i - 1}}">[[${i}]]</a>
 											</li>
-											<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
+
+											<!-- Nút Next -->
+											<li class="page-item"
+												th:classappend="${pageNo == totalPages} ? 'disabled':''">
 												<a class="page-link"
-													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo+1}}"
+													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo + 1}}"
 													aria-label="Next">
 													<span aria-hidden="true">»</span>
 												</a>
@@ -174,6 +184,7 @@
 								</div>
 							</div>
 						</th:block>
+
 					</div>
 				</div>
 	</section>

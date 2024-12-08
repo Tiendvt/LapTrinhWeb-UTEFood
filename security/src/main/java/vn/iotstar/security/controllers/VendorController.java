@@ -89,15 +89,28 @@ public class VendorController {
     // View Products
     @GetMapping("/products")
     public String viewProducts(Principal principal, Model model,
-                               @RequestParam(defaultValue = "0") Integer pageNo,
-                               @RequestParam(defaultValue = "10") Integer pageSize) {
+                               @RequestParam(defaultValue = "0") int pageNo,
+                               @RequestParam(defaultValue = "10") int pageSize,
+                               @RequestParam(defaultValue = "") String searchQuery) {
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
-        Page<Product> products = productService.getProductsByShop(shop, pageNo, pageSize);
-        model.addAttribute("products", products.getContent());
+
+        Page<Product> productsPage;
+        if (searchQuery.isEmpty()) {
+            productsPage = productService.getProductsByShop(shop, pageNo, pageSize);
+        } else {
+            productsPage = productService.searchVendorProductsPagination(shop, searchQuery, pageNo, pageSize);
+        }
+
+        model.addAttribute("products", productsPage.getContent());
         model.addAttribute("pageNo", pageNo);
         model.addAttribute("pageSize", pageSize);
-        model.addAttribute("totalPages", products.getTotalPages());
-        return "vendor/products";
+        model.addAttribute("totalElements", productsPage.getTotalElements());
+        model.addAttribute("totalPages", productsPage.getTotalPages());
+        model.addAttribute("isFirst", productsPage.isFirst());
+        model.addAttribute("isLast", productsPage.isLast());
+        model.addAttribute("searchQuery", searchQuery);
+
+        return "vendor/products"; // Update this with the actual view for product list
     }
 
     // Add Product Page

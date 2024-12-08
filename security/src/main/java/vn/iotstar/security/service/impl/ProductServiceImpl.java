@@ -240,6 +240,10 @@ public class ProductServiceImpl implements ProductService {
         }
 		return String.valueOf(totalProduct);
 	}
-
+	@Override
+    public Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize) {
+        return productRepository.findByShopAndTitleContainingIgnoreCase(shop, searchQuery, PageRequest.of(pageNo, pageSize));
+    }
+	
 }
 
