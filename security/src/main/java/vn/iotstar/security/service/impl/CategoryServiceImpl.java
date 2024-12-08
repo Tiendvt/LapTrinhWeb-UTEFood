@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import vn.iotstar.security.model.Category;
-import vn.iotstar.security.model.Product;
 import vn.iotstar.security.repository.CategoryRepository;
-import vn.iotstar.security.repository.ProductRepository;
 import vn.iotstar.security.service.CategoryService;
 
 
