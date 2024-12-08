@@ -346,13 +346,17 @@ public class AdminController {
 	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
+		System.out.print(values);
 		String status = null;
 
 		for (OrderStatus orderSt : values) {
 			if (orderSt.getId().equals(st)) {
+				System.out.print("orderSt ID:" + orderSt.getId());
 				status = orderSt.getName();
+				System.out.print("status:" + status);
 			}
 		}
+		
 
 		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
 
@@ -511,6 +515,18 @@ public class AdminController {
 		Boolean f = userService.updateAccountStatus(id, status);
 		if (f) {
 			session.setAttribute("succMsg", "Account Status Updated");
+		} else {
+			session.setAttribute("errorMsg", "Something wrong on server");
+		}
+		return "redirect:/admin/users?type=" + type;
+	}
+	
+	@GetMapping("/updateRole")
+	public String updateUserAccountStatus(@RequestParam String role, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
+		Boolean f = userService.updateAccountRole(id, role);
+		if (f) {
+			session.setAttribute("succMsg", "Account Role Updated");
 		} else {
 			session.setAttribute("errorMsg", "Something wrong on server");
 		}

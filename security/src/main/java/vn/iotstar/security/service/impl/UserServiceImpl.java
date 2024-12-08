@@ -184,7 +184,19 @@ public class UserServiceImpl implements UserService{
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
 		return userRepository.findByRole(role, pageable);
 	}
-	
-	
+
+	@Override
+	public Boolean updateAccountRole(Integer id, String role) {
+		Optional<User> findByuser = userRepository.findById(id);
+
+		if (findByuser.isPresent()) {
+			User user = findByuser.get();
+			user.setRole(role);
+			userRepository.save(user);
+			return true;
+		}
+		return false;
+	}
+
 
 }

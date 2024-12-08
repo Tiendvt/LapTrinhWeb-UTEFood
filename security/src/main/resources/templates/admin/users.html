@@ -30,7 +30,13 @@
 <body>
 	<section>
 		<div class="container-fluid mt-5 p-5">
+			<hr>
+			<a href="/admin/" class="text-decoration-none">
+				<i class="fa-solid fa-arrow-left"></i> Back
+			</a>
 			<div class="card card-sh">
+				<p class="text-center fs-3 mt-2">All Products</p>
+
 				<div class="card-header text-center">
 					<p class="fs-4" th:if="${userType==1}">Admin</p>
 					<p class="fs-4" th:if="${userType==2}">Vendor</p>
@@ -103,10 +109,36 @@
 										<td>[[${u.address + ',' + u.city + ',' + u.province + ',' + u.pincode}]]</td>
 										<td>[[${u.isEnable}]]</td>
 										<td>
-											<a th:href="@{'/admin/updateSts?status=true&id=' + ${u.id} + '&type=' + ${userType}}"
-												class="btn btn-sm btn-primary status-button">Active</a>
-											<a th:href="@{'/admin/updateSts?status=false&id=' + ${u.id} + '&type=' + ${userType}}"
-												class="btn btn-sm btn-danger status-button">Inactive</a>
+											<div class="d-flex align-items-center">
+												<!-- Dropdown for Role Selection -->
+												<div class="col-4 mx-2">
+													<label for="type" class="visually-hidden">Role</label>
+													<form id="roleForm" method="get" th:action="@{'/admin/updateRole'}">
+														<input type="hidden" name="id" th:value="${u.id}" />
+														<input type="hidden" name="type" th:value="${userType}" />
+														<select class="form-control" id="role" name="role"
+															onchange="this.form.submit()">
+															<option value="ROLE_USER"
+																th:selected="${u.role == 'ROLE_USER'}">ROLE_USER
+															</option>
+															<option value="ROLE_VENDOR"
+																th:selected="${u.role == 'ROLE_VENDOR'}">ROLE_VENDOR
+															</option>
+															<option value="ROLE_ADMIN"
+																th:selected="${u.role == 'ROLE_ADMIN'}">ROLE_ADMIN
+															</option>
+														</select>
+													</form>
+												</div>
+
+												<!-- Active Button -->
+												<a th:href="@{'/admin/updateSts?status=true&id=' + ${u.id} + '&type=' + ${userType}}"
+													class="btn btn-sm btn-primary status-button mx-2">Active</a>
+
+												<!-- Inactive Button -->
+												<a th:href="@{'/admin/updateSts?status=false&id=' + ${u.id} + '&type=' + ${userType}}"
+													class="btn btn-sm btn-danger status-button mx-2">Inactive</a>
+											</div>
 										</td>
 									</tr>
 								</th:block>
@@ -122,7 +154,7 @@
 												<a class="page-link"
 													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo-1}}"
 													aria-label="Previous">
-													<span aria-hidden="true">&laquo;</span>
+													<span aria-hidden="true">«</span>
 												</a>
 											</li>
 											<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item"
@@ -134,7 +166,7 @@
 												<a class="page-link"
 													th:href="@{'/admin/users?type=' + ${userType} + '&pageNo=' + ${pageNo+1}}"
 													aria-label="Next">
-													<span aria-hidden="true">&raquo;</span>
+													<span aria-hidden="true">»</span>
 												</a>
 											</li>
 										</ul>

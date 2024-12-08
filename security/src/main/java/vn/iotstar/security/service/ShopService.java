@@ -16,4 +16,6 @@ public interface ShopService {
     void updateShopSoldAndRevenue(Integer shopId, Double revenue);
     
     List<Shop> getAll();
+
 }
+

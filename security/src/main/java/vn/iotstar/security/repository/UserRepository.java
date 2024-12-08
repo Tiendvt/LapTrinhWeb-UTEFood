@@ -17,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	public User findByActiveToken(String token);
 	Page<User> findByRoleAndEmailContainingIgnoreCaseOrRoleAndNameContainingIgnoreCase(String role1, String ch, String role2, String ch2, Pageable pageable);
 	Page<User> findByRole(String role, Pageable pageable);
+	User findById(int id);
 }

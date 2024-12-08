@@ -54,4 +54,6 @@ public class ShopServiceImpl implements ShopService {
 	public List<Shop> getAll() {
 		return shopRepository.findAll();
 	}
+
 }
+

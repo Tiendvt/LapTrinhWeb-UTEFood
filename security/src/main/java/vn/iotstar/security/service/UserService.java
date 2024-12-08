@@ -41,4 +41,6 @@ public interface UserService {
 	public Page<User> searchUsersPagination(String role, Integer pageNo, Integer pageSize, String ch);
 
 	public Page<User> getAllUsersPagination(String role, Integer pageNo, Integer pageSize);
+
+	public Boolean updateAccountRole(Integer id, String role);
 }

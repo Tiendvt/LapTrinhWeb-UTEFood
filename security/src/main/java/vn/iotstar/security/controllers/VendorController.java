@@ -486,4 +486,33 @@ public class VendorController {
         // Redirect back to the profile page after attempting to change the password
         return "redirect:/vendor/profile";
     }
+    @GetMapping("/discounted-products")
+    public String viewDiscountedProducts(Principal principal, Model model,
+                                          @RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        // Retrieve the shop associated with the logged-in vendor
+        Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+
+        // Retrieve the products for the shop
+        Page<Product> products = productService.getProductsByShop(shop, pageNo, pageSize);
+
+        // Pass the products to the view
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPages", products.getTotalPages());
+
+        return "vendor/discounted_products"; 
+    }
+    // Apply promotion to a specific product (set discount)
+    @PostMapping("/product/{id}/apply-promotion")
+    public String applyPromotionToProduct(@PathVariable Integer id, @RequestParam int discount, Principal principal) {
+        Product product = productService.getProductById(id);
+        if (product != null && discount > 0) {
+            product.setDiscount(discount);  // Set the discount for the product
+            productService.applyPromotion(product);  // Apply the promotion (calculate discount price)
+            productService.saveProduct(product);  // Save the updated product
+        }
+        return "redirect:/vendor/discounted-products";  // Redirect to the page showing discounted products
+    }
 }

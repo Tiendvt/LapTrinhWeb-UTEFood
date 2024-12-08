@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "product_order") // Đặt tên bảng tùy chỉnh
 public class ProductOrder {
 
 	@Id
@@ -54,5 +56,8 @@ public class ProductOrder {
 	@JoinColumn(name = "shop_id")
 	private Shop shop;
 
+	// Liên kết với bảng Review
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Review review;
 
 }
