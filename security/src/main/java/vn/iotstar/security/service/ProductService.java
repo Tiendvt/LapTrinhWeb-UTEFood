@@ -39,6 +39,7 @@ public interface ProductService {
 
 	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
 
+
 	void applyPromotion(Product product);
 
 	List<Product> getDiscountedProducts();

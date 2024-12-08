@@ -2,8 +2,8 @@ package vn.iotstar.security.util;
 
 public enum OrderStatus {
 
-	IN_PROGRESS(1, "In Progress"), ORDER_RECEIVED(2, "Order Received"), PRODUCT_PACKED(3, "Product Packed"),
-	OUT_FOR_DELIVERY(4, "Out for Delivery"), DELIVERED(5, "Delivered"),CANCEL(6,"Cancelled"),SUCCESS(7,"Success");
+	NEW_ORDER(1, "New Order"), ORDER_CONFIRMED(2, "Order Confirmed"), PRODUCT_PACKED(3, "In Transit"),
+	DELIVERED(4, "Delivered"), CANCELLED(5, "Cancelled"),RETURNED_REFUNDED(6,"Returned - Refunded");
 
 	private Integer id;
 

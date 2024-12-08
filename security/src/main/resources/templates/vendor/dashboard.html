@@ -100,6 +100,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-4">
+                
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Manage Discounts</h5>
+                            <th:block th:if="${shop != null}">
+                                <a href="/vendor/discounted-products" class="btn btn-warning">Manage Discounts</a>
+                            </th:block>
+                            <th:block th:if="${shop == null}">
+                                <p class="text-danger">No products available to apply discounts. Create your shop first.</p>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     </section>
