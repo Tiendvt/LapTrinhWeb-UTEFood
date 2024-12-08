@@ -3,7 +3,7 @@
 	th:fragment="layout(content)">
 
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <title>Insert title here</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -33,12 +33,12 @@ body {
 }
 
 html {
-	scroll-behavior: smooth; /* Hiệu ứng cuộn mượt mà */
+	scroll-behavior: smooth; /* Hiá»u á»©ng cuá»n mÆ°á»£t mÃ  */
 }
 
 body {
-	overflow-y: scroll; /* Cho phép cuộn dọc */
-	height: 100%; /* Đảm bảo chiều cao đầy đủ */
+	overflow-y: scroll; /* Cho phÃ©p cuá»n dá»c */
+	height: 100%; /* Äáº£m báº£o chiá»u cao Äáº§y Äá»§ */
 }
 </style>
 </head>
@@ -65,16 +65,16 @@ body {
 
 					<th:block th:unless="${user == null}">
 
-						<li class="nav-item" th:if="${user.role == 'ROLE_ADMIN'}"><a class="nav-link active"
-								aria-current="page" href="/admin/"><i class="fa-solid fa-house"></i> Home</a></li>
+						<li class="nav-item" th:if="${user.role == 'ROLE_ADMIN'}"><a
+							class="nav-link active" aria-current="page" href="/admin/"><i
+								class="fa-solid fa-house"></i> Home</a></li>
 
-						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}">
-							<a class="nav-link active"
-								aria-current="page" href="/"><i class="fa-solid fa-house"></i> Home</a>
-								
-								</li>
-								<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a class="nav-link active"
-								aria-current="page" href="/vendor/"><i class="fa-solid fa-house"></i> Home</a></li>
+						<li class="nav-item" th:if="${user.role == 'ROLE_USER'}"><a
+							class="nav-link active" aria-current="page" href="/user/"><i
+								class="fa-solid fa-house"></i> Home</a></li>
+						<li class="nav-item" th:if="${user.role == 'ROLE_VENDOR'}"><a
+							class="nav-link active" aria-current="page" href="/vendor/"><i
+								class="fa-solid fa-house"></i> Home</a></li>
 
 					</th:block>
 
@@ -93,37 +93,53 @@ body {
 				<!-- Navbar items for logged-in users -->
 				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-				    <!-- If the user is logged in -->
-				    <th:block th:if="${user != null}">
-				        <!-- If the user is an admin -->
-				        <th:block th:if="${user.role == 'ROLE_ADMIN'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				        
-				        <!-- If the user is not an admin (regular user) -->
-				        <th:block th:if="${user.role == 'ROLE_USER'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="/user/cart">
-        <i class="fa-solid fa-cart-shopping"></i> Cart 
-        <span th:if="${countCart > 0}" class="badge bg-danger">[[${countCart}]]</span>
-    </a>
-</li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/user/user-orders"><i class="fa-solid fa-box"></i> My Orders</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				        <th:block th:if="${user.role == 'ROLE_VENDOR'}">
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/vendor/profile"><i class="fa-solid fa-user"></i> Profile</a></li>
-				            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-				        </th:block>
-				    </th:block>
+					<!-- If the user is logged in -->
+					<th:block th:if="${user != null}">
+						<!-- If the user is an admin -->
+						<th:block th:if="${user.role == 'ROLE_ADMIN'}">
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/admin/profile"><i
+									class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/logout"><i
+									class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
 
-				    <!-- If the user is not logged in -->
-				    <th:block th:if="${user == null}">
-				        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/signin"><i class="fa-solid fa-right-to-bracket"></i> LOGIN</a></li>
-				        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/register">REGISTER</a></li>
-				    </th:block>
+						<!-- If the user is not an admin (regular user) -->
+						<th:block th:if="${user.role == 'ROLE_USER'}">
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/user/profile"><i
+									class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/user/cart"> <i
+									class="fa-solid fa-cart-shopping"></i> Cart <span
+									th:if="${countCart > 0}" class="badge bg-danger">[[${countCart}]]</span>
+							</a></li>
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/user/user-orders"><i
+									class="fa-solid fa-box"></i> My Orders</a></li>
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/logout"><i
+									class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
+						<th:block th:if="${user.role == 'ROLE_VENDOR'}">
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/vendor/profile"><i
+									class="fa-solid fa-user"></i> Profile</a></li>
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/logout"><i
+									class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+						</th:block>
+					</th:block>
+
+					<!-- If the user is not logged in -->
+					<th:block th:if="${user == null}">
+						<li class="nav-item"><a class="nav-link active"
+							aria-current="page" href="/signin"><i
+								class="fa-solid fa-right-to-bracket"></i> LOGIN</a></li>
+						<li class="nav-item"><a class="nav-link active"
+							aria-current="page" href="/register">REGISTER</a></li>
+					</th:block>
 
 				</ul>
 			</div>
@@ -136,19 +152,19 @@ body {
 	<!-- Start Footer -->
 	<div class="container-fluid p-1 bg-primary text-center text-white"
 		style="margin-top: 500px">
-		<p>Địa chỉ: 01 Đ. Võ Văn Ngân, Linh Chiểu, Thủ Đức, Hồ Chí Minh, Việt Nam. Tổng đài hỗ trợ: 0123456789 - Email:
-					admin@utefoodshop.com
-				</p>
-				<p>Chịu Trách Nhiệm Quản Lý : Nhóm 16</p>
-				<p>utefoodshop.com</p>
+		<p>Địa chỉ: 01 Đ. Võ Văn Ngân, Linh Chiểu, Thủ Đức, Hồ Chí Minh,
+			Việt Nam. Tổng đài hỗ trợ: 0123456789 - Email: admin@utefoodshop.com
+		</p>
+		<p>Chịu Trách Nhiệm Quản Lý : Nhóm 16</p>
+		<p>utefoodshop.com</p>
 	</div>
 	<!-- End Footer -->
- <!-- Add a placeholder for page-specific JavaScript -->
- 
+	<!-- Add a placeholder for page-specific JavaScript -->
+
 	<!-- Scripts  -->
 	<!-- Script cho favorite:  -->
-	
-       <script>
+
+	<script>
     function toggleFavorite(productId) {
         console.log("Button clicked! Product ID: " + productId);  // Debugging log
         fetch(`/favorites/product/toggle?productId=${productId}`, {
@@ -175,11 +191,11 @@ body {
         .catch(error => console.error('Error:', error));
     }
 </script>
-    <!-- Script cho render ảnh đánh giá trước khi gửi:  -->
-<script>
+	<!-- Script cho render áº£nh ÄÃ¡nh giÃ¡ trÆ°á»c khi gá»­i:  -->
+	<script>
     document.getElementById('files').addEventListener('change', function(event) {
         const previewContainer = document.getElementById('preview');
-        previewContainer.innerHTML = ''; // Xóa nội dung cũ
+        previewContainer.innerHTML = ''; // XÃ³a ná»i dung cÅ©
 
 
         const files = event.target.files;
@@ -188,7 +204,7 @@ body {
             const file = files[i];
             const fileReader = new FileReader();
 
-            // Kiểm tra loại file
+            // Kiá»m tra loáº¡i file
             if (file.type.startsWith('image/')) {
                 fileReader.onload = function(e) {
                     const img = document.createElement('img');
@@ -212,12 +228,14 @@ body {
                 previewContainer.appendChild(message);
             }
 
-            fileReader.readAsDataURL(file); // Đọc file dưới dạng URL
+            fileReader.readAsDataURL(file); // Äá»c file dÆ°á»i dáº¡ng URL
         }
     });
 </script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 
 	<script type="text/javascript" src="js/script.js"></script>
 	<script type="text/javascript" src="../js/script.js"></script>

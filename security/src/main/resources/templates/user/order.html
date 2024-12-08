@@ -74,24 +74,24 @@
 										<tr>
 											<td>Total price</td>
 											<td>:</td>
-											<td>&#8377; [[${orderPrice}]]</td>
+											<td>₫ [[${orderPrice}]]</td>
 										</tr>
 										<tr>
 											<td>Delivery Fee</td>
 											<td>:</td>
-											<td>&#8377; 250</td>
+											<td>₫ 250</td>
 										</tr>
 
 										<tr>
 											<td>Tax</td>
 											<td>:</td>
-											<td>&#8377; 100</td>
+											<td>₫ 100</td>
 										</tr>
 
 										<tr class="border-top">
 											<td>Total Price</td>
 											<td>:</td>
-											<td>&#8377; [[${totalOrderPrice}]]</td>
+											<td>₫ [[${totalOrderPrice}]]</td>
 										</tr>
 									</tbody>
 								</table>
@@ -129,7 +129,7 @@ document.getElementById('orders').onsubmit = function(e) {
     var paymentType = document.getElementById('paymentType').value;
     var emailInput = document.querySelector('[name="email"]');
     var email = emailInput.value;
-    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex để kiểm tra email hợp lệ
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex Äá» kiá»m tra email há»£p lá»
 
     if (paymentType === "") {
         alert('Please select a payment type.');
@@ -137,7 +137,7 @@ document.getElementById('orders').onsubmit = function(e) {
     } else if (email === "" || !emailPattern.test(email)) {
         alert('Please enter a valid email address.');
         e.preventDefault();
-        emailInput.focus(); // Đặt focus vào trường email nếu có lỗi
+        emailInput.focus(); // Äáº·t focus vÃ o trÆ°á»ng email náº¿u cÃ³ lá»i
     }
 };
 </script>

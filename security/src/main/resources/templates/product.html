@@ -12,20 +12,18 @@
 </head>
 
 <body>
-
-
 	<section>
-
 		<!-- Search Bar -->
-		<div class="mt-5 d-flex justify-content-center"> <!-- Tăng mt-5 để cách xa phần header -->
-			<div class="col-md-6">
-				<form action="/products" method="get" class="p-3 rounded-pill shadow-lg"
-					style="background-color: #f8f9fa; border: none;">
+		<div class="mt-5 d-flex justify-content-center">
+			<div class="col-md-8">
+				<form action="/products" method="get" class="p-4 rounded-pill shadow"
+					style="background-color: #ffffff; border: 1px solid #e9ecef;">
 					<div class="input-group input-group-lg">
 						<input type="text" class="form-control border-0 rounded-start-pill" name="ch"
-							th:value="${param.ch}" placeholder="Search for products">
-						<button class="btn btn-light text-dark ms-3 col-md-2">
-							<i class="fa-solid fa-magnifying-glass"></i> Search
+							th:value="${param.ch}" placeholder="Search for products"
+							style="background-color: #f8f9fa; padding: 10px 15px;">
+						<button class="btn btn-primary text-white rounded-end-pill ms-2 px-4">
+							<i class="fa-solid fa-magnifying-glass me-2"></i>Search
 						</button>
 					</div>
 				</form>

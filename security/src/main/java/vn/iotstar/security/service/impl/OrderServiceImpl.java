@@ -1,10 +1,12 @@
 package vn.iotstar.security.service.impl;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,16 +174,56 @@ public class OrderServiceImpl implements OrderService {
 	public List<ProductOrder> getOrdersByStatus(String status) {
 		return orderRepository.findAllByStatus(status);
 	}
+	@Override
+	public double getTotalRevenueForShop(Shop shop) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+        return orders.stream()
+                .filter(order -> "Delivered".equalsIgnoreCase(order.getStatus()))
+                .mapToDouble(order -> order.getPrice() * order.getQuantity())
+                .sum();
+    }
+
+    /**
+     * Get total products sold for a specific shop.
+     */
+    @Override
+	public int getTotalProductsSoldForShop(Shop shop) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+        return orders.stream()
+                .filter(order -> "Delivered".equalsIgnoreCase(order.getStatus()))
+                .mapToInt(ProductOrder::getQuantity)
+                .sum();
+    }
+
+    /**
+     * Get monthly revenue for a specific shop.
+     */
+    @Override
+	public Map<String, Double> getMonthlyRevenueForShop(Shop shop, int year) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+
+        // Correct TreeMap instantiation
+        Map<String, Double> monthlyRevenueMap = new TreeMap<>();
+        
+        for (ProductOrder order : orders) {
+            if (order.getOrderDate().getYear() == year && "Delivered".equalsIgnoreCase(order.getStatus())) {
+                String monthYear = order.getOrderDate().getMonth().toString() + " " + year;
+                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + order.getPrice() * order.getQuantity());
+            }
+        }
+
+        // Ensure all months are present in the map
+        for (Month month : Month.values()) {
+            String monthYear = month.toString() + " " + year;
+            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+        }
+
+        return monthlyRevenueMap;
+    }
 
 	@Override
 	public void productIdToNull(int product_id) {
-		List<ProductOrder> listProductOrder = orderRepository.findByProductId(product_id);
-		
-		for (ProductOrder productOrder : listProductOrder) {
-	        productOrder.setProduct(null);
-	    }
-		
-		orderRepository.saveAll(listProductOrder);
+		// TODO Auto-generated method stub
 		
 	}
 }
