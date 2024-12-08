@@ -15,15 +15,16 @@
 	<section>
 		<!-- Search Bar -->
 		<div class="mt-5 d-flex justify-content-center">
-			<div class="col-md-8">
-				<form action="/products" method="get" class="p-4 rounded-pill shadow"
-					style="background-color: #ffffff; border: 1px solid #e9ecef;">
-					<div class="input-group input-group-lg">
+			<div class="col-md-5">
+				<form action="/products" method="get" class="p-3 rounded-pill shadow"
+					style="background-color: #ffffff; border: 1px solid #e9ecef; margin-top: 50px;">
+					<div class="input-group input-group-sm">
 						<input type="text" class="form-control border-0 rounded-start-pill" name="ch"
 							th:value="${param.ch}" placeholder="Search for products"
-							style="background-color: #f8f9fa; padding: 10px 15px;">
-						<button class="btn btn-primary text-white rounded-end-pill ms-2 px-4">
-							<i class="fa-solid fa-magnifying-glass me-2"></i>Search
+							style="background-color: #f8f9fa; padding: 8px 10px; font-size: 0.9rem;">
+						<button class="btn btn-primary text-white rounded-end-pill ms-2 px-3"
+							style="font-size: 0.9rem;">
+							<i class="fa-solid fa-magnifying-glass me-1"></i>Search
 						</button>
 					</div>
 				</form>
@@ -88,7 +89,7 @@
 						<div class="col-md-4">
 							<p>Total Products: [[${totalElements}]]</p>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<th:block th:if="${productsSize > 0}">
 								<nav aria-label="Page navigation example">
 									<ul class="pagination justify-content-center">
