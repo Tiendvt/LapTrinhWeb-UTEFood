@@ -12,60 +12,23 @@
 </head>
 
 <body>
-
-
 	<section>
-
-
-            <!-- Products Display Area -->
-            <div class="col-md-10">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="fs-3 text-center">Products</p>
-                        <div class="row">
-                            <th:block th:if="${productsSize > 0}">
-                                <div class="col-md-3 mt-2" th:each="p:${products}">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body text-center">
-                                            <img alt="" th:src="@{'/img/product_img/'+${p.image}}"
-                                                 width="150px" height="150px">
-                                            <p class="fs-5 text-center">[[${p.title}]]</p>
-                                            <div class="row text-center">
-                                                <p class="fs-6 fw-bold">
-                                                    <span> [[${p.discountPrice}]] ₫</span> <br>
-                                                    <span class="text-decoration-line-through text-secondary">[[${p.price}]] ₫</span>
-                                                    <span class="fs-6 text-success">[[${p.discount}]]% off</span>
-                                                </p>
-                                                <a th:href="@{'/product/'+${p.id}}"
-                                                   class="btn btn-primary col-md-6 offset-md-3">View Details</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </th:block>
-                            <th:block th:unless="${productsSize > 0}">
-                                <p class="fs-4 text-center mt-4 text-danger">Product not available</p>
-                            </th:block>
-                        </div>
-                    </div>
-                </div>
-
 		<!-- Search Bar -->
-		<div class="mt-5 d-flex justify-content-center"> <!-- Tăng mt-5 để cách xa phần header -->
-			<div class="col-md-6">
-				<form action="/products" method="get" class="p-3 rounded-pill shadow-lg"
-					style="background-color: #f8f9fa; border: none;">
+		<div class="mt-5 d-flex justify-content-center">
+			<div class="col-md-8">
+				<form action="/products" method="get" class="p-4 rounded-pill shadow"
+					style="background-color: #ffffff; border: 1px solid #e9ecef;">
 					<div class="input-group input-group-lg">
 						<input type="text" class="form-control border-0 rounded-start-pill" name="ch"
-							th:value="${param.ch}" placeholder="Search for products">
-						<button class="btn btn-light text-dark ms-3 col-md-2">
-							<i class="fa-solid fa-magnifying-glass"></i> Search
+							th:value="${param.ch}" placeholder="Search for products"
+							style="background-color: #f8f9fa; padding: 10px 15px;">
+						<button class="btn btn-primary text-white rounded-end-pill ms-2 px-4">
+							<i class="fa-solid fa-magnifying-glass me-2"></i>Search
 						</button>
 					</div>
 				</form>
 			</div>
 		</div>
-
 
 		<!-- Product Categories Sidebar -->
 		<div class="container-fluid mt-1">

@@ -16,17 +16,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.transaction.Transactional;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
-
+import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.Shop;
-
+import vn.iotstar.security.repository.CartRepository;
 import vn.iotstar.security.repository.CategoryRepository;
+import vn.iotstar.security.repository.FavoriteProductRepository;
 import vn.iotstar.security.repository.ProductRepository;
 import vn.iotstar.security.service.ProductService;
 
 
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
@@ -34,6 +37,15 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	 @Autowired
+	 private FavoriteProductRepository favoriteProductRepository;
+	 
+	 @Autowired
+	private CartRepository cartRepository;
+	 
+	 @Autowired
+	private OrderServiceImpl orderServiceImpl;
 
 	@Override
 	public Product saveProduct(Product product) {
@@ -53,6 +65,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Boolean deleteProduct(Integer id) {
+		favoriteProductRepository.deleteByProduct_Id(id);
+		cartRepository.deleteByProductId(id);
+		orderServiceImpl.productIdToNull(id);
+		
 		Product product = productRepository.findById(id).orElse(null);
 
 		if (!ObjectUtils.isEmpty(product)) {

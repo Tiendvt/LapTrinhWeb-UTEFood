@@ -52,6 +52,6 @@ public interface OrderService {
 
 	double getTotalRevenueForShop(Shop shop);
         
-
+    void productIdToNull(int product_id);
 }
 
