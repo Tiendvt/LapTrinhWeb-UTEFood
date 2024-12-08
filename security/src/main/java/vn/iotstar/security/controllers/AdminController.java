@@ -6,25 +6,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
 import java.security.Principal;
-
+import java.time.Year;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
 import org.springframework.web.bind.annotation.PathVariable;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +34,7 @@ import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
+import vn.iotstar.security.service.ShopService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
@@ -66,6 +63,10 @@ public class AdminController {
 	@Autowired
 	private OrderService orderService;
 	
+	@Autowired
+    private ShopService shopService;
+
+	
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
@@ -88,13 +89,6 @@ public class AdminController {
 	@GetMapping("/")
 	public String index() {
 		return "admin/index";
-	}
-
-	@GetMapping("/loadAddProduct")
-	public String loadAddProduct(Model m) {
-		List<Category> categories = categoryService.getAllCategory();
-		m.addAttribute("categories", categories);
-		return "admin/add_product";
 	}
 
 
@@ -218,40 +212,6 @@ public class AdminController {
 		return "redirect:/admin/loadEditCategory/" + category.getId();
 	}
 
-	@PostMapping("/saveProduct")
-
-	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-			HttpSession session) throws IOException {
-
-		String msg = checkAddProduct(product);
-		if(!msg.isEmpty()) {
-			session.setAttribute("errorMsg", msg);
-			return "redirect:/admin/loadAddProduct";
-		}
-		
-		String imageName = image != null && !image.isEmpty() ? image.getOriginalFilename() : "default.jpg";
-
-		product.setImage(imageName);
-		System.out.print("Path image Product: " + imageName);
-		product.setDiscount(0);
-		product.setDiscountPrice(product.getPrice());
-		Product saveProduct = productService.saveProduct(product);
-		if (!ObjectUtils.isEmpty(saveProduct)) {
-			File saveFile = new ClassPathResource("static/img").getFile();
-				Path path = Paths
-						.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
-			
-
-			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			System.out.print("\nPath image Product: " + path);
-			session.setAttribute("succMsg", "Product Saved Success");
-		} else {
-			session.setAttribute("errorMsg", "something wrong on server");
-		}
-
-
-		return "redirect:/admin/loadAddProduct";
-	}
 
 	@GetMapping("/products")
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
@@ -399,6 +359,48 @@ public class AdminController {
 
 	}
 	
+	@GetMapping("/revenue")
+	public String loadViewRevenue(Model m, @RequestParam(required = false) String year) {
+		
+		 if (year == null || year.isEmpty()) {
+		        year = String.valueOf(Year.now().getValue());
+		    }
+    
+	    String totalRevenue = orderService.getTotalRevenue();
+	    String totalOrders = String.valueOf(orderService.getAllOrders().size());
+	    String totalDeliveredOrders = String.valueOf(orderService.getOrdersByStatus("Delivered").size());
+	    String totalSoldProduct = "0";
+	    Map<String, Double> monthlyRevenueMap;
+
+	    List<ProductOrder> allDeliveredOrders = orderService.getOrdersByStatus("Delivered");
+	    if (!allDeliveredOrders.isEmpty()) {
+	        
+	    	totalSoldProduct = productService.getTotalSoldProduct(allDeliveredOrders);
+	        
+	        
+	        try {
+		        int yearInt = Integer.parseInt(year);
+		        if (yearInt <= 0) { 
+		        	m.addAttribute("year", null);
+		        }
+		        else {
+		        	monthlyRevenueMap = orderService.getMonthlyRevenue(allDeliveredOrders, yearInt);
+
+			        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+			        m.addAttribute("year", year);
+		        }
+			 } catch (NumberFormatException e) {
+				 m.addAttribute("year", null);
+			 }	        
+	    }
+
+	    m.addAttribute("totalOrders", totalOrders);
+	    m.addAttribute("totalDeliveredOrders", totalDeliveredOrders);
+	    m.addAttribute("totalProductsSold", totalSoldProduct);
+	    m.addAttribute("totalRevenue", totalRevenue);
+	    return "admin/revenue";
+	}
+	
 	@GetMapping("/users")
 	public String loadViewUsers(Model m, @RequestParam Integer type, 
 	                             @RequestParam(defaultValue = "") String ch,
@@ -437,36 +439,19 @@ public class AdminController {
 		}
 		return "redirect:/admin/users?type=" + type;
 	}
-
-	@GetMapping("/add-admin")
-	public String loadAdminAdd() {
-		return "/admin/add_admin";
-	}
-
-	@PostMapping("/save-admin")
-	public String saveAdmin(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
-			throws IOException {
-
-		String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-		user.setProfileImage(imageName);
-		User saveUser = userService.saveAdmin(user);
-
-		if (!ObjectUtils.isEmpty(saveUser)) {
-			if (!file.isEmpty()) {
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-						+ file.getOriginalFilename());
-
-				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			}
-			session.setAttribute("succMsg", "Register successfully");
+	
+	@GetMapping("/updateRole")
+	public String updateUserAccountStatus(@RequestParam String role, @RequestParam Integer id,
+			@RequestParam Integer type, HttpSession session) {
+		Boolean f = userService.updateAccountRole(id, role);
+		if (f) {
+			session.setAttribute("succMsg", "Account Role Updated");
 		} else {
-			session.setAttribute("errorMsg", "something wrong on server");
+			session.setAttribute("errorMsg", "Something wrong on server");
 		}
-
-		return "redirect:/admin/add-admin";
+		return "redirect:/admin/users?type=" + type;
 	}
+
 
 	@GetMapping("/profile")
 	public String profile(Principal p, Model m, HttpSession session) {
@@ -507,25 +492,6 @@ public class AdminController {
 		}
 
 		return "redirect:/admin/profile";
-	}
-
-	private String checkAddProduct(Product product ) {
-		if(ObjectUtils.isEmpty(product.getTitle())) {
-			return "Enter Title";
-		}	
-		else if (ObjectUtils.isEmpty(product.getCategory())) {
-			return "Select Category";		
-		}
-		else if (ObjectUtils.isEmpty(product.getDescription())) {
-			return "Enter Descirption";			
-		}
-		else if (ObjectUtils.isEmpty(product.getPrice())) {
-			return "Enter Price";
-		}
-		else if (ObjectUtils.isEmpty(product.getStock())) {
-			return "Enter Stock";
-		}
-		return "";
 	}
 	
 	private String checkCategory(Category category) {

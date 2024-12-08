@@ -40,7 +40,4 @@ public class FavoriteServiceImpl implements FavoriteService {
 			return favoriteProductRepository.countByProductId(product_id);
 		}
 
-
-	
-
 }

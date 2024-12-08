@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Order Success</title>
+</head>
+<body>
+    <section>
+		<div class="container" style="margin-top: 100px; padding: 40px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); border-radius: 10px; background-color: #fdfdfd; max-width: 600px;">
+		    <div class="text-center">
+		        <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #28a745; margin-bottom: 20px;"></i>
+		        <h3 style="color: #28a745; font-weight: bold;">Payment Successful</h3>
+		        <p style="color: #6c757d;">Your payment has been processed successfully.</p>
+		    </div>
+		    <div style="border: 1px solid #dee2e6; border-left: 4px solid #28a745; border-radius: 5px; background-color: #f8f9fa; padding: 20px; margin-top: 20px;">
+		        <p style="margin: 0 0 10px;">
+		            <strong>Order ID:</strong> <span th:text="${orderId}"></span>
+		        </p>
+		        <p style="margin: 0 0 10px;">
+		            <strong>Transaction ID:</strong> <span th:text="${transactionId}"></span>
+		        </p>
+		        <p style="margin: 0 0 10px;">
+		            <strong>Total Paid:</strong> 
+		            <span style="color: #28a745;">₫ <span th:text="${totalPrice}"></span></span>
+		        </p>
+		        <p style="margin: 0;">
+		            <strong>Payment Time:</strong> <span th:text="${paymentTime}"></span>
+		        </p>
+		    </div>
+		    <div class="text-center" style="margin-top: 20px;">
+		        <a href="/" 
+		           style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+		            <i class="fa-solid fa-house"></i> Home
+		        </a>
+		        <a href="/user/user-orders" 
+		           style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">
+		            <i class="fa-solid fa-box-open"></i> Your Orders
+		        </a>
+		    </div>
+		</div>
+
+    </section>
+</body>
+</html>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
+
 <head>
     <meta charset="ISO-8859-1">
     <title>Vendor Orders</title>
@@ -70,57 +72,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- When searching, if order is found -->
-                            <th:block th:if="${srch}">
-                                <th:block th:if="${orderDtls != null}">
-                                    <tr>
-                                        <th scope="row">[[${orderDtls.orderId}]]</th>
-                                        <td>
-                                            Name: [[${orderDtls.orderAddress.firstName + ' ' + orderDtls.orderAddress.lastName}]]<br>
-                                            Email: [[${orderDtls.orderAddress.email}]]<br>
-                                            Mobno: [[${orderDtls.orderAddress.mobileNo}]]<br>
-                                            Address: [[${orderDtls.orderAddress.address}]]<br>
-                                            City: [[${orderDtls.orderAddress.city}]]<br>
-                                            Province: [[${orderDtls.orderAddress.province}]], [[${orderDtls.orderAddress.pincode}]]
-                                        </td>
-                                        <td>[[${orderDtls.orderDate}]]</td>
-                                        <td>[[${orderDtls.product.title}]]</td>
-                                        <td>Quantity: [[${orderDtls.quantity}]] <br>Price: [[${orderDtls.price}]] <br>Total Price: [[${orderDtls.quantity * orderDtls.price}]]</td>
-                                        <td>[[${orderDtls.status}]]</td>
-                                        <td>
-                                            <form action="/vendor/update-order-status" method="post">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <select class="form-control" name="st">
-                                                            <option>--select--</option>
-                                                            <option value="1">In Progress</option>
-                                                            <option value="2">Order Received</option>
-                                                            <option value="3">Product Packed</option>
-                                                            <option value="4">Out for Delivery</option>
-                                                            <option value="5">Delivered</option>
-                                                            <option value="6">Cancelled</option>
-                                                        </select>
-                                                    </div>
-                                                    <input th:value="${orderDtls.id}" name="id" type="hidden">
-                                                    <div class="col">
-                                                        <th:block th:if="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered'}">
-                                                            <button class="btn btn-primary btn-sm col disabled">Update</button>
-                                                        </th:block>
-                                                        <th:block th:unless="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered'}">
-                                                            <button class="btn btn-sm btn-primary">Update</button>
-                                                        </th:block>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                <th:block th:unless="${orderDtls != null}">
-                                    <p class="fs-3 text-center text-danger">[[${errorMsg}]]</p>
-                                </th:block>
-                            </th:block>
-
-                            <!-- When not searching, showing orders list -->
+                            
                             <th:block th:unless="${srch}">
                                 <th:block th:if="${#lists.isEmpty(orders)}">
                                     <tr>
@@ -139,7 +91,7 @@
                                             Province: [[${o.orderAddress.province}]], [[${o.orderAddress.pincode}]]
                                         </td>
                                         <td>[[${o.orderDate}]]</td>
-                                        <td>[[${o.product.title}]]</td>
+                                        <td>[[${o.name}]]</td>
                                         <td>Quantity: [[${o.quantity}]] <br>Price: [[${o.price}]] <br>Total Price: [[${o.quantity * o.price}]]</td>
                                         <td>[[${o.status}]]</td>
                                         <td>
@@ -173,6 +125,7 @@
                             </th:block>
                         </tbody>
                     </table>
+
 
                     <!-- Pagination -->
                     <th:block th:if="${!srch && !#lists.isEmpty(orders)}">

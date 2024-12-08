@@ -7,10 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-
-
-
+import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
+import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.Shop;
 
 
@@ -40,12 +39,20 @@ public interface ProductService {
 
 	public Page<Product> getProductsByShop(Shop shop, Integer pageNo, Integer pageSize);
 
+
 	void applyPromotion(Product product);
 
 	List<Product> getDiscountedProducts();
 
 	List<Product> getProductsSoldMoreThan10();
-	 Page<Product> getProductsByCriteria(String criteria, Pageable pageable);
-}
 
+	 Page<Product> getProductsByCriteria(String criteria, Pageable pageable);
+
+
+
+	
+	public Boolean deleteProductByCategory(Category category);
+	
+	String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders);
+}
 

@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -515,4 +517,49 @@ public class VendorController {
         }
         return "redirect:/vendor/discounted-products";  // Redirect to the page showing discounted products
     }
+    
+    @GetMapping("/revenue")
+    public String viewRevenue(Model model, Principal principal, @RequestParam(required = false) String year) {
+        // Retrieve the shop of the logged-in vendor
+        Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+        if (shop == null) {
+            model.addAttribute("errorMsg", "No shop found. Please create your shop first.");
+            return "vendor/dashboard";
+        }
+
+        // Default to the current year if no year is provided
+        if (year == null || year.isEmpty()) {
+            year = String.valueOf(LocalDate.now().getYear());
+        }
+
+        // Retrieve revenue data
+        double totalRevenue = orderService.getTotalRevenueForShop(shop);
+        int totalProductsSold = orderService.getTotalProductsSoldForShop(shop);
+        Map<String, Double> monthlyRevenueMap = null;
+        
+        try {
+	        int yearInt = Integer.parseInt(year);
+	        if (yearInt <= 0) { 
+	        	model.addAttribute("year", null);
+	        }
+	        else {
+	        	monthlyRevenueMap = orderService.getMonthlyRevenueForShop(shop, Integer.parseInt(year));
+
+		        model.addAttribute("year", year);
+	        }
+		 } catch (NumberFormatException e) {
+			 model.addAttribute("year", null);
+		 }	  
+               
+
+        // Add attributes to the model for the view
+        model.addAttribute("shop", shop);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalProductsSold", totalProductsSold);
+        model.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+
+
+        return "vendor/revenue"; // Render the vendor revenue view
+    }
+
 }

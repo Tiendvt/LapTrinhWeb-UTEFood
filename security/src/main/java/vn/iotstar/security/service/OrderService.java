@@ -30,10 +30,33 @@ public interface OrderService {
     Page<ProductOrder> getOrdersByShopPagination(Shop shop, Integer pageNo, Integer pageSize);
 
     Page<ProductOrder> getOrdersByStatusAndShop(String status, Shop shop, Integer pageNo, Integer pageSize);
+
+    
+    List<ProductOrder> getOrdersByStatus(String status);
+
+
     List<ProductOrder> getOrdersByStatusAndUser(String status, Integer userId);
     ProductOrder getOrderById(Integer id);
     void submitReview(Integer orderId, String comment, MultipartFile[] files);
     Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
+
+	/**
+	 * Get monthly revenue for a specific shop.
+	 */
+	Map<String, Double> getMonthlyRevenueForShop(Shop shop, int year);
+
+	/**
+	 * Get total products sold for a specific shop.
+	 */
+	int getTotalProductsSoldForShop(Shop shop);
+
+	double getTotalRevenueForShop(Shop shop);
         
+    void productIdToNull(int product_id);
+    
+    String getTotalRevenue();
+    
+    Map<String, Double> getMonthlyRevenue(List<ProductOrder> listDeliveredOrder, int year);
+    
 }
 

@@ -1,4 +1,3 @@
-
 package vn.iotstar.security.repository;
 
 import java.util.List;
@@ -37,6 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 			String ch2, Pageable pageable);
 
 	Page<Product> findByShop(Shop shop, Pageable pageable);
+
 	List<Product> findByDiscountGreaterThan(int discount);
 	List<Product> findBySoldGreaterThanOrderBySoldDesc(int soldCount);
 	///---- Lọc sản phẩm ----
@@ -58,3 +58,4 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	Page<Product> findMostFavoriteProducts(Pageable pageable);
 
 }
+
