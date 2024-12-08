@@ -2,66 +2,73 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
 
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Insert title here</title>
+    <meta charset="ISO-8859-1">
+    <title>Insert title here</title>
 </head>
 
 <body>
-	<section>
-		<div class="container-fluid p-5 mt-5">
-			<div class="row">
-				<div class="col-md-3">
-					<div class="card card-sh">
-						<div class="card-header text-center ">
-							<p class="fs-4">Add Category</p>
-							<th:block th:if="${session.succMsg}">
-								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
+    <section>
+        <div class="container-fluid p-5 mt-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card card-sh">
+                        <div class="card-header text-center ">
+                            <p class="fs-4">Add Category</p>
+                            <th:block th:if="${session.succMsg}">
+                                <p class="text-success fw-bold">[[${session.succMsg}]]</p>
+                                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                            </th:block>
 
-							<th:block th:if="${session.errorMsg}">
-								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
-								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-							</th:block>
+                            <th:block th:if="${session.errorMsg}">
+                                <p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+                                <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+                            </th:block>
 
-						</div>
-						<div class="card-body">
-							<form action="/admin/saveCategory" method="post" enctype="multipart/form-data">
-								<div class="mb-3">
-									<label>Enter Category</label> <input type="text" name="name" class="form-control">
-								</div>
+                        </div>
+                        <div class="card-body">
+                            <form action="/admin/saveCategory" method="post" enctype="multipart/form-data"
+                                onsubmit="return validateForm()">
+                                <div class="mb-3">
+                                    <label>Enter Category</label>
+                                    <input type="text" name="name" id="categoryName" class="form-control" required
+                                        maxlength="255">
+                                    <div id="nameError" class="text-danger"></div>
+                                </div>
 
-								<div class="mb-3">
-									<label>Status</label>
+                                <div class="mb-3">
+                                    <label>Status</label>
 
-									<div class="form-check">
-										<input class="form-check-input" type="radio" checked value="true"
-											name="isActive" id="flexRadioDefault1">
-										<label class="form-check-label" for="flexRadioDefault1">
-											Active </label>
-									</div>
-									<div class="form-check">
-										<input class="form-check-input" type="radio" name="isActive" value="false"
-											id="flexRadioDefault2"> <label class="form-check-label"
-											for="flexRadioDefault2">
-											Inactive </label>
-									</div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" checked value="true"
+                                            name="isActive" id="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            Active </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="isActive" value="false"
+                                            id="flexRadioDefault2"> <label class="form-check-label"
+                                            for="flexRadioDefault2">
+                                            Inactive </label>
+                                    </div>
 
-								</div>
+                                </div>
 
-								<div class="mb-3">
-									<label>Upload Image</label> <input type="file" name="file" class="form-control">
-								</div>
-								<button class="btn btn-primary col-md-12 mt-2">Save</button>
-							</form>
-						</div>
-					</div>
-				</div>
+                                <div class="mb-3">
+                                    <label>Upload Image</label>
+                                    <input type="file" name="file" id="file" class="form-control"
+                                        accept="image/png, image/jpeg, image/jpg">
+                                    <div id="fileError" class="text-danger"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary col-md-12 mt-2">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-				<div class="col-md-8">
-					<div class="card card-sh">
-						<div class="card-header text-center fs-4">Category Details</div>
-						<div class="card-body">
+                <div class="col-md-8">
+                    <div class="card card-sh">
+                        <div class="card-header text-center fs-4">Category Details</div>
+                        <div class="card-body">
 							<table class="table">
 								<thead>
 									<tr>
@@ -105,7 +112,7 @@
 							<!-- Pagination -->
 							<th:block th:if="${!#lists.isEmpty(categorys)}">
 								<div class="row">
-									<!-- Hiển thị tổng số danh mục -->
+									<!-- Hiá»ƒn thá»‹ tá»•ng sá»‘ danh má»¥c -->
 									<div class="col-md-12 text-center mb-3 fs-4">
 										<strong>Total Categories: [[${totalElements}]]</strong>
 									</div>
@@ -117,7 +124,7 @@
 														<a class="page-link"
 															th:href="@{'/admin/category?pageNo=' + ${pageNo - 1}}"
 															aria-label="Previous">
-															<span aria-hidden="true">&laquo;</span>
+															<span aria-hidden="true">«</span>
 														</a>
 													</li>
 
@@ -132,7 +139,7 @@
 														<a class="page-link"
 															th:href="@{'/admin/category?pageNo=' + ${pageNo + 1}}"
 															aria-label="Next">
-															<span aria-hidden="true">&raquo;</span>
+															<span aria-hidden="true">»</span>
 														</a>
 													</li>
 												</ul>
@@ -144,11 +151,44 @@
 
 						</div>
 
-					</div>
+                    </div>
 
-				</div>
-			</div>
-	</section>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function validateForm() {
+                let isValid = true;
+
+                // Validate Category Name
+                const categoryName = document.getElementById("categoryName").value;
+                const nameError = document.getElementById("nameError");
+                nameError.textContent = "";
+                if (categoryName.trim() === "") {
+                    nameError.textContent = "Category name is required.";
+                    isValid = false;
+                } else if (categoryName.length > 255) {
+                    nameError.textContent = "Category name must be less than 255 characters.";
+                    isValid = false;
+                }
+
+                // Validate File
+                const fileInput = document.getElementById("file");
+                const fileError = document.getElementById("fileError");
+                fileError.textContent = "";
+                if (fileInput.files.length > 0) {
+                    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+                    if (!allowedTypes.includes(fileInput.files[0].type)) {
+                        fileError.textContent = "Invalid file type. Allowed types: png, jpeg, jpg.";
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+        </script>
+    </section>
 </body>
 
 </html>

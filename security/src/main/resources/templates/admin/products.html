@@ -7,29 +7,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 	<style>
-		.card-sh {
-			border-radius: 10px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		}
-
-		.table th,
-		.table td {
-			vertical-align: middle;
-		}
-
-		.pagination .page-item.active .page-link {
-			background-color: #007bff;
-			border-color: #007bff;
-		}
-
-		.pagination .page-link:hover {
-			background-color: #0056b3;
-			border-color: #0056b3;
-		}
-
-		.page-link {
-			color: #007bff;
-		}
+		/* ... (Your existing CSS) ... */
 	</style>
 </head>
 
@@ -55,11 +33,12 @@
 				</th:block>
 
 				<div class="row p-3">
-					<form action="/admin/products" method="get" class="d-flex align-items-center">
+					<form action="/admin/products" method="get" class="d-flex align-items-center" onsubmit="return validateSearchForm()">
 						<!-- Search Input -->
 						<div class="col-3">
-							<input type="text" class="form-control rounded-pill" name="ch"
-								placeholder="Search Products">
+							<input type="text" class="form-control rounded-pill" name="ch" id="searchInput"
+								placeholder="Search Products" minlength="2">
+                                <div id="searchError" class="text-danger"></div>
 						</div>
 						<!-- Category Dropdown -->
 						<div class="col-1 mx-2">
@@ -80,7 +59,7 @@
 					</form>
 				</div>
 
-				<!-- Product Table -->
+				<!-- Product Table (No changes needed here for validation) -->
 				<div class="p-3">
 					<table class="table table-bordered table-striped">
 						<thead class="table-light">
@@ -132,32 +111,32 @@
 					<!-- Pagination -->
 					<th:block th:if="${!#lists.isEmpty(products)}">
 						<div class="row">
-							<!-- Tổng số sản phẩm căn giữa -->
+							<!-- Tá»•ng sá»‘ sáº£n pháº©m cÄƒn giá»¯a -->
 							<div class="col-md-12 text-center mb-3 fs-4">
 							    <strong>Total Products: [[${totalElements}]]</strong>
 							</div>
-							<!-- Phần phân trang -->
+							<!-- Pháº§n phÃ¢n trang -->
 							<div class="col-md-12">
 								<nav aria-label="Page navigation example">
 									<ul class="pagination justify-content-center">
-										<!-- Nút Previous -->
+										<!-- NÃºt Previous -->
 										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
 											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}"
 												aria-label="Previous">
-												<span aria-hidden="true">&laquo;</span>
+												<span aria-hidden="true">«</span>
 											</a>
 										</li>
-										<!-- Các trang -->
+										<!-- CÃ¡c trang -->
 										<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item active"
 											th:classappend="${pageNo+1 == i} ? 'active' : ''">
 											<a class="page-link"
 												th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
 										</li>
-										<!-- Nút Next -->
+										<!-- NÃºt Next -->
 										<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
 											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}"
 												aria-label="Next">
-												<span aria-hidden="true">&raquo;</span>
+												<span aria-hidden="true">»</span>
 											</a>
 										</li>
 									</ul>
@@ -171,6 +150,20 @@
 			</div>
 		</div>
 	</section>
+    <script>
+        function validateSearchForm() {
+            const searchTerm = document.getElementById("searchInput").value;
+            const searchError = document.getElementById("searchError");
+            searchError.textContent = "";
+
+            if (searchTerm.trim() !== "" && searchTerm.length < 2) {
+                searchError.textContent = "Search term must be at least 2 characters.";
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 
 </html>

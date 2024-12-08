@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
@@ -112,7 +113,6 @@ public class AdminController {
 
 
 	@PostMapping("/saveCategory")
-
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 		
@@ -309,6 +309,20 @@ public class AdminController {
 		
 
 		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+		
+		if (updateOrder != null && "Delivered".equals(status)) {
+            // Get the associated product and shop from the order
+            Product product = updateOrder.getProduct();
+            Shop shop = product.getShop();
+
+            // Increment sold quantity in Product
+            product.setSold(product.getSold() + updateOrder.getQuantity());
+            productService.saveProduct(product);  // Update the product
+
+            // Update shop sold and revenue without saving the entire shop
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice()*updateOrder.getQuantity());
+            
+        }
 
 		try {
 			commonUtil.sendMailForProductOrder(updateOrder, status);
@@ -367,6 +381,7 @@ public class AdminController {
 		    }
     
 	    String totalRevenue = orderService.getTotalRevenue();
+	    System.out.println(totalRevenue);
 	    String totalOrders = String.valueOf(orderService.getAllOrders().size());
 	    String totalDeliveredOrders = String.valueOf(orderService.getOrdersByStatus("Delivered").size());
 	    String totalSoldProduct = "0";

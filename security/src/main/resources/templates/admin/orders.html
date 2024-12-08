@@ -24,10 +24,11 @@
 				</th:block>
 
 				<div class="col-md-4 p-4">
-					<form action="/admin/search-order" method="get">
+					<form action="/admin/search-order" method="get" onsubmit="return validateSearchForm()">
 						<div class="row">
 							<div class="col">
-								<input type="text" class="form-control" name="orderId" placeholder="Enter order id">
+								<input type="text" class="form-control" name="orderId" id="orderIdInput" placeholder="Enter order id">
+                                <div id="orderIdError" class="text-danger"></div>
 							</div>
 							<div class="col">
 								<button class="btn btn-primary col">Search</button>
@@ -68,10 +69,10 @@
 											Total Price: [[${orderDtls.quantity * orderDtls.price}]]</td>
 										<td>[[${orderDtls.status}]]</td>
 										<td>
-											<form action="/admin/update-order-status" method="post">
+											<form action="/admin/update-order-status" method="post" onsubmit="return validateUpdateForm(this)">
 												<div class="row">
 													<div class="col">
-														<select class="form-control" name="st">
+														<select class="form-control" name="st" id="statusSelect">
 															<option value="1">New Order</option>
 															<option value="2">Order Confirmed</option>
 															<option value="3">In Transit</option>
@@ -79,6 +80,7 @@
 															<option value="5">Canceled</option>
 															<option value="6">Returned - Refunded</option>
 														</select>
+                                                        <div class="statusError text-danger"></div>
 													</div>
 													<input th:value="${orderDtls.id}" name="id" type="hidden">
 													<div class="col">
@@ -123,10 +125,10 @@
 											[[${o.quantity * o.price}]]</td>
 										<td>[[${o.status}]]</td>
 										<td>
-											<form action="/admin/update-order-status" method="post">
+											<form action="/admin/update-order-status" method="post" onsubmit="return validateUpdateForm(this)">
 												<div class="row">
 													<div class="col">
-														<select class="form-control" name="st">
+														<select class="form-control" name="st" id="statusSelect">
 															<option value="1">New Order</option>
 															<option value="2">Order Confirmed</option>
 															<option value="3">In Transit</option>
@@ -134,8 +136,7 @@
 															<option value="5">Canceled</option>
 															<option value="6">Returned - Refunded</option>
 														</select>
-
-
+                                                        <div class="statusError text-danger"></div>
 													</div>
 													<input th:value="${o.id}" name="id" type="hidden">
 													<div class="col">
@@ -158,7 +159,7 @@
 						</tbody>
 					</table>
 					<th:block th:if="${!srch && !#lists.isEmpty(orders)}">
-						<!-- Tổng số sản phẩm căn giữa -->
+						<!-- Tá»•ng sá»‘ sáº£n pháº©m cÄƒn giá»¯a -->
 						<div class="row">
 							<div class="col-md-12 text-center mb-3 fs-4">
 								<strong>Total Products: [[${totalElements}]]</strong>
@@ -167,26 +168,26 @@
 							<div class="col-md-12">
 								<nav aria-label="Page navigation example">
 									<ul class="pagination justify-content-center">
-										<!-- Nút Previous -->
+										<!-- NÃºt Previous -->
 										<li class="page-item" th:classappend="${pageNo == 1} ? 'disabled':''">
 											<a class="page-link" th:href="@{'/admin/orders?pageNo=' + ${pageNo - 1}}"
 												aria-label="Previous">
-												<span aria-hidden="true">&laquo;</span>
+												<span aria-hidden="true">«</span>
 											</a>
 										</li>
 
-										<!-- Các trang -->
+										<!-- CÃ¡c trang -->
 										<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
 											th:classappend="${pageNo == i} ? 'active':''">
 											<a class="page-link"
 												th:href="@{'/admin/orders?pageNo=' + ${i - 1}}">[[${i}]]</a>
 										</li>
 
-										<!-- Nút Next -->
+										<!-- NÃºt Next -->
 										<li class="page-item" th:classappend="${pageNo == totalPages} ? 'disabled':''">
 											<a class="page-link" th:href="@{'/admin/orders?pageNo=' + ${pageNo + 1}}"
 												aria-label="Next">
-												<span aria-hidden="true">&raquo;</span>
+												<span aria-hidden="true">»</span>
 											</a>
 										</li>
 									</ul>
@@ -200,6 +201,35 @@
 			</div>
 		</div>
 	</section>
+    <script>
+        function validateSearchForm() {
+            const orderId = document.getElementById("orderIdInput").value;
+            const orderIdError = document.getElementById("orderIdError");
+            orderIdError.textContent = "";
+
+            if (orderId.trim() === "") {
+                orderIdError.textContent = "Please enter an order ID.";
+                return false;
+            }
+
+            // Add more validation for order ID format if needed
+
+            return true;
+        }
+
+        function validateUpdateForm(form) {
+            const statusSelect = form.querySelector("#statusSelect");
+            const statusError = form.querySelector(".statusError");
+            statusError.textContent = "";
+
+            if (statusSelect.value === "") {
+                statusError.textContent = "Please select a status.";
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 
 </html>

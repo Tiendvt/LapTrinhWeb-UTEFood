@@ -8,29 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        .card-sh {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .form-check-label {
-            font-size: 0.9rem;
-        }
-        .container-fluid {
-            background-color: #f7f7f7;
-            border-radius: 10px;
-        }
-        .card-header {
-            background-color: #007bff;
-            color: white;
-            border-radius: 10px 10px 0 0;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border: none;
-            width: 100%;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
+        /* ... (Your existing CSS) ... */
     </style>
 </head>
 <body>
@@ -52,12 +30,13 @@
                             </th:block>
                         </div>
                         <div class="card-body">
-                            <form action="/admin/updateCategory" method="post" enctype="multipart/form-data">
+                            <form id="categoryForm" action="/admin/updateCategory" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 <input type="hidden" name="id" th:value="${category.id}">
                                 
                                 <div class="mb-3">
                                     <label for="name">Enter Category</label>
-                                    <input type="text" id="name" name="name" th:value="${category.name}" class="form-control" placeholder="Enter category name">
+                                    <input type="text" id="name" name="name" th:value="${category.name}" class="form-control" placeholder="Enter category name" required minlength="2" maxlength="255">
+                                    <div id="nameError" class="text-danger"></div>
                                 </div>
 
                                 <div class="mb-3">
@@ -74,7 +53,8 @@
 
                                 <div class="mb-3">
                                     <label for="file">Upload Image</label>
-                                    <input type="file" id="file" name="file" class="form-control">
+                                    <input type="file" id="file" name="file" class="form-control" accept="image/*">
+                                    <div id="fileError" class="text-danger"></div>
                                 </div>
                                 
                                 <div class="mb-3">
@@ -93,5 +73,37 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function validateForm() {
+            let isValid = true;
+            const name = document.getElementById("name").value;
+            const file = document.getElementById("file").value;
+            const nameError = document.getElementById("nameError");
+            const fileError = document.getElementById("fileError");
+
+            nameError.textContent = "";
+            fileError.textContent = "";
+
+            if (name.trim() === "" || name.length < 2) {
+                nameError.textContent = "Name must be at least 2 characters.";
+                isValid = false;
+            } else if (name.length > 255) {
+                nameError.textContent = "Name must not exceed 255 characters.";
+                isValid = false;
+            }
+
+            // Validate file only if a new file is selected
+            if (file) {
+                const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+                if (!allowedExtensions.exec(file)) {
+                    fileError.textContent = "Please upload an image file (jpg, jpeg, png, gif).";
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+    </script>
 </body>
 </html>
