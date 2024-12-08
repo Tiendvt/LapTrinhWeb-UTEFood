@@ -27,7 +27,7 @@ public class FileStorageService  {
 
             // Đường dẫn lưu file
             String fileName = file.getOriginalFilename();
-            System.out.print("file name: " + fileName+"\n");
+            //System.out.print("file name: " + fileName+"\n");
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

@@ -385,6 +385,7 @@ public class UserController {
     @GetMapping("/vnpay-payment")
     public String handleVnPayReturn(Principal p, HttpServletRequest request, Model model) {
         // Extract parameters from VNPay's callback
+    	System.out.print("thanh toán");
         String orderInfo = request.getParameter("vnp_OrderInfo");
         String paymentTime = request.getParameter("vnp_PayDate");
         String transactionId = request.getParameter("vnp_TransactionNo");
@@ -416,8 +417,8 @@ public class UserController {
         	List<ProductOrder> order = orderService.getOrdersByStatusAndUser(OrderStatus.ONLINE.getName(), user.getId());
         	
         	   
-        	order.getFirst().setStatus(OrderStatus.CANCELLED.getName());
-        	orderService.updateOrderStatus(order.getFirst().getId(), OrderStatus.CANCELLED.getName());
+        	order.get(0).setStatus(OrderStatus.CANCELLED.getName());
+        	orderService.updateOrderStatus(order.get(0).getId(), OrderStatus.CANCELLED.getName());
         	
             return "user/orderfail"; // Redirect to failure page
         }

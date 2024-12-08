@@ -31,6 +31,8 @@
 				<div class="col-md-6">
 					<!-- Product Title -->
 					<h3 class="font-weight-bold">[[${product.title}]]</h3>
+ <!-- Shop Name -->
+    <p><span class="fw-bold">Shop Name:</span> [[${product.shop.name}]]</p> <!-- Thêm dòng này -->
 
 					<!-- Product Description -->
 					<p><span class="fw-bold">Description:</span> [[${product.description}]]</p>
@@ -41,6 +43,7 @@
 						<span class="fw-bold">Product Details:</span><br>
 						Status:
 						<span class="badge" th:class="${product.stock > 0} ? 'badge-success' : 'badge-danger'">
+							<i th:class="${product.stock > 0} ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
 							[[${product.stock > 0 ? 'Available' : 'Out of Stock'}]]
 						</span><br>
 						Category: [[${product.category.name}]]<br>

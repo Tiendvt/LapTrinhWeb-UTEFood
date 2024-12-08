@@ -217,6 +217,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
 	@Override
+
+	public Page<Product> getProductsByCriteria(String criteria, Pageable pageable) {
+		switch (criteria.toUpperCase()) {
+        case "NEWEST":
+            return productRepository.findNewestProducts(pageable);
+        case "BEST_SELLING":
+            return productRepository.findBestSellingProducts(pageable);
+        case "TOP_RATED":
+            return productRepository.findTopRatedProducts(pageable);
+        case "FAVORITE":
+            return productRepository.findMostFavoriteProducts(pageable);
+        default:
+            throw new IllegalArgumentException("Invalid criteria: " + criteria);
+    }
+	}
+
 	public Boolean deleteProductByCategory(Category category) {
 		List<Product> listProduct = productRepository.findByCategory(category);
 		

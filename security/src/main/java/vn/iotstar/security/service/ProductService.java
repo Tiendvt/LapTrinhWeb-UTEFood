@@ -4,6 +4,7 @@ package vn.iotstar.security.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.iotstar.security.model.Category;
@@ -44,9 +45,16 @@ public interface ProductService {
 	List<Product> getDiscountedProducts();
 
 	List<Product> getProductsSoldMoreThan10();
+
+	 Page<Product> getProductsByCriteria(String criteria, Pageable pageable);
+
+
+
 	
 	public Boolean deleteProductByCategory(Category category);
 	
 	String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders);
+
 	Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize);
 }
+
