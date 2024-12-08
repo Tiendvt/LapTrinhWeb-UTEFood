@@ -370,10 +370,12 @@ public class AdminController {
 	
 	@GetMapping("/revenue")
 	public String loadViewRevenue(Model m, @RequestParam(required = false) String year) {
-
+		
 		 if (year == null || year.isEmpty()) {
 		        year = String.valueOf(Year.now().getValue());
 		    }
+		 
+		 
 		
 	    double totalRevenue = 0;
 	    int totalProduct = 0;
@@ -397,37 +399,51 @@ public class AdminController {
 	        for (ProductOrder productOrder : allDeliveredOrders) {
 	            totalProduct += productOrder.getQuantity();
 	        }
+	        
+	        
+	        try {
+		        int yearInt = Integer.parseInt(year);
+		        if (yearInt <= 0) { 
+		        	m.addAttribute("year", null);
+		        }
+		        else {
+		        	// Use TreeMap with custom Comparator (corrected)
+			        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+			            @Override
+			            public int compare(String monthYear1, String monthYear2) {
+			                try {
+			                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+			                    Date date1 = format.parse(monthYear1);
+			                    Date date2 = format.parse(monthYear2); 
+			                    return date1.compareTo(date2);
+			                } catch (ParseException e) {
+			                    e.printStackTrace();
+			                    return 0;
+			                }
+			            }
+			        });
 
-	        // Use TreeMap with custom Comparator (corrected)
-	        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
-	            @Override
-	            public int compare(String monthYear1, String monthYear2) {
-	                try {
-	                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
-	                    Date date1 = format.parse(monthYear1);
-	                    Date date2 = format.parse(monthYear2); 
-	                    return date1.compareTo(date2);
-	                } catch (ParseException e) {
-	                    e.printStackTrace();
-	                    return 0;
-	                }
-	            }
-	        });
+			        for (ProductOrder productOrder : allOrders) {
+			            LocalDate orderDate = productOrder.getOrderDate();
+			            if (orderDate.getYear() == Integer.parseInt(year)) {
+			                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
+			                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
+			            }
+			        }
 
-	        for (ProductOrder productOrder : allOrders) {
-	            LocalDate orderDate = productOrder.getOrderDate();
-	            if (orderDate.getYear() == Integer.parseInt(year)) {
-	                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
-	                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
-	            }
-	        }
+			        for (Month month : Month.values()) {
+			            String monthYear = month.toString() + " " + String.valueOf(year);
+			            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+			        }
 
-	        for (Month month : Month.values()) {
-	            String monthYear = month.toString() + " " + String.valueOf(year);
-	            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
-	        }
+			        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+			        m.addAttribute("year", year);
+		        }
+			 } catch (NumberFormatException e) {
+				 m.addAttribute("year", null);
+			 }
 
-	        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+	        
 	    }
 
 	    DecimalFormat df = new DecimalFormat("#,##0");
@@ -437,7 +453,6 @@ public class AdminController {
 	    m.addAttribute("totalDeliveredOrders", totalDeliveredOrders);
 	    m.addAttribute("totalProductsSold", String.valueOf(totalProduct));
 	    m.addAttribute("totalRevenue", formattedTotalRevenue);
-	    m.addAttribute("year", year);
 	    return "admin/revenue";
 	}
 	
