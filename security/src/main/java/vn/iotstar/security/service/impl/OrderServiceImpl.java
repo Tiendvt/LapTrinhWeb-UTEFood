@@ -61,7 +61,14 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(cart.getQuantity());
             order.setUser(cart.getUser());
             order.setShop(cart.getProduct().getShop()); // Ensure shop linkage
-            order.setStatus(OrderStatus.NEW_ORDER.getName());
+            
+            if("ONLINE".equalsIgnoreCase(orderRequest.getPaymentType())){
+            	order.setStatus(OrderStatus.ONLINE.getName());
+            }
+            else {
+            	order.setStatus(OrderStatus.NEW_ORDER.getName());
+            }
+            
             order.setPaymentType(orderRequest.getPaymentType());
 
             OrderAddress address = new OrderAddress();
@@ -174,6 +181,21 @@ public class OrderServiceImpl implements OrderService {
 	public List<ProductOrder> getOrdersByStatus(String status) {
 		return orderRepository.findAllByStatus(status);
 	}
+
+
+
+	@Override
+	public void productIdToNull(int product_id) {
+		List<ProductOrder> listProductOrder = orderRepository.findByProductId(product_id);
+		
+		for (ProductOrder productOrder : listProductOrder) {
+	        productOrder.setProduct(null);
+	    }
+		
+		orderRepository.saveAll(listProductOrder);
+	}
+		
+
 	@Override
 	public double getTotalRevenueForShop(Shop shop) {
         List<ProductOrder> orders = orderRepository.findAllByShop(shop);
@@ -221,9 +243,4 @@ public class OrderServiceImpl implements OrderService {
         return monthlyRevenueMap;
     }
 
-	@Override
-	public void productIdToNull(int product_id) {
-		// TODO Auto-generated method stub
-		
-	}
 }

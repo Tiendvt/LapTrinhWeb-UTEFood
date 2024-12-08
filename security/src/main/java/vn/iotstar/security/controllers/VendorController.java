@@ -517,6 +517,7 @@ public class VendorController {
         }
         return "redirect:/vendor/discounted-products";  // Redirect to the page showing discounted products
     }
+    
     @GetMapping("/revenue")
     public String viewRevenue(Model model, Principal principal, @RequestParam(required = false) String year) {
         // Retrieve the shop of the logged-in vendor

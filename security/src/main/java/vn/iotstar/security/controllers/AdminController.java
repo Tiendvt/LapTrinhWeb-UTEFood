@@ -100,13 +100,6 @@ public class AdminController {
 		return "admin/index";
 	}
 
-	@GetMapping("/loadAddProduct")
-	public String loadAddProduct(Model m) {
-		List<Category> categories = categoryService.getAllCategory();
-		m.addAttribute("categories", categories);
-		return "admin/add_product";
-	}
-
 
 	@GetMapping("/category")
 	public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
@@ -228,40 +221,6 @@ public class AdminController {
 		return "redirect:/admin/loadEditCategory/" + category.getId();
 	}
 
-	@PostMapping("/saveProduct")
-
-	public String saveProduct(@ModelAttribute Product product, @RequestParam("file") MultipartFile image,
-			HttpSession session) throws IOException {
-
-		String msg = checkAddProduct(product);
-		if(!msg.isEmpty()) {
-			session.setAttribute("errorMsg", msg);
-			return "redirect:/admin/loadAddProduct";
-		}
-		
-		String imageName = image != null && !image.isEmpty() ? image.getOriginalFilename() : "default.jpg";
-
-		product.setImage(imageName);
-		System.out.print("Path image Product: " + imageName);
-		product.setDiscount(0);
-		product.setDiscountPrice(product.getPrice());
-		Product saveProduct = productService.saveProduct(product);
-		if (!ObjectUtils.isEmpty(saveProduct)) {
-			File saveFile = new ClassPathResource("static/img").getFile();
-				Path path = Paths
-						.get(saveFile.getAbsolutePath() + File.separator + "product_img" + File.separator + imageName);
-			
-
-			Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			System.out.print("\nPath image Product: " + path);
-			session.setAttribute("succMsg", "Product Saved Success");
-		} else {
-			session.setAttribute("errorMsg", "something wrong on server");
-		}
-
-
-		return "redirect:/admin/loadAddProduct";
-	}
 
 	@GetMapping("/products")
 	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
@@ -411,10 +370,12 @@ public class AdminController {
 	
 	@GetMapping("/revenue")
 	public String loadViewRevenue(Model m, @RequestParam(required = false) String year) {
-
+		
 		 if (year == null || year.isEmpty()) {
 		        year = String.valueOf(Year.now().getValue());
 		    }
+		 
+		 
 		
 	    double totalRevenue = 0;
 	    int totalProduct = 0;
@@ -435,40 +396,54 @@ public class AdminController {
 	    if (!allDeliveredOrders.isEmpty()) {
 	        totalDeliveredOrders = String.valueOf(allDeliveredOrders.size());
 
-	        for (ProductOrder productOrder : allOrders) {
+	        for (ProductOrder productOrder : allDeliveredOrders) {
 	            totalProduct += productOrder.getQuantity();
 	        }
+	        
+	        
+	        try {
+		        int yearInt = Integer.parseInt(year);
+		        if (yearInt <= 0) { 
+		        	m.addAttribute("year", null);
+		        }
+		        else {
+		        	// Use TreeMap with custom Comparator (corrected)
+			        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+			            @Override
+			            public int compare(String monthYear1, String monthYear2) {
+			                try {
+			                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+			                    Date date1 = format.parse(monthYear1);
+			                    Date date2 = format.parse(monthYear2); 
+			                    return date1.compareTo(date2);
+			                } catch (ParseException e) {
+			                    e.printStackTrace();
+			                    return 0;
+			                }
+			            }
+			        });
 
-	        // Use TreeMap with custom Comparator (corrected)
-	        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
-	            @Override
-	            public int compare(String monthYear1, String monthYear2) {
-	                try {
-	                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
-	                    Date date1 = format.parse(monthYear1);
-	                    Date date2 = format.parse(monthYear2); 
-	                    return date1.compareTo(date2);
-	                } catch (ParseException e) {
-	                    e.printStackTrace();
-	                    return 0;
-	                }
-	            }
-	        });
+			        for (ProductOrder productOrder : allOrders) {
+			            LocalDate orderDate = productOrder.getOrderDate();
+			            if (orderDate.getYear() == Integer.parseInt(year)) {
+			                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
+			                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
+			            }
+			        }
 
-	        for (ProductOrder productOrder : allOrders) {
-	            LocalDate orderDate = productOrder.getOrderDate();
-	            if (orderDate.getYear() == Integer.parseInt(year)) {
-	                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
-	                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
-	            }
-	        }
+			        for (Month month : Month.values()) {
+			            String monthYear = month.toString() + " " + String.valueOf(year);
+			            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+			        }
 
-	        for (Month month : Month.values()) {
-	            String monthYear = month.toString() + " " + String.valueOf(year);
-	            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
-	        }
+			        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+			        m.addAttribute("year", year);
+		        }
+			 } catch (NumberFormatException e) {
+				 m.addAttribute("year", null);
+			 }
 
-	        m.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+	        
 	    }
 
 	    DecimalFormat df = new DecimalFormat("#,##0");
@@ -478,7 +453,6 @@ public class AdminController {
 	    m.addAttribute("totalDeliveredOrders", totalDeliveredOrders);
 	    m.addAttribute("totalProductsSold", String.valueOf(totalProduct));
 	    m.addAttribute("totalRevenue", formattedTotalRevenue);
-	    m.addAttribute("year", year);
 	    return "admin/revenue";
 	}
 	
@@ -533,35 +507,6 @@ public class AdminController {
 		return "redirect:/admin/users?type=" + type;
 	}
 
-	@GetMapping("/add-admin")
-	public String loadAdminAdd() {
-		return "/admin/add_admin";
-	}
-
-	@PostMapping("/save-admin")
-	public String saveAdmin(@ModelAttribute User user, @RequestParam("img") MultipartFile file, HttpSession session)
-			throws IOException {
-
-		String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-		user.setProfileImage(imageName);
-		User saveUser = userService.saveAdmin(user);
-
-		if (!ObjectUtils.isEmpty(saveUser)) {
-			if (!file.isEmpty()) {
-				File saveFile = new ClassPathResource("static/img").getFile();
-
-				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + "profile_img" + File.separator
-						+ file.getOriginalFilename());
-
-				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-			}
-			session.setAttribute("succMsg", "Register successfully");
-		} else {
-			session.setAttribute("errorMsg", "something wrong on server");
-		}
-
-		return "redirect:/admin/add-admin";
-	}
 
 	@GetMapping("/profile")
 	public String profile(Principal p, Model m, HttpSession session) {
@@ -602,25 +547,6 @@ public class AdminController {
 		}
 
 		return "redirect:/admin/profile";
-	}
-
-	private String checkAddProduct(Product product ) {
-		if(ObjectUtils.isEmpty(product.getTitle())) {
-			return "Enter Title";
-		}	
-		else if (ObjectUtils.isEmpty(product.getCategory())) {
-			return "Select Category";		
-		}
-		else if (ObjectUtils.isEmpty(product.getDescription())) {
-			return "Enter Descirption";			
-		}
-		else if (ObjectUtils.isEmpty(product.getPrice())) {
-			return "Enter Price";
-		}
-		else if (ObjectUtils.isEmpty(product.getStock())) {
-			return "Enter Stock";
-		}
-		return "";
 	}
 	
 	private String checkCategory(Category category) {

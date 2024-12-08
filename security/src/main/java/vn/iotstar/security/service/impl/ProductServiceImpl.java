@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.Transactional;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
-import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.repository.CartRepository;
 import vn.iotstar.security.repository.CategoryRepository;
@@ -215,6 +214,22 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProductsSoldMoreThan10() {
         return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
     }
+
+	@Override
+	public Boolean deleteProductByCategory(Category category) {
+		List<Product> listProduct = productRepository.findByCategory(category);
+		
+		for (Product product : listProduct) {
+			deleteProduct(product.getId());
+		}
+		
+		listProduct = productRepository.findByCategory(category);
+		
+		if(ObjectUtils.isEmpty(listProduct)) {
+			return true;
+		}
+		return false;
+	}
 
 }
 

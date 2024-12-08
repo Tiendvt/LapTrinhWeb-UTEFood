@@ -6,9 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-
-
-
+import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.Shop;
 
@@ -45,4 +43,6 @@ public interface ProductService {
 	List<Product> getDiscountedProducts();
 
 	List<Product> getProductsSoldMoreThan10();
+	
+	public Boolean deleteProductByCategory(Category category);
 }
