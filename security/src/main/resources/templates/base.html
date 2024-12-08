@@ -212,6 +212,47 @@ body {
         }
     });
 </script>
+<!--render ảnh cho update -->
+<script>
+	document.getElementById('files').addEventListener('change', function (event) {
+    let formData = new FormData();
+    Array.from(event.target.files).forEach(file => {
+        formData.append("files", file);
+    });
+
+    fetch('/user/upload-files', { // Endpoint xử lý upload
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let preview = document.getElementById('preview');
+            preview.innerHTML = ''; // Xóa các preview cũ
+            data.fileUrls.forEach(url => {
+                // Kiểm tra loại file
+                if (url.endsWith('.mp4') || url.endsWith('.avi') || url.endsWith('.mov')) {
+                    let video = document.createElement('video');
+                    video.src = url;
+                    video.classList.add('img-thumbnail');
+                    video.controls = true;
+                    preview.appendChild(video);
+                } else {
+                    let img = document.createElement('img');
+                    img.src = url;
+                    img.classList.add('img-thumbnail');
+                    preview.appendChild(img);
+                }
+            });
+        } else {
+            alert('Failed to upload files');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 

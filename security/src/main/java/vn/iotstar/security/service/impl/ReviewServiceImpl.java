@@ -32,23 +32,27 @@ public class ReviewServiceImpl implements ReviewService{
 
 	@Override
 	public void updateReview(Integer reviewId, String comment, MultipartFile[] files) {
-		Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
+		 Review review = reviewRepository.findById(reviewId)
+		            .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        // Update comment
-        review.setComment(comment);
+		    // Update comment
+		    review.setComment(comment);
 
-        // Process file uploads if any
-        if (files != null && files.length > 0) {
-            List<String> uploadedFiles = new ArrayList<>();
-            for (MultipartFile file : files) {
-                String filePath = fileStorageService.storeFile(file);
-                uploadedFiles.add(filePath);
-            }
-            review.setFileUrls(uploadedFiles); // Update file URLs
-        }
+		    // Process file uploads if any
+		    if (files != null && files.length > 0) {
+		        List<String> uploadedFiles = new ArrayList<>();
+		        for (MultipartFile file : files) {
+		            if (!file.isEmpty()) { // Kiểm tra file có hợp lệ không
+		                String filePath = fileStorageService.storeFile(file);
+		                uploadedFiles.add(filePath);
+		            }
+		        }
+		        if (!uploadedFiles.isEmpty()) {
+		            review.setFileUrls(uploadedFiles); // Update file URLs nếu có file mới
+		        }
+		    }
 
-        reviewRepository.save(review); // Save updated review
+		    reviewRepository.save(review); // Save updated review
 		
 	}
 
