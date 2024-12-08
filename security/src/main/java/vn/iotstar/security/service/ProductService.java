@@ -54,5 +54,6 @@ public interface ProductService {
 	public Boolean deleteProductByCategory(Category category);
 	
 	String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders);
+	public Page<Product> searchProductsByCategoryAndKeyword(String category, String keyword, Pageable pageable);
 }
 

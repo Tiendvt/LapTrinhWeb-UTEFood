@@ -141,15 +141,29 @@ public class HomeController {
 
 	    Page<Product> page;
 
-	    // Lọc theo tiêu chí
+	    // Logic tìm kiếm
 	    if (!StringUtils.isEmpty(ch)) {
-	        page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
+	        // Nếu có từ khóa tìm kiếm ch
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo cả category và từ khóa
+	            page = productService.searchProductsByCategoryAndKeyword(category, ch, PageRequest.of(pageNo, pageSize));
+	        } else {
+	            // Tìm sản phẩm theo từ khóa mà không phân theo category
+	            page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
+	        }
 	    } else if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        // Nếu có tiêu chí lọc (không phải mặc định)
 	        page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
 	    } else {
-	        page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	        // Nếu không có từ khóa và không có tiêu chí lọc, phân trang theo category
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo category
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	        } else {
+	            // Nếu category là rỗng (All), tìm tất cả sản phẩm
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, "");
+	        }
 	    }
-
 	    // Gán các thông tin sản phẩm vào Model
 	    List<Product> products = page.getContent();
 	    m.addAttribute("products", products);
