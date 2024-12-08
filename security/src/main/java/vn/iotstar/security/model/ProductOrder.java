@@ -37,6 +37,8 @@ public class ProductOrder {
 
 	@ManyToOne
 	private Product product;
+	
+	private String name ;
 
 	private Double price;
 

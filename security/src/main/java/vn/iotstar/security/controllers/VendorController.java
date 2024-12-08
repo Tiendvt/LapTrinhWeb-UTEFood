@@ -535,14 +535,29 @@ public class VendorController {
         // Retrieve revenue data
         double totalRevenue = orderService.getTotalRevenueForShop(shop);
         int totalProductsSold = orderService.getTotalProductsSoldForShop(shop);
-        Map<String, Double> monthlyRevenueMap = orderService.getMonthlyRevenueForShop(shop, Integer.parseInt(year));
+        Map<String, Double> monthlyRevenueMap = null;
+        
+        try {
+	        int yearInt = Integer.parseInt(year);
+	        if (yearInt <= 0) { 
+	        	model.addAttribute("year", null);
+	        }
+	        else {
+	        	monthlyRevenueMap = orderService.getMonthlyRevenueForShop(shop, Integer.parseInt(year));
+
+		        model.addAttribute("year", year);
+	        }
+		 } catch (NumberFormatException e) {
+			 model.addAttribute("year", null);
+		 }	  
+               
 
         // Add attributes to the model for the view
         model.addAttribute("shop", shop);
         model.addAttribute("totalRevenue", totalRevenue);
         model.addAttribute("totalProductsSold", totalProductsSold);
         model.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
-        model.addAttribute("year", year);
+
 
         return "vendor/revenue"; // Render the vendor revenue view
     }
