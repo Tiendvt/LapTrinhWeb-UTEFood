@@ -41,7 +41,7 @@
   </nav>
   
   <section>
-    <!-- Giao diện giỏ hàng -->
+    <!-- Giao diá»n giá» hÃ ng -->
     <div class="container-fluid mt-5 p-5">
       <div class="card card-sh">
         <div class="card-header text-center">
@@ -82,12 +82,12 @@
               <tr th:if="${carts.size() > 0}">
                 <td colspan="4"></td>
                 <td class="fw-bold">Total Price</td>
-                <td class="fw-bold">&#8377; [[${totalOrderPrice}]]</td>
+                <td class="fw-bold">₫ [[${totalOrderPrice}]]</td>
               </tr>
             </tbody>
           </table>
           <div class="text-center">
-            <!-- Nút bấm Proceed Payment -->
+            <!-- NÃºt báº¥m Proceed Payment -->
             <button type="button" class="btn btn-warning" onclick="handleProceedPayment()">
               Proceed Payment
             </button>
@@ -117,15 +117,15 @@
 
 		<script th:inline="javascript">
 			function handleProceedPayment() {
-				/* Kiểm tra xem danh sách carts có rỗng không */
-				let isCartEmpty = /*[[${#lists.isEmpty(carts)}]]*/ true; // Thymeleaf sẽ thay thế giá trị này.
+				/* Kiá»m tra xem danh sÃ¡ch carts cÃ³ rá»ng khÃ´ng */
+				let isCartEmpty = /*[[${#lists.isEmpty(carts)}]]*/ true; // Thymeleaf sáº½ thay tháº¿ giÃ¡ trá» nÃ y.
 
 				if (isCartEmpty) {
-					// Hiển thị modal thông báo
+					// Hiá»n thá» modal thÃ´ng bÃ¡o
 					let modal = new bootstrap.Modal(document.getElementById('paymentModal'));
 					modal.show();
 				} else {
-					// Chuyển hướng đến /user/orders
+					// Chuyá»n hÆ°á»ng Äáº¿n /user/orders
 					window.location.href = '/user/orders';
 				}
 			}
