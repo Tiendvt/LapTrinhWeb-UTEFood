@@ -1,40 +1,237 @@
+Krant.27
+_krant.27
+Online
+
+
+
+Rythm hopped into the server. — 12/4/24, 2:51 PM
+Rythm
+APP
+ — 12/4/24, 2:52 PM
+Click below to start a Rythm session
+Good to see you, ????. — 12/4/24, 2:56 PM
+Rythm
+APP
+ — 12/4/24, 2:57 PM
+Click below to start a Rythm session
+abc joined the party. — 12/4/24, 2:57 PM
+Everyone welcome Đỗ Văn Tiến! — 12/4/24, 2:58 PM
+Quang Vinh joined the party. — 12/4/24, 3:09 PM
+Đỗ Văn Tiến — 12/4/24, 11:03 PM
+List<Product> findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(String ch, String ch2);
+Krant.27 — 12/4/24, 11:05 PM
+ategory_Name
+Đỗ Văn Tiến — 12/4/24, 11:07 PM
+List<Product> results = productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase("Laptop", "Electronics");
+Expected Output:
+A list of products that:
+
+Have "Laptop" in their title.
+OR belong to a category with "Electronics" in its name.
+Krant.27 — 12/5/24, 12:35 AM
+package vn.iotstar.security.controllers;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+Expand
+message.txt
+6 KB
+Krant.27 — 12/6/24, 12:13 PM
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String orderStatus; // Trạng thái đơn hàng
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_address_id", referencedColumnName = "id")
+    private OrderAddress orderAddress; // Quan hệ 1-1 với địa chỉ giao hàng
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderProduct> orderProducts; // Quan hệ 1-N với sản phẩm trong đơn hàng
+
+    // Các trường bổ sung như ngày tạo, tổng giá tiền, người dùng...
+    private Double totalAmount;
+    private String customerName;
+
+    // Getters and Setters
+}
+import jakarta.persistence.*;
+
+@Entity
+public class OrderAddress {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String street;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
+
+    @OneToOne(mappedBy = "orderAddress")
+    private Order order; // Quan hệ ngược 1-1 với Order
+
+    // Getters and Setters
+}
+import jakarta.persistence.*;
+
+@Entity
+public class OrderProduct {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order; // Quan hệ N-1 với Order
+
+    private String productName; // Tên sản phẩm
+    private Integer quantity;   // Số lượng
+    private Double price;       // Giá sản phẩm
+
+    // Getters and Setters
+}
+Đỗ Văn Tiến — 12/6/24, 1:33 PM
+package vn.iotstar.security.model;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import jakarta.persistence.;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Entity
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String orderId;
+
+    private LocalDate orderDate;
+
+    @ManyToOne
+    private User user;
+
+    private Double totalPrice;
+
+    private String paymentType;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<ProductOrder> productOrders;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private OrderAddress orderAddress;
+
+    private String status;
+}
+package vn.iotstar.security.model;
+
+import jakarta.persistence.;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Entity
+public class ProductOrder {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne
+    private Shop shop;  // The shop selling these products
+
+    @ManyToOne
+    private Order order;  // The order this product is part of
+
+    private Double price;
+
+    private String status;
+
+    @OneToMany(mappedBy = "productOrder", cascade = CascadeType.ALL)
+    private List<Product> products;  // List of products from the same shop
+
+    private Integer quantity;
+}
+Krant.27 — 12/6/24, 2:13 PM
+package vn.iotstar.security.model;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+Expand
+Order.java
+2 KB
+Đỗ Văn Tiến — 12/6/24, 3:10 PM
 <!DOCTYPE html>
+
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
-<<<<<<< HEAD
 
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Insert title here</title>
-</head>
+<meta charset="ISO-8859-1">
+Expand
+home.html
+6 KB
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 
-<body>
-	<section>
-		<div class="container-fluid mt-5 p-1">
-			<div class="row">
-				<p class="text-center fs-3 mt-2">All Orders</p>
-				<hr>
-				<a href="/vendor/" class="text-decoration-none"><i class="fa-solid fa-arrow-left"></i> Back</a>
-				<th:block th:if="${session.succMsg}">
-					<p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
+<head>
 
-				<th:block th:if="${session.errorMsg}">
-					<p class="text-danger fw-bold text-center">[[${session.errorMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
-				<div class="col-md-4 p-4">
-					<form action="/vendor/search-order" method="get" class="p-3 rounded-pill shadow-lg"
-						style="background-color: #f8f9fa; border: none;">
-						<div class="input-group input-group-lg">
-							<input type="text" class="form-control border-0 rounded-start-pill" name="orderId"
-								placeholder="Enter order id" style="background-color: #f8f9fa;">
-							<button class="btn btn-primary rounded-end-pill px-4" type="submit">Search</button>
-						</div>
-					</form>
-				</div>
-				<div class="col-md-12 ps-4 pe-4">
-=======
+<meta charset="ISO-8859-1">
+Expand
+base.html
+6 KB
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Login Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+Expand
+login.html
+4 KB
+Đỗ Văn Tiến — Today at 11:41 AM
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
+
+<head>
+    <meta charset="ISO-8859-1">
+Expand
+orders.html
+10 KB
+﻿
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
+
 <head>
     <meta charset="ISO-8859-1">
     <title>Vendor Orders</title>
@@ -105,58 +302,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- When searching, if order is found -->
-                            <th:block th:if="${srch}">
-                                <th:block th:if="${orderDtls != null}">
-                                    <tr>
-                                        <th scope="row">[[${orderDtls.orderId}]]</th>
-                                        <td>
-                                            Name: [[${orderDtls.orderAddress.firstName + ' ' + orderDtls.orderAddress.lastName}]]<br>
-                                            Email: [[${orderDtls.orderAddress.email}]]<br>
-                                            Mobno: [[${orderDtls.orderAddress.mobileNo}]]<br>
-                                            Address: [[${orderDtls.orderAddress.address}]]<br>
-                                            City: [[${orderDtls.orderAddress.city}]]<br>
-                                            Province: [[${orderDtls.orderAddress.province}]], [[${orderDtls.orderAddress.pincode}]]
-                                        </td>
-                                        <td>[[${orderDtls.orderDate}]]</td>
-                                        <td>[[${orderDtls.product.title}]]</td>
-                                        <td>Quantity: [[${orderDtls.quantity}]] <br>Price: [[${orderDtls.price}]] <br>Total Price: [[${orderDtls.quantity * orderDtls.price}]]</td>
-                                        <td>[[${orderDtls.status}]]</td>
-                                        <td>
-                                            <form action="/vendor/update-order-status" method="post">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <select class="form-control" name="st">
-                                                            <option>--select--</option>
-                                                            <option value="1">In Progress</option>
-                                                            <option value="2">Order Received</option>
-                                                            <option value="3">Product Packed</option>
-                                                            <option value="4">Out for Delivery</option>
-                                                            <option value="5">Delivered</option>
-                                                            <option value="6">Cancelled</option>
-                                                        </select>
-                                                    </div>
-                                                    <input th:value="${orderDtls.id}" name="id" type="hidden">
-                                                    <div class="col">
-                                                        <th:block th:if="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered'}">
-                                                            <button class="btn btn-primary btn-sm col disabled">Update</button>
-                                                        </th:block>
-                                                        <th:block th:unless="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered'}">
-                                                            <button class="btn btn-sm btn-primary">Update</button>
-                                                        </th:block>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                <th:block th:unless="${orderDtls != null}">
-                                    <p class="fs-3 text-center text-danger">[[${errorMsg}]]</p>
-                                </th:block>
-                            </th:block>
->>>>>>> 3063930a2615b5a7d9d3abd2c45765a16949691f
-
-                            <!-- When not searching, showing orders list -->
+                            
                             <th:block th:unless="${srch}">
                                 <th:block th:if="${#lists.isEmpty(orders)}">
                                     <tr>
@@ -210,153 +356,7 @@
                         </tbody>
                     </table>
 
-<<<<<<< HEAD
-										<td>Name : [[${orderDtls.orderAddress.firstName+'
-											'+orderDtls.orderAddress.lastName}]]<br> Email :
-											[[${orderDtls.orderAddress.email}]] <br> Mobno:
-											[[${orderDtls.orderAddress.mobileNo}]] <br> Address :
-											[[${orderDtls.orderAddress.address}]] <br> City :
-											[[${orderDtls.orderAddress.city}]] <br> Province :
-											[[${orderDtls.orderAddress.province}]],
-											[[${orderDtls.orderAddress.pincode}]]
 
-
-
-										</td>
-										<td>[[${orderDtls.orderDate}]]</td>
-										<td>[[${orderDtls.product.title}]]</td>
-										<td>Quantity : [[${orderDtls.quantity}]] <br>Price :
-											[[${orderDtls.price}]] <br>Total Price
-											:[[${orderDtls.quantity * orderDtls.price}]]
-										</td>
-										<td>[[${orderDtls.status}]]</td>
-										<td>
-											<form action="/vendor/update-order-status" method="post">
-												<div class="row">
-													<div class="col">
-														<select class="form-control" name="st">
-															<option>--select--</option>
-															<option value="1">In Progress</option>
-															<option value="2">Order Received</option>
-															<option value="3">Product Packed</option>
-															<option value="4">Out for Delivery</option>
-															<option value="5">Delivered</option>
-															<option value="6">Cancelled</option>
-														</select>
-													</div>
-													<input th:value="${orderDtls.id}" name="id" type="hidden">
-													<div class="col">
-														<th:block
-															th:if="${orderDtls.status=='Cancelled' || orderDtls.status=='Delivered'}">
-															<button
-																class="btn btn-primary btn-sm col disabled">Update</button>
-														</th:block>
-														<th:block
-															th:unless="${orderDtls.status=='Cancelled' || orderDtls.status=='Delivered'}">
-															<button class="btn btn-sm btn-primary ">Update</button>
-														</th:block>
-
-
-													</div>
-												</div>
-											</form>
-										</td>
-									</tr>
-								</th:block>
-								<th:block th:unless="${orderDtls!=null}">
-									<p class="fs-3 text-center text-danger">[[${errorMsg}]]</p>
-								</th:block>
-							</th:block>
-
-							<th:block th:unless="${srch}">
-								<tr th:each="o:${orders}">
-									<th scope="row">[[${o.orderId}]]</th>
-
-									<td>Name : [[${o.orderAddress.firstName+'
-										'+o.orderAddress.lastName}]]<br> Email :
-										[[${o.orderAddress.email}]] <br> Mobno:
-										[[${o.orderAddress.mobileNo}]] <br> Address :
-										[[${o.orderAddress.address}]] <br> City :
-										[[${o.orderAddress.city}]] <br> Province :
-										[[${o.orderAddress.province}]], [[${o.orderAddress.pincode}]]
-
-
-
-									</td>
-									<td>[[${o.orderDate}]]</td>
-									<td>[[${o.product.title}]]</td>
-									<td>Quantity : [[${o.quantity}]] <br>Price :
-										[[${o.price}]] <br>Total Price :[[${o.quantity *
-										o.price}]]
-									</td>
-									<td>[[${o.status}]]</td>
-									<td>
-										<form action="/vendor/update-order-status" method="post">
-											<div class="row">
-												<div class="col">
-													<select class="form-control" name="st">
-														<option>--select--</option>
-														<option value="1">In Progress</option>
-														<option value="2">Order Received</option>
-														<option value="3">Product Packed</option>
-														<option value="4">Out for Delivery</option>
-														<option value="5">Delivered</option>
-														<option value="6">Cancelled</option>
-													</select>
-												</div>
-												<input th:value="${o.id}" name="id" type="hidden">
-												<div class="col">
-													<th:block th:if="${o.status=='Cancelled' || o.status=='Delivered'}">
-														<button
-															class="btn btn-primary btn-sm col disabled">Update</button>
-													</th:block>
-													<th:block
-														th:unless="${o.status=='Cancelled' || o.status=='Delivered'}">
-														<button class="btn btn-sm btn-primary ">Update</button>
-													</th:block>
-												</div>
-											</div>
-										</form>
-									</td>
-								</tr>
-							</th:block>
-						</tbody>
-					</table>
-					<th:block th:if="${!srch}">
-						<div class="row">
-							<div class="col-md-4">Total Orders : [[${totalElements}]]</div>
-							<div class="col-md-6">
-
-								<nav aria-label="Page navigation example">
-									<ul class="pagination">
-										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''"><a
-												class="page-link" th:href="@{'/vendor/orders?pageNo='+${pageNo-1}}"
-												aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-											</a></li>
-
-										<li th:each="i:${#numbers.sequence(1,totalPages)}" class="page-item"
-											th:classappend="${pageNo+1==i}?'active':''" ]]><a class="page-link"
-												th:href="@{'/vendor/orders?pageNo='+${i-1}}">[[${i}]]</a></li>
-
-										<li class="page-item" th:classappend="${isLast} ? 'disabled':''"><a
-												class="page-link" th:href="@{'/vendor/orders?pageNo='+${pageNo+1}}"
-												aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-											</a></li>
-									</ul>
-								</nav>
-							</div>
-
-						</div>
-					</th:block>
-				</div>
-			</div>
-
-		</div>
-	</section>
-</body>
-
-</html>
-=======
                     <!-- Pagination -->
                     <th:block th:if="${!srch && !#lists.isEmpty(orders)}">
                         <div class="row">
@@ -388,4 +388,6 @@
     </section>
 </body>
 </html>
->>>>>>> 3063930a2615b5a7d9d3abd2c45765a16949691f
+
+orders.html
+10 KB
