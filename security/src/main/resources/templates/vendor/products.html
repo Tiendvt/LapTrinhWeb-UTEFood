@@ -99,7 +99,7 @@
 									<ul class="pagination justify-content-center">
 										<!-- Nút Previous -->
 										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}"
+											<a class="page-link" th:href="@{'/vendor/products?pageNo='+${pageNo-1}}"
 												aria-label="Previous">
 												<span aria-hidden="true">&laquo;</span>
 											</a>
@@ -108,11 +108,11 @@
 										<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
 											th:classappend="${pageNo+1 == i} ? 'active' : ''">
 											<a class="page-link"
-												th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
+												th:href="@{'/vendor/products?pageNo='+${i-1}}">[[${i}]]</a>
 										</li>
 										<!-- Nút Next -->
 										<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}"
+											<a class="page-link" th:href="@{'/vendor/products?pageNo='+${pageNo+1}}"
 												aria-label="Next">
 												<span aria-hidden="true">&raquo;</span>
 											</a>
