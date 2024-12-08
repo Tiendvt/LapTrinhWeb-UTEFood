@@ -27,16 +27,23 @@
             </div>
             
             <div id="preview" class="mt-3">
-                <!-- Preview hình ảnh/video nếu có -->
-                <div th:if="${review != null and !#lists.isEmpty(review.fileUrls)}" class="row">
-                    <div th:each="file : ${review.fileUrls}" class="col-md-3">
-                        <a th:href="@{'/uploads/' + ${file}}" target="_blank">
-                            <img th:src="@{'/uploads/' + ${file}}" class="img-thumbnail" alt="Review File">
-                        </a>
-                    </div>
-                </div>
-                <p th:if="${review == null or #lists.isEmpty(review.fileUrls)}">No uploaded files available.</p>
-            </div>
+    <!-- Preview hình ảnh/video nếu có -->
+	    <div th:if="${review != null and !#lists.isEmpty(review.fileUrls)}" class="row">
+    <div th:each="file : ${review.fileUrls}" class="col-md-3">
+        <a th:href="@{${file}}" target="_blank">
+            <span th:if="${file.endsWith('.mp4') || file.endsWith('.avi') || file.endsWith('.mov')}">
+                <video th:src="@{${file}}" class="img-thumbnail" controls alt="Review File"></video>
+            </span>
+            <span th:unless="${file.endsWith('.mp4') || file.endsWith('.avi') || file.endsWith('.mov')}">
+                <img th:src="@{${file}}" class="img-thumbnail" alt="Review File">
+            </span>
+        </a>
+    </div>
+</div>
+
+    <p th:if="${review == null or #lists.isEmpty(review.fileUrls)}">No uploaded files available.</p>
+</div>
+
             
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary" th:text="${review != null} ? 'Update Review' : 'Submit Review'"></button>
