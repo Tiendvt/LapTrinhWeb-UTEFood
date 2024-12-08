@@ -1,26 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<section>
-		<div class="container mt-5 p-5">
+		<div class="container mt-6 p-5" 
+		     style="margin-top: 200px; max-width: 600px; background-color: #fdfdfd; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
 			<div class="row">
-				<div class="col-md-6 offset-md-3 text-center">
-					<i class="fa-solid fa-circle-check fa-5x text-success"></i>
-					<p class="fs-3">Product Ordered Successfully</p>
-					<p class="fs-4">Product will be delivered with in 7 days</p>
-					<div class="text-center">
-						<a href="/" class="btn btn-primary">Home</a> <a href="/user/user-orders"
-							class="btn btn-primary">Your Order</a>
+				<div class="col-md-12 text-center">
+					<i class="fa-solid fa-circle-check"
+						style="font-size: 70px; color: #28a745; margin-bottom: 20px;"></i>
+					<p style="font-size: 24px; font-weight: bold; color: #28a745;">Product Ordered Successfully</p>
+					<p style="font-size: 20px; color: #6c757d;">Your product will be delivered within 7 days.</p>
+					<div class="text-center mt-4">
+						<a href="/" class="btn"
+							style="padding: 10px 20px; background-color: #007bff; color: #fff; border-radius: 5px; margin-right: 10px;">
+							<i class="fa-solid fa-house"></i> Home
+						</a>
+						<a href="/user/user-orders" class="btn"
+							style="padding: 10px 20px; background-color: #007bff; color: #fff; border-radius: 5px;">
+							<i class="fa-solid fa-box-open"></i> Your Orders
+						</a>
 					</div>
 				</div>
 			</div>
-
 		</div>
+
 	</section>
 </body>
+
 </html>
