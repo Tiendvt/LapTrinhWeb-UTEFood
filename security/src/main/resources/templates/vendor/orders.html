@@ -78,7 +78,58 @@
 							</tr>
 						</thead>
 						<tbody>
-
+							<th:block th:if="${srch}">
+								<th:block th:if="${orderDtls != null}">
+									<tr>
+										<th scope="row">[[${orderDtls.orderId}]]</th>
+										<td>Name: [[${orderDtls.orderAddress.firstName + ' ' +
+											orderDtls.orderAddress.lastName}]]<br> Email:
+											[[${orderDtls.orderAddress.email}]] <br> Mobno:
+											[[${orderDtls.orderAddress.mobileNo}]] <br> Address:
+											[[${orderDtls.orderAddress.address}]] <br> City:
+											[[${orderDtls.orderAddress.city}]] <br> State:
+											[[${orderDtls.orderAddress.province}]], [[${orderDtls.orderAddress.pincode}]]
+										</td>
+										<td>[[${orderDtls.orderDate}]]</td>
+										<td>[[${orderDtls.product.title}]]</td>
+										<td>Quantity: [[${orderDtls.quantity}]] <br> Price: [[${orderDtls.price}]] <br>
+											Total Price: [[${orderDtls.quantity * orderDtls.price}]]</td>
+										<td>[[${orderDtls.status}]]</td>
+										<td>
+											<form action="/admin/update-order-status" method="post" onsubmit="return validateUpdateForm(this)">
+												<div class="row">
+													<div class="col">
+														<select class="form-control" name="st" id="statusSelect">
+															<option value="1">New Order</option>
+															<option value="2">Order Confirmed</option>
+															<option value="3">In Transit</option>
+															<option value="4">Delivered</option>
+															<option value="5">Canceled</option>
+															<option value="6">Returned - Refunded</option>
+														</select>
+                                                        <div class="statusError text-danger"></div>
+													</div>
+													<input th:value="${orderDtls.id}" name="id" type="hidden">
+													<div class="col">
+														<th:block
+															th:if="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered' || orderDtls.status == 'Returned - Refunded' }">
+															<button
+																class="btn btn-primary btn-sm col disabled">Update</button>
+														</th:block>
+														<th:block
+															th:unless="${orderDtls.status == 'Cancelled' || orderDtls.status == 'Delivered' || orderDtls.status == 'Returned - Refunded'}">
+															<button class="btn btn-sm btn-primary">Update</button>
+														</th:block>
+													</div>
+												</div>
+											</form>
+										</td>
+									</tr>
+								</th:block>
+								<th:block th:unless="${orderDtls != null}">
+									<p class="fs-3 text-center text-danger">[[${errorMsg}]]</p>
+								</th:block>
+							</th:block>
 							<th:block th:unless="${srch}">
 								<th:block th:if="${#lists.isEmpty(orders)}">
 									<tr>

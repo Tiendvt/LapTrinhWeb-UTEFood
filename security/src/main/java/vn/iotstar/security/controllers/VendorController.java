@@ -215,15 +215,26 @@ public class VendorController {
     public String viewOrders(Principal principal, Model model,
                              @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        // Ensure pageNo is at least 0 (0-based indexing)
+        if (pageNo < 0) {
+            pageNo = 0;
+        }
+
         // Retrieve the shop associated with the logged-in vendor
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
 
-        // Retrieve orders for the shop, passing the page number and page size for pagination
+        // Retrieve orders for the shop
         Page<ProductOrder> page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
 
+        // Ensure pageNo does not exceed the total number of pages
+        if (pageNo >= page.getTotalPages() && page.getTotalPages() > 0) {
+            pageNo = page.getTotalPages() - 1;
+            page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
+        }
+
         // Add necessary attributes to the model for pagination and orders
-        model.addAttribute("orders", page.getContent());  // Orders specific to the shop
-        model.addAttribute("srch", false);  // Set to false as no search is done
+        model.addAttribute("orders", page.getContent()); // Orders specific to the shop
+        model.addAttribute("srch", false); // Set to false as no search is done
         model.addAttribute("pageNo", page.getNumber());
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalElements", page.getTotalElements());
@@ -232,7 +243,7 @@ public class VendorController {
         model.addAttribute("isLast", page.isLast());
 
         // Return the vendor orders page view
-        return "vendor/orders";  // View for vendor orders
+        return "vendor/orders"; // View for vendor orders
     }
 
 
@@ -298,14 +309,20 @@ public class VendorController {
             ProductOrder order = orderService.getOrdersByOrderId(orderId.trim());
 
             // Ensure the order belongs to the logged-in vendor's shop
-            if (order != null && order.getShop().getOwner().getEmail().equals(principal.getName())) {
-                model.addAttribute("orderDtls", order);  // Add the order details to the model
-                model.addAttribute("srch", true);  // Set the flag for search results
-            } else {
-                // If the order doesn't belong to the vendor, show an error message
+            if (order == null ) {
+            	model.addAttribute("orderDtls", null);
+            	// If the order doesn't belong to the vendor, show an error message
                 session.setAttribute("errorMsg", "Incorrect order ID or permission denied.");
-                model.addAttribute("orderDtls", null);  // No order details to show
+                //model.addAttribute("orderDtls", null);  // No order details to show
+                
+            } else {
+            	
+            	model.addAttribute("orderDtls", order);  // Add the order details to the model
+            	System.out.println("--------------------------------------------");
+            	System.out.println(order.getName());
+                  // Set the flag for search results
             }
+            model.addAttribute("srch", true);
         } else {
             // No orderId provided, fetch orders for the logged-in vendor's shop
             Shop shop = shopService.getShopByOwnerEmail(principal.getName());
