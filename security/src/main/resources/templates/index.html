@@ -140,7 +140,7 @@
                             <img th:src="@{'/img/product_img/' + ${product.image}}" class="card-img-top" alt="Product Image">
                             <div class="card-body">
                                 <h5 class="card-title">[[${product.title}]]</h5>
-                                <p class="card-text product-price">Price: $[[${product.price}]]</p>
+                                <p class="card-text product-price">Price: [[${product.price}]]₫</p>
                                 <p class="card-text">Sold: [[${product.sold}]] units</p>
                                 <a th:href="@{'/product/' + ${product.id}}" class="btn btn-primary">View Product</a>
                             </div>
