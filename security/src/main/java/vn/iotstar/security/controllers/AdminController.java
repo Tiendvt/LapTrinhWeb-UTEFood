@@ -435,7 +435,7 @@ public class AdminController {
 	    if (!allDeliveredOrders.isEmpty()) {
 	        totalDeliveredOrders = String.valueOf(allDeliveredOrders.size());
 
-	        for (ProductOrder productOrder : allOrders) {
+	        for (ProductOrder productOrder : allDeliveredOrders) {
 	            totalProduct += productOrder.getQuantity();
 	        }
 
