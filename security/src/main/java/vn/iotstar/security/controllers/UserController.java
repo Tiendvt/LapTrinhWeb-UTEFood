@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Cart;
 import vn.iotstar.security.model.Category;
@@ -139,13 +140,37 @@ public class UserController {
 	}
 	@PostMapping("/save-order")
 	public String saveOrder(@ModelAttribute OrderRequest request, Principal p) throws Exception {
-		// System.out.println(request);
-		User user = getLoggedInUserDetails(p);
-		orderService.saveOrder(user.getId(), request);
-		// THÊM CODE Ở ĐÂY ĐỂ XÓA GIỎ HÀNG KHI ĐÃ THANH TOÁN
-		cartService.clearCartByUserId(user.getId());
-		return "redirect:/user/success";
+	    User user = getLoggedInUserDetails(p);
+
+	    // Validate total price
+	    if (request.getTotalPrice() == null) {
+	        throw new IllegalArgumentException("Total price is required.");
+	    }
+
+	    // Check payment type
+	    if ("ONLINE".equalsIgnoreCase(request.getPaymentType())) {
+	        // Generate VNPay URL
+	        String vnpayUrl = "/api/payment/create_payment?amount="+ request.getTotalPrice();
+
+	        // Save the order details before redirecting (if needed for tracking)
+	        orderService.saveOrder(user.getId(), request);
+
+	        // Redirect to VNPay
+	        return "redirect:" + vnpayUrl;
+	    } else if ("COD".equalsIgnoreCase(request.getPaymentType())) {
+	        // Process Cash on Delivery (COD)
+	        orderService.saveOrder(user.getId(), request);
+
+	        // Clear cart after successful order placement
+	        cartService.clearCartByUserId(user.getId());
+
+	        // Redirect to success page
+	        return "redirect:/user/success";
+	    } else {
+	        throw new IllegalArgumentException("Invalid payment type.");
+	    }
 	}
+
 	@GetMapping("/success")
 	public String loadSuccess() {
 		return "/user/success";
@@ -356,6 +381,32 @@ public class UserController {
             response.put("message", "Failed to upload files: " + e.getMessage());
         }
         return response;
+    }
+    @GetMapping("/vnpay-payment")
+    public String handleVnPayReturn(HttpServletRequest request, Model model) {
+        // Extract parameters from VNPay's callback
+        String orderInfo = request.getParameter("vnp_OrderInfo");
+        String paymentTime = request.getParameter("vnp_PayDate");
+        String transactionId = request.getParameter("vnp_TransactionNo");
+        String totalPrice = request.getParameter("vnp_Amount");
+        String paymentStatus = request.getParameter("vnp_ResponseCode");
+
+        // Convert the amount back to normal format (VNPay sends the amount in *100)
+        double actualPrice = Double.parseDouble(totalPrice) / 100;
+
+        // Add parameters to the model for the view
+        
+        model.addAttribute("orderId", orderInfo);
+        model.addAttribute("totalPrice", actualPrice);
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("transactionId", transactionId);
+
+        // Check payment status
+        if ("00".equals(paymentStatus)) { // "00" indicates success
+            return "user/ordersuccess"; // Redirect to success page
+        } else {
+            return "user/orderfail"; // Redirect to failure page
+        }
     }
 
 }

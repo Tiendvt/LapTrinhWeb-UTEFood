@@ -30,10 +30,10 @@ public class PaymentController {
 	@GetMapping("/create_payment")
 	public ResponseEntity<?> createPayment(HttpServletRequest req) throws UnsupportedEncodingException {
 	    String orderType = "billpayment";
-	    long amount = 1000000;
+	    double rawAmount = Double.parseDouble(req.getParameter("amount"));
 	    String vnp_TxnRef = PaymentConfig.getRandomNumber(8);
 	    String vnp_IpAddr = PaymentConfig.getIpAddress(req);
-
+	    long amount = (long) (rawAmount * 100);
 	    String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
 	    
 	    Map<String, String> vnp_Params = new HashMap<>();
