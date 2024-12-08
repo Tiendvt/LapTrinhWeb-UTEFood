@@ -39,6 +39,18 @@ public interface OrderService {
     ProductOrder getOrderById(Integer id);
     void submitReview(Integer orderId, String comment, MultipartFile[] files);
     Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
+
+	/**
+	 * Get monthly revenue for a specific shop.
+	 */
+	Map<String, Double> getMonthlyRevenueForShop(Shop shop, int year);
+
+	/**
+	 * Get total products sold for a specific shop.
+	 */
+	int getTotalProductsSoldForShop(Shop shop);
+
+	double getTotalRevenueForShop(Shop shop);
         
 
 }
