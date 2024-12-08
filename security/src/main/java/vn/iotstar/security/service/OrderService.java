@@ -40,6 +40,6 @@ public interface OrderService {
     void submitReview(Integer orderId, String comment, MultipartFile[] files);
     Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
         
-
+    void productIdToNull(int product_id);
 }
 

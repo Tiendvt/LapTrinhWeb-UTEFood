@@ -172,4 +172,16 @@ public class OrderServiceImpl implements OrderService {
 	public List<ProductOrder> getOrdersByStatus(String status) {
 		return orderRepository.findAllByStatus(status);
 	}
+
+	@Override
+	public void productIdToNull(int product_id) {
+		List<ProductOrder> listProductOrder = orderRepository.findByProductId(product_id);
+		
+		for (ProductOrder productOrder : listProductOrder) {
+	        productOrder.setProduct(null);
+	    }
+		
+		orderRepository.saveAll(listProductOrder);
+		
+	}
 }

@@ -10,4 +10,6 @@ public interface FavoriteProductRepository extends JpaRepository<FavoriteProduct
 	 void deleteByUserIdAndProductId(Integer userId, Integer productId);
 	 FavoriteProduct findByUserIdAndProductId(Integer userId, Integer productId);
 	 int countByProductId(int product_id);
+	 
+	 void deleteByProduct_Id(int product_id);
 }
