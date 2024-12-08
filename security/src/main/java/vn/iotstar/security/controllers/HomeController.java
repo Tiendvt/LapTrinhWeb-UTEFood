@@ -319,7 +319,6 @@ public class HomeController {
 		List<Category> categories = categoryService.getAllActiveCategory();
 		m.addAttribute("categories", categories);
 		return "product";
-
 	}
 	@GetMapping("/profile")
 	public String profile() {
