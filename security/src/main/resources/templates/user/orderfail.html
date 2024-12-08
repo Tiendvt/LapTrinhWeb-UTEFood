@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Order Failed</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-5 p-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-center">
+                    <i class="fa-solid fa-circle-xmark fa-5x text-danger"></i>
+                    <p class="fs-3 text-danger">Payment Failed</p>
+                    <p class="fs-4">We were unable to process your payment.</p>
+                    <p class="fs-4">Order ID: <strong th:text="${orderId}"></strong></p>
+                    <p class="fs-4">Transaction ID: <strong th:text="${transactionId}"></strong></p>
+                    <p class="fs-4">Total Attempted: <strong>₫ <span th:text="${totalPrice}"></span></strong></p>
+                    <p class="fs-4">Payment Time: <strong th:text="${paymentTime}"></strong></p>
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-primary">Home</a>
+                        <a href="/user/user-orders" class="btn btn-secondary">Retry Payment</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+

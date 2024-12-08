@@ -1,9 +1,11 @@
 package vn.iotstar.security.controllers;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,9 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Cart;
 import vn.iotstar.security.model.Category;
@@ -33,6 +37,7 @@ import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.ReviewService;
 import vn.iotstar.security.service.UserService;
+import vn.iotstar.security.service.impl.FileStorageService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
 @Controller
@@ -47,6 +52,9 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	@Autowired
+	private FileStorageService fileStorageService;
+	
+	@Autowired
 	private CommonUtil commonUtil;
 		@Autowired
 		private ProductService productService;
@@ -54,6 +62,7 @@ public class UserController {
 		private ReviewService reviewService;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
 	//Thêm ModelAttribute để hiển thị nút điều hướng cho người dùng trên thanh nav bar của base.html. nếu ko có cái này thì trong base.html kiểm tra user==null và sau khi đăng nhập nó vẫn chỉ hiển thị 2 nút bấm LOGIN, REGISTER
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
@@ -131,13 +140,37 @@ public class UserController {
 	}
 	@PostMapping("/save-order")
 	public String saveOrder(@ModelAttribute OrderRequest request, Principal p) throws Exception {
-		// System.out.println(request);
-		User user = getLoggedInUserDetails(p);
-		orderService.saveOrder(user.getId(), request);
-		// THÊM CODE Ở ĐÂY ĐỂ XÓA GIỎ HÀNG KHI ĐÃ THANH TOÁN
-		cartService.clearCartByUserId(user.getId());
-		return "redirect:/user/success";
+	    User user = getLoggedInUserDetails(p);
+
+	    // Validate total price
+	    if (request.getTotalPrice() == null) {
+	        throw new IllegalArgumentException("Total price is required.");
+	    }
+
+	    // Check payment type
+	    if ("ONLINE".equalsIgnoreCase(request.getPaymentType())) {
+	        // Generate VNPay URL
+	        String vnpayUrl = "/api/payment/create_payment?amount="+ request.getTotalPrice();
+
+	        // Save the order details before redirecting (if needed for tracking)
+	        orderService.saveOrder(user.getId(), request);
+
+	        // Redirect to VNPay
+	        return "redirect:" + vnpayUrl;
+	    } else if ("COD".equalsIgnoreCase(request.getPaymentType())) {
+	        // Process Cash on Delivery (COD)
+	        orderService.saveOrder(user.getId(), request);
+
+	        // Clear cart after successful order placement
+	        cartService.clearCartByUserId(user.getId());
+
+	        // Redirect to success page
+	        return "redirect:/user/success";
+	    } else {
+	        throw new IllegalArgumentException("Invalid payment type.");
+	    }
 	}
+
 	@GetMapping("/success")
 	public String loadSuccess() {
 		return "/user/success";
@@ -305,7 +338,7 @@ public class UserController {
         }
 
         Review review = reviewService.getReviewByOrderId(orderId); // Fetch review from database
-        System.out.print("review objeect: " + review.getComment());
+        System.out.print("review object: " + review.getFileUrls());
         model.addAttribute("order", order);
         model.addAttribute("review", review); // Pass review data to the view
 
@@ -317,9 +350,63 @@ public class UserController {
                                @RequestParam String comment,
                                @RequestParam("files") MultipartFile[] files,
                                RedirectAttributes redirectAttributes) {
-        reviewService.updateReview(reviewId, comment, files); // Call service to update review
-        redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
+    	try {
+            // Chỉ gửi file không trống tới service
+            if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
+                reviewService.updateReview(reviewId, comment, null);
+            } else {
+                reviewService.updateReview(reviewId, comment, files);
+            }
+            redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Error updating review: " + e.getMessage());
+        }
         return "redirect:/user/user-orders";
+
+    }
+    @PostMapping("/upload-files")
+    @ResponseBody
+    public Map<String, Object> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Lưu các file vào thư mục tĩnh
+            List<String> fileUrls = Arrays.stream(files)
+                                          .map(fileStorageService::storeFile)
+                                          .collect(Collectors.toList());
+            // Trả về danh sách các đường dẫn file
+            response.put("success", true);
+            response.put("fileUrls", fileUrls);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to upload files: " + e.getMessage());
+        }
+        return response;
+    }
+    @GetMapping("/vnpay-payment")
+    public String handleVnPayReturn(HttpServletRequest request, Model model) {
+        // Extract parameters from VNPay's callback
+        String orderInfo = request.getParameter("vnp_OrderInfo");
+        String paymentTime = request.getParameter("vnp_PayDate");
+        String transactionId = request.getParameter("vnp_TransactionNo");
+        String totalPrice = request.getParameter("vnp_Amount");
+        String paymentStatus = request.getParameter("vnp_ResponseCode");
+
+        // Convert the amount back to normal format (VNPay sends the amount in *100)
+        double actualPrice = Double.parseDouble(totalPrice) / 100;
+
+        // Add parameters to the model for the view
+        
+        model.addAttribute("orderId", orderInfo);
+        model.addAttribute("totalPrice", actualPrice);
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("transactionId", transactionId);
+
+        // Check payment status
+        if ("00".equals(paymentStatus)) { // "00" indicates success
+            return "user/ordersuccess"; // Redirect to success page
+        } else {
+            return "user/orderfail"; // Redirect to failure page
+        }
     }
 
 }

@@ -46,4 +46,6 @@ public class OrderRequest {
 
     @Column(columnDefinition = "NVARCHAR(255)")
     private String paymentType;
+    @Column(name = "total_price")
+    private Double totalPrice;
 }
