@@ -314,13 +314,13 @@ public class AdminController {
             // Get the associated product and shop from the order
             Product product = updateOrder.getProduct();
             Shop shop = product.getShop();
-
+            int productQuantity = updateOrder.getQuantity();
             // Increment sold quantity in Product
             product.setSold(product.getSold() + updateOrder.getQuantity());
             productService.saveProduct(product);  // Update the product
 
             // Update shop sold and revenue without saving the entire shop
-            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice()*updateOrder.getQuantity());
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice()*productQuantity,productQuantity);
             
         }
 
