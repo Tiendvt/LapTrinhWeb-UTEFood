@@ -129,6 +129,11 @@ public class HomeController {
 	        @RequestParam(defaultValue = "") String ch,
 	        @RequestParam(name = "criteria", defaultValue = "DEFAULT") String criteria) {
 
+	    // Nếu có tiêu chí lọc thì đổi pageSize thành 20
+	    if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        pageSize = 20;
+	    }
+
 	    // Lấy danh sách danh mục
 	    List<Category> categories = categoryService.getAllActiveCategory();
 	    m.addAttribute("paramValue", category);
@@ -138,34 +143,30 @@ public class HomeController {
 
 	    // Lọc theo tiêu chí
 	    if (!StringUtils.isEmpty(ch)) {
-	        // Tìm kiếm sản phẩm
 	        page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
 	    } else if (!"DEFAULT".equalsIgnoreCase(criteria)) {
-	        // Lọc sản phẩm theo tiêu chí (bán chạy, yêu thích, v.v.)
 	        page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
 	    } else {
-	        // Sản phẩm theo danh mục
 	        page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
 	    }
 
-	    // Lấy nội dung trang
+	    // Gán các thông tin sản phẩm vào Model
 	    List<Product> products = page.getContent();
 	    m.addAttribute("products", products);
 	    m.addAttribute("productsSize", products.size());
-
-	    // Phân trang
 	    m.addAttribute("pageNo", page.getNumber());
 	    m.addAttribute("pageSize", pageSize);
 	    m.addAttribute("totalElements", page.getTotalElements());
 	    m.addAttribute("totalPages", page.getTotalPages());
 	    m.addAttribute("isFirst", page.isFirst());
 	    m.addAttribute("isLast", page.isLast());
-
-	    // Truyền tiêu chí lọc vào model để hiển thị trong giao diện
 	    m.addAttribute("criteria", criteria);
+	    m.addAttribute("ch", ch); // Thêm `ch` vào Model để giữ giá trị trong view
 
 	    return "product";
 	}
+
+
 
 
 	@GetMapping("/product/{id}")
