@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Shop Settings</title>
+	<meta charset="UTF-8">
+	<title>Shop Settings</title>
 </head>
+
 <body>
-    <section>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <h3 class="text-center">Shop Settings</h3>
-                            <hr>
-                            <!-- Success and Error Messages -->
-                            <th:block th:if="${succMsg}">
-                                <p class="text-success text-center">[[${succMsg}]]</p>
-                            </th:block>
-                            <th:block th:if="${errorMsg}">
-                                <p class="text-danger text-center">[[${errorMsg}]]</p>
-                            </th:block>
-                            <form action="/vendor/update-shop" method="post" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Shop Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your shop name" th:value="${shop.name}" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Describe your shop" th:text="${shop.description}" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="logo" class="form-label">Logo</label>
-                                    <input type="file" class="form-control" id="logo" name="file">
-                                    <th:block th:if="${shop.logo}">
-                                        <img th:src="@{'/img/shop_img/' + ${shop.logo}}" alt="Shop Logo" class="img-thumbnail mt-2" style="width: 100px; height: 100px;">
-                                    </th:block>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="isActive" name="isActive" th:checked="${shop.isActive}">
-                                    <label class="form-check-label" for="isActive">Is Active</label>
-                                </div>
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    <a href="/vendor/" class="btn btn-secondary">Cancel</a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+	<section class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+					<div class="card shadow-sm">
+						<div class="card-body p-3">
+							<h4 class="text-center mb-3">Shop Settings</h4>
+							<hr>
+							<!-- Success and Error Messages -->
+							<th:block th:if="${succMsg}">
+								<p class="text-success text-center">[[${succMsg}]]</p>
+							</th:block>
+							<th:block th:if="${errorMsg}">
+								<p class="text-danger text-center">[[${errorMsg}]]</p>
+							</th:block>
+							<form action="/vendor/update-shop" method="post" enctype="multipart/form-data">
+								<div class="mb-2">
+									<label for="name" class="form-label">Shop Name</label>
+									<input type="text" class="form-control form-control-sm" id="name" name="name"
+										placeholder="Enter your shop name" th:value="${shop.name}" required>
+								</div>
+								<div class="mb-2">
+									<label for="description" class="form-label">Description</label>
+									<textarea class="form-control form-control-sm" id="description" name="description"
+										rows="3" placeholder="Describe your shop" th:text="${shop.description}"
+										required></textarea>
+								</div>
+								<div class="mb-2">
+									<label for="logo" class="form-label">Logo</label>
+									<input type="file" class="form-control form-control-sm" id="logo" name="file">
+									<th:block th:if="${shop.logo}">
+										<img th:src="@{'/img/shop_img/' + ${shop.logo}}" alt="Shop Logo"
+											class="img-thumbnail mt-1" style="width: 80px; height: 80px;">
+									</th:block>
+								</div>
+								<div class="form-check mb-2">
+									<input class="form-check-input" type="checkbox" id="isActive" name="isActive"
+										th:checked="${shop.isActive}">
+									<label class="form-check-label" for="isActive">Is Active</label>
+								</div>
+								<div class="text-center">
+									<button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+									<a href="/vendor/" class="btn btn-secondary btn-sm">Cancel</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
+
 </html>

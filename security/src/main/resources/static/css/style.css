@@ -89,3 +89,79 @@ body {
         transform: translateY(0);
     }
 }
+.btn-light {
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.btn-light:hover {
+    background-color: #f8f9fa;
+}
+/* Heart icon enhancements */
+/* Removes the default border around the button */
+.heart button {
+    border: none;
+    background: none;
+    padding: 0; /* Remove padding for a cleaner look */
+}
+
+/* Smooth transition for color change when hovering */
+.heart i {
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for color and scaling */
+}
+
+/* When hovering over the heart icon, change color and scale it */
+.heart i:hover {
+    color: red; /* Change color to red on hover */
+    transform: scale(1.2); /* Slightly enlarge the icon on hover */
+}
+
+/* Define the default color of the heart icon */
+.heart i.fas {
+    color: red; /* Red color for solid heart (favorited) */
+}
+
+.heart i.far {
+    color: #ccc; /* Grey color for outline heart (not favorited) */
+}
+
+/* Optional: Change color when the heart is favorited (btn-danger) */
+.heart button.btn-danger i {
+    color: red; /* Red color when the heart is favorited */
+}
+/* Optional: Customize the favorite count */
+#favorite-count {
+    font-size: 1rem; /* Adjust font size for the count */
+    color: #333; /* Change text color */
+    font-weight: bold; /* Make the count text bold */
+}
+/* Badge customization for status */
+.status-badge {
+    font-size: 1rem; /* Tăng kích thước chữ */
+    padding: 0.5em 1em; /* Tăng khoảng cách bên trong badge */
+    border-radius: 20px; /* Làm bo tròn badge */
+    display: inline-flex; /* Giúp badge căn giữa với biểu tượng */
+    align-items: center; /* Căn giữa biểu tượng và chữ */
+    gap: 0.5em; /* Tạo khoảng cách giữa biểu tượng và chữ */
+}
+
+/* Green badge for available products */
+.badge-success {
+    background-color: #28a745; /* Màu xanh lá cây đậm */
+    color: white; /* Chữ trắng */
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2); /* Hiệu ứng bóng */
+}
+
+/* Red badge for out of stock products */
+.badge-danger {
+    background-color: #dc3545; /* Màu đỏ đậm */
+    color: rgb(64, 0, 64); /* Chữ trắng */
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2); /* Hiệu ứng bóng */
+}
+
+/* Icon enhancement inside the badge */
+.status-badge i {
+    font-size: 1.2rem; /* Tăng kích thước biểu tượng */
+    vertical-align: middle;
+}
+

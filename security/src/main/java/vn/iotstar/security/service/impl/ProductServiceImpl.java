@@ -1,6 +1,3 @@
-
-
-
 package vn.iotstar.security.service.impl;
 
 import java.io.File;
@@ -19,17 +16,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.transaction.Transactional;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
-
+import vn.iotstar.security.model.ProductOrder;
 import vn.iotstar.security.model.Shop;
-
+import vn.iotstar.security.repository.CartRepository;
 import vn.iotstar.security.repository.CategoryRepository;
+import vn.iotstar.security.repository.FavoriteProductRepository;
 import vn.iotstar.security.repository.ProductRepository;
 import vn.iotstar.security.service.ProductService;
 
 
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
@@ -37,6 +37,15 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	 @Autowired
+	 private FavoriteProductRepository favoriteProductRepository;
+	 
+	 @Autowired
+	private CartRepository cartRepository;
+	 
+	 @Autowired
+	private OrderServiceImpl orderServiceImpl;
 
 	@Override
 	public Product saveProduct(Product product) {
@@ -56,6 +65,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Boolean deleteProduct(Integer id) {
+		favoriteProductRepository.deleteByProduct_Id(id);
+		cartRepository.deleteByProductId(id);
+		orderServiceImpl.productIdToNull(id);
+		
 		Product product = productRepository.findById(id).orElse(null);
 
 		if (!ObjectUtils.isEmpty(product)) {
@@ -133,9 +146,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch) {
+	public Page<Product> searchProductPagination(Integer pageNo, Integer pageSize, String ch, int type) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCase(ch, ch, pageable);
+		
+		switch (type) {
+	    case 2:
+	        return productRepository.findByTitleContainingIgnoreCase(ch, pageable);
+	    case 3:
+	        return productRepository.findByCategory_NameContainingIgnoreCase(ch, pageable);
+	    case 4:
+	        return productRepository.findByShop_NameContainingIgnoreCase(ch, pageable);
+	    default:
+	        return productRepository.findByTitleContainingIgnoreCaseOrCategory_NameContainingIgnoreCaseOrShop_NameContainingIgnoreCase(ch, ch, ch, pageable);
+		}
 	}
 
 	@Override
@@ -175,5 +198,77 @@ public class ProductServiceImpl implements ProductService {
 	    Pageable pageable = PageRequest.of(pageNo, pageSize);
 	    return productRepository.findByShop(shop, pageable);
 	}
+	@Override
+	public List<Product> getDiscountedProducts() {
+        return productRepository.findByDiscountGreaterThan(0);
+    }
+
+    // Apply promotion logic (update discount price based on discount field)
+    @Override
+	public void applyPromotion(Product product) {
+        if (product.getDiscount() > 0) {
+            double discountAmount = product.getPrice() * (product.getDiscount() / 100.0);
+            product.setDiscountPrice(product.getPrice() - discountAmount);
+        }
+    }
+    @Override
+	public List<Product> getProductsSoldMoreThan10() {
+        return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
+    }
+
+	@Override
+
+	public Page<Product> getProductsByCriteria(String criteria, Pageable pageable) {
+		switch (criteria.toUpperCase()) {
+        case "NEWEST":
+            return productRepository.findNewestProducts(pageable);
+        case "BEST_SELLING":
+            return productRepository.findBestSellingProducts(pageable);
+        case "TOP_RATED":
+            return productRepository.findTopRatedProducts(pageable);
+        case "FAVORITE":
+            return productRepository.findMostFavoriteProducts(pageable);
+        default:
+            throw new IllegalArgumentException("Invalid criteria: " + criteria);
+    }
+	}
+
+	public Boolean deleteProductByCategory(Category category) {
+		List<Product> listProduct = productRepository.findByCategory(category);
+		
+		for (Product product : listProduct) {
+			deleteProduct(product.getId());
+		}
+		
+		listProduct = productRepository.findByCategory(category);
+		
+		if(ObjectUtils.isEmpty(listProduct)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders) {
+		int totalProduct = 0;
+		for (ProductOrder productOrder : allDeliveredOrders) {
+            totalProduct += productOrder.getQuantity();
+        }
+		return String.valueOf(totalProduct);
+	}
+
+	@Override
+    public Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize) {
+        return productRepository.findByShopAndTitleContainingIgnoreCase(shop, searchQuery, PageRequest.of(pageNo, pageSize));
+    }
+	
+
+
+	@Override
+	public Page<Product> searchProductsByCategoryAndKeyword(String category, String keyword, Pageable pageable) {
+		 return productRepository.findByCategoryAndKeyword(category, keyword, pageable);
+	}
+
 
 }
+

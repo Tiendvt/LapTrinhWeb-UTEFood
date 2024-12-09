@@ -1,5 +1,7 @@
 package vn.iotstar.security.service;
 
+import java.util.List;
+
 import vn.iotstar.security.model.Shop;
 
 public interface ShopService {
@@ -11,9 +13,9 @@ public interface ShopService {
     boolean doesShopExistForOwner(String email);
 
     Shop saveShop(Shop shop);
-    void updateShopSoldAndRevenue(Integer shopId, Double revenue);
+    void updateShopSoldAndRevenue(Integer shopId, Double revenue,int quantity);
+    
+    List<Shop> getAll();
+
 }
-
-
-
 

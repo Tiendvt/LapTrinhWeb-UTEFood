@@ -1,8 +1,17 @@
 package vn.iotstar.security.service.impl;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +20,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import vn.iotstar.security.model.Cart;
 import vn.iotstar.security.model.OrderAddress;
 import vn.iotstar.security.model.OrderRequest;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Review;
 import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.repository.CartRepository;
 import vn.iotstar.security.repository.ProductOrderRepository;
+import vn.iotstar.security.repository.ReviewRepository;
 import vn.iotstar.security.service.OrderService;
 import vn.iotstar.security.util.CommonUtil;
 import vn.iotstar.security.util.OrderStatus;
@@ -35,7 +47,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private CommonUtil commonUtil;
-
+    @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private ShopServiceImpl shopService;
     @Override
     public void saveOrder(Integer userId, OrderRequest orderRequest) throws Exception {
         List<Cart> carts = cartRepository.findByUserId(userId);
@@ -51,7 +68,15 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(cart.getQuantity());
             order.setUser(cart.getUser());
             order.setShop(cart.getProduct().getShop()); // Ensure shop linkage
-            order.setStatus(OrderStatus.IN_PROGRESS.getName());
+            order.setName(cart.getProduct().getTitle());
+            
+            if("ONLINE".equalsIgnoreCase(orderRequest.getPaymentType())){
+            	order.setStatus(OrderStatus.ONLINE.getName());
+            }
+            else {
+            	order.setStatus(OrderStatus.NEW_ORDER.getName());
+            }
+            
             order.setPaymentType(orderRequest.getPaymentType());
 
             OrderAddress address = new OrderAddress();
@@ -114,5 +139,180 @@ public class OrderServiceImpl implements OrderService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return orderRepository.findAllByStatusAndShop(status, shop, pageable);
     }
-}
 
+    public List<ProductOrder> getOrdersByStatusAndUser(String status, Integer userId) {
+        return orderRepository.findByStatusAndUserId(status, userId);
+        
+    }
+
+    public void submitReview(Integer orderId, String comment, MultipartFile[] files) {
+    	ProductOrder order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!"Delivered".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Only completed orders can be reviewed");
+        }
+
+        // Giả định có bảng Review hoặc lưu trực tiếp vào bảng ProductOrder
+        Review review = new Review();
+        review.setComment(comment);
+        review.setOrder(order);
+
+        // Xử lý upload file (nếu có)
+        if (files != null) {
+            for (MultipartFile file : files) {
+                String fileName = fileStorageService.storeFile(file); // Lưu file và lấy đường dẫn
+                review.addFile(fileName); // Giả sử có danh sách file trong entity Review
+            }
+        }
+
+        reviewRepository.save(review); // Lưu đánh giá vào cơ sở dữ liệu
+    }
+
+	@Override
+	public ProductOrder getOrderById(Integer id) {
+		System.out.print("orderid: "+orderRepository.findById(id));
+		return orderRepository.findById(id).orElse(null);
+	}
+	@Override
+	public Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders) {
+	    Map<Integer, Boolean> reviewStatus = new HashMap<>();
+	    for (ProductOrder order : orders) {
+	        boolean isReviewed = reviewRepository.existsByOrderId(order.getId());
+	        reviewStatus.put(order.getId(), isReviewed);
+	    }
+	    return reviewStatus;
+	}
+
+
+	@Override
+	public List<ProductOrder> getOrdersByStatus(String status) {
+		return orderRepository.findAllByStatus(status);
+	}
+
+
+
+	@Override
+	public void productIdToNull(int product_id) {
+		List<ProductOrder> listProductOrder = orderRepository.findByProductId(product_id);
+		
+		for (ProductOrder productOrder : listProductOrder) {
+	        productOrder.setProduct(null);
+	    }
+		
+		orderRepository.saveAll(listProductOrder);
+	}
+		
+
+	@Override
+	public double getTotalRevenueForShop(Shop shop) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+        return orders.stream()
+                .filter(order -> "Delivered".equalsIgnoreCase(order.getStatus()))
+                .mapToDouble(order -> order.getPrice() * order.getQuantity())
+                .sum();
+    }
+
+    /**
+     * Get total products sold for a specific shop.
+     */
+    @Override
+	public int getTotalProductsSoldForShop(Shop shop) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+        return orders.stream()
+                .filter(order -> "Delivered".equalsIgnoreCase(order.getStatus()))
+                .mapToInt(ProductOrder::getQuantity)
+                .sum();
+    }
+
+    /**
+     * Get monthly revenue for a specific shop.
+     */
+    @Override
+	public Map<String, Double> getMonthlyRevenueForShop(Shop shop, int year) {
+        List<ProductOrder> orders = orderRepository.findAllByShop(shop);
+
+        // Correct TreeMap instantiation
+        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String monthYear1, String monthYear2) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+                    Date date1 = format.parse(monthYear1);
+                    Date date2 = format.parse(monthYear2); 
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
+        
+        for (ProductOrder order : orders) {
+            if (order.getOrderDate().getYear() == year && "Delivered".equalsIgnoreCase(order.getStatus())) {
+                String monthYear = order.getOrderDate().getMonth().toString() + " " + year;
+                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + order.getPrice() * order.getQuantity());
+            }
+        }
+
+        // Ensure all months are present in the map
+        for (Month month : Month.values()) {
+            String monthYear = month.toString() + " " + year;
+            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+        }
+
+        return monthlyRevenueMap;
+    }
+
+	@Override
+	public String getTotalRevenue() {
+		double totalRevenue = 0;
+		List<Shop> listShop = shopService.getAll();
+	    if (!listShop.isEmpty()) {
+	        for (Shop shop : listShop) {
+	            totalRevenue += shop.getRevenue();
+	        }
+	    }
+	    
+	    DecimalFormat df = new DecimalFormat("#,##0");
+	    String formattedTotalRevenue = df.format(totalRevenue);
+	    
+	    return formattedTotalRevenue;
+	}
+
+	@Override
+	public Map<String, Double> getMonthlyRevenue(List<ProductOrder> listDeliveredProductOrder, int year) {
+		// Use TreeMap with custom Comparator (corrected)
+        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String monthYear1, String monthYear2) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+                    Date date1 = format.parse(monthYear1);
+                    Date date2 = format.parse(monthYear2); 
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
+
+        for (ProductOrder productOrder : listDeliveredProductOrder) {
+            LocalDate orderDate = productOrder.getOrderDate();
+            if (orderDate.getYear() == year) {
+                String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
+                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice()*productOrder.getQuantity());
+            }
+        }
+
+        for (Month month : Month.values()) {
+            String monthYear = month.toString() + " " + String.valueOf(year);
+            monthlyRevenueMap.putIfAbsent(monthYear, 0.0);
+        }
+        
+        return monthlyRevenueMap;
+	}
+	
+
+}

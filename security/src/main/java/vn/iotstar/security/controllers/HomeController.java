@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,8 +35,10 @@ import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.User;
+import vn.iotstar.security.repository.FavoriteProductRepository;
 import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
+import vn.iotstar.security.service.FavoriteService;
 import vn.iotstar.security.service.ProductService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
@@ -61,7 +64,10 @@ public class HomeController {
 
 	@Autowired
 	private CartService cartService;
-
+	@Autowired
+	private FavoriteProductRepository favoriteProductRepository;
+	@Autowired
+	private FavoriteService favoriteService;
 	@ModelAttribute
 	public void getUserDetails(Principal p, Model m) {
 		if (p != null) {
@@ -78,15 +84,25 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String index(Model m) {
+	    // Fetch all active categories
+	    List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
+	            .sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
 
-		List<Category> allActiveCategory = categoryService.getAllActiveCategory().stream()
-				.sorted((c1, c2) -> c2.getId().compareTo(c1.getId())).limit(6).toList();
-		List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
-				.sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
-		m.addAttribute("category", allActiveCategory);
-		m.addAttribute("products", allActiveProducts);
-		return "index";
+	    // Fetch all active products (limit to 8 products)
+	    List<Product> allActiveProducts = productService.getAllActiveProducts("").stream()
+	            .sorted((p1, p2) -> p2.getId().compareTo(p1.getId())).limit(8).toList();
+
+	    // Fetch products that have sold more than 10 units
+	    List<Product> productsSoldMoreThan10 = productService.getProductsSoldMoreThan10();
+
+	    // Add these products to the model to display them in the view
+	    m.addAttribute("productsSoldMoreThan10", productsSoldMoreThan10);
+	    m.addAttribute("category", allActiveCategory);
+	    m.addAttribute("products", allActiveProducts);
+
+	    return "index";
 	}
+
 
 	@GetMapping("/signin")
 	public String login(Principal principal) {
@@ -105,42 +121,86 @@ public class HomeController {
 	}
 
 	@GetMapping("/products")
-	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
-			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
-			@RequestParam(defaultValue = "") String ch) {
+	public String products(
+	        Model m,
+	        @RequestParam(value = "category", defaultValue = "") String category,
+	        @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+	        @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
+	        @RequestParam(defaultValue = "") String ch,
+	        @RequestParam(name = "criteria", defaultValue = "DEFAULT") String criteria) {
 
-		List<Category> categories = categoryService.getAllActiveCategory();
-		m.addAttribute("paramValue", category);
-		m.addAttribute("categories", categories);
+	    // Nếu có tiêu chí lọc thì đổi pageSize thành 20
+	    if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        pageSize = 20;
+	    }
 
-		List<Product> product = productService.getAllActiveProducts(category);
-		m.addAttribute("products", product);
-		Page<Product> page = null;
-		if (StringUtils.isEmpty(ch)) {
-			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-		} else {
-			page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
-		}
+	    // Lấy danh sách danh mục
+	    List<Category> categories = categoryService.getAllActiveCategory();
+	    m.addAttribute("paramValue", category);
+	    m.addAttribute("categories", categories);
 
-		List<Product> products = page.getContent();
-		m.addAttribute("products", products);
-		m.addAttribute("productsSize", products.size());
+	    Page<Product> page;
 
-		m.addAttribute("pageNo", page.getNumber());
-		m.addAttribute("pageSize", pageSize);
-		m.addAttribute("totalElements", page.getTotalElements());
-		m.addAttribute("totalPages", page.getTotalPages());
-		m.addAttribute("isFirst", page.isFirst());
-		m.addAttribute("isLast", page.isLast());
+	    // Logic tìm kiếm
+	    if (!StringUtils.isEmpty(ch)) {
 
-		return "product";
+	        // Nếu có từ khóa tìm kiếm ch
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo cả category và từ khóa
+	            page = productService.searchProductsByCategoryAndKeyword(category, ch, PageRequest.of(pageNo, pageSize));
+	        } else {
+	            // Tìm sản phẩm theo từ khóa mà không phân theo category
+	            page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
+	        }
+	    } else if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        // Nếu có tiêu chí lọc (không phải mặc định)
+	        page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
+	    } else {
+	        // Nếu không có từ khóa và không có tiêu chí lọc, phân trang theo category
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo category
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	        } else {
+	            // Nếu category là rỗng (All), tìm tất cả sản phẩm
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, "");
+	        }
+	    }
+
+	    // Gán các thông tin sản phẩm vào Model
+	    List<Product> products = page.getContent();
+	    m.addAttribute("products", products);
+	    m.addAttribute("productsSize", products.size());
+	    m.addAttribute("pageNo", page.getNumber());
+	    m.addAttribute("pageSize", pageSize);
+	    m.addAttribute("totalElements", page.getTotalElements());
+	    m.addAttribute("totalPages", page.getTotalPages());
+	    m.addAttribute("isFirst", page.isFirst());
+	    m.addAttribute("isLast", page.isLast());
+	    m.addAttribute("criteria", criteria);
+	    m.addAttribute("ch", ch); // Thêm `ch` vào Model để giữ giá trị trong view
+
+	    return "product";
 	}
 
+
+
+
 	@GetMapping("/product/{id}")
-	public String product(@PathVariable int id, Model m) {
-		Product productById = productService.getProductById(id);
-		m.addAttribute("product", productById);
+	public String product(@PathVariable int id, Model m, Principal principal) {
+		Product product = productService.getProductById(id);
+	    m.addAttribute("product", product);
+	    boolean isFavorite = false;
+	    if (principal != null) {
+	        User user = userService.getUserByEmail(principal.getName());
+	        
+	        	isFavorite = favoriteProductRepository.existsByUserIdAndProductId(user.getId(), id);
+
+	    } 
+	 // Count the number of users who have favorited this product
+	    int favoriteCount = favoriteService.countByProductId(product.getId());
+	    
+	        m.addAttribute("isFavorite", isFavorite);
+	        m.addAttribute("favoriteCount", favoriteCount);
 		return "view_product";
 	}
 
@@ -278,7 +338,6 @@ public class HomeController {
 		List<Category> categories = categoryService.getAllActiveCategory();
 		m.addAttribute("categories", categories);
 		return "product";
-
 	}
 	@GetMapping("/profile")
 	public String profile() {

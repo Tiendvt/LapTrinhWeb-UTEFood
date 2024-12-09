@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Revenue</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .revenue-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+        }
+
+        .table-highlight {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .revenue-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+
+        .revenue-table th, .revenue-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <section class="container mt-5">
+        <h1 class="text-center">Revenue Management</h1>
+        <p class="text-center text-muted">Track your shop's performance and revenue.</p>
+        <hr>
+
+        <!-- Display error message if no shop found -->
+        <th:block th:if="${errorMsg}">
+            <p class="text-danger text-center fw-bold">[[${errorMsg}]]</p>
+        </th:block>
+
+        <!-- Summary Section -->
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <div class="revenue-card">
+                    <h5>Total Revenue</h5>
+                    <h3 class="text-success" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="revenue-card">
+                    <h5>Total Products Sold</h5>
+                    <h3 class="text-primary" th:text="${totalProductsSold}">0</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="revenue-card">
+                    <h5>Year</h5>
+                    <h3 th:text="${year}">2024</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6">
+                <form action="/vendor/revenue" method="get" class="input-group input-group-lg">
+                    <input type="text" name="year" class="form-control" placeholder="Enter year (e.g., 2024)" 
+                           th:value="${year}">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Monthly Revenue Table -->
+        <div class="row mt-4">
+            <div class="col-md-8 offset-md-2">
+                <h3 class="text-center">Monthly Revenue</h3>
+                <table class="table revenue-table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entry : ${monthlyRevenueMap}">
+                            <td th:text="${entry.key}">January</td>
+                            <td th:text="${#numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')} + ' ₫'" 
+                                th:class="${entry.value > 500000 ? 'table-highlight' : ''}">0 ₫</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

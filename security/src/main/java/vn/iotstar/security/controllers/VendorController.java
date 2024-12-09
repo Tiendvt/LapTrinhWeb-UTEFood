@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -87,15 +89,28 @@ public class VendorController {
     // View Products
     @GetMapping("/products")
     public String viewProducts(Principal principal, Model model,
-                               @RequestParam(defaultValue = "0") Integer pageNo,
-                               @RequestParam(defaultValue = "10") Integer pageSize) {
+                               @RequestParam(defaultValue = "0") int pageNo,
+                               @RequestParam(defaultValue = "10") int pageSize,
+                               @RequestParam(defaultValue = "") String searchQuery) {
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
-        Page<Product> products = productService.getProductsByShop(shop, pageNo, pageSize);
-        model.addAttribute("products", products.getContent());
+
+        Page<Product> productsPage;
+        if (searchQuery.isEmpty()) {
+            productsPage = productService.getProductsByShop(shop, pageNo, pageSize);
+        } else {
+            productsPage = productService.searchVendorProductsPagination(shop, searchQuery, pageNo, pageSize);
+        }
+
+        model.addAttribute("products", productsPage.getContent());
         model.addAttribute("pageNo", pageNo);
         model.addAttribute("pageSize", pageSize);
-        model.addAttribute("totalPages", products.getTotalPages());
-        return "vendor/products";
+        model.addAttribute("totalElements", productsPage.getTotalElements());
+        model.addAttribute("totalPages", productsPage.getTotalPages());
+        model.addAttribute("isFirst", productsPage.isFirst());
+        model.addAttribute("isLast", productsPage.isLast());
+        model.addAttribute("searchQuery", searchQuery);
+
+        return "vendor/products"; // Update this with the actual view for product list
     }
 
     // Add Product Page
@@ -200,15 +215,26 @@ public class VendorController {
     public String viewOrders(Principal principal, Model model,
                              @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        // Ensure pageNo is at least 0 (0-based indexing)
+        if (pageNo < 0) {
+            pageNo = 0;
+        }
+
         // Retrieve the shop associated with the logged-in vendor
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
 
-        // Retrieve orders for the shop, passing the page number and page size for pagination
+        // Retrieve orders for the shop
         Page<ProductOrder> page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
 
+        // Ensure pageNo does not exceed the total number of pages
+        if (pageNo >= page.getTotalPages() && page.getTotalPages() > 0) {
+            pageNo = page.getTotalPages() - 1;
+            page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
+        }
+
         // Add necessary attributes to the model for pagination and orders
-        model.addAttribute("orders", page.getContent());  // Orders specific to the shop
-        model.addAttribute("srch", false);  // Set to false as no search is done
+        model.addAttribute("orders", page.getContent()); // Orders specific to the shop
+        model.addAttribute("srch", false); // Set to false as no search is done
         model.addAttribute("pageNo", page.getNumber());
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalElements", page.getTotalElements());
@@ -217,8 +243,9 @@ public class VendorController {
         model.addAttribute("isLast", page.isLast());
 
         // Return the vendor orders page view
-        return "vendor/orders";  // View for vendor orders
+        return "vendor/orders"; // View for vendor orders
     }
+
 
 
 
@@ -245,11 +272,11 @@ public class VendorController {
             Shop shop = product.getShop();
 
             // Increment sold quantity in Product
-            product.setSold(product.getSold() + 1);
+            product.setSold(product.getSold() + updateOrder.getQuantity());
             productService.saveProduct(product);  // Update the product
-
+            int productQuantity = updateOrder.getQuantity();
             // Update shop sold and revenue without saving the entire shop
-            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice());
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice(),productQuantity);
 
             // Log or display success message
             session.setAttribute("succMsg", "Order status updated to Delivered. Product sold and shop revenue updated.");
@@ -283,14 +310,20 @@ public class VendorController {
             ProductOrder order = orderService.getOrdersByOrderId(orderId.trim());
 
             // Ensure the order belongs to the logged-in vendor's shop
-            if (order != null && order.getShop().getOwner().getEmail().equals(principal.getName())) {
-                model.addAttribute("orderDtls", order);  // Add the order details to the model
-                model.addAttribute("srch", true);  // Set the flag for search results
-            } else {
-                // If the order doesn't belong to the vendor, show an error message
+            if (order == null ) {
+            	model.addAttribute("orderDtls", null);
+            	// If the order doesn't belong to the vendor, show an error message
                 session.setAttribute("errorMsg", "Incorrect order ID or permission denied.");
-                model.addAttribute("orderDtls", null);  // No order details to show
+                //model.addAttribute("orderDtls", null);  // No order details to show
+                
+            } else {
+            	
+            	model.addAttribute("orderDtls", order);  // Add the order details to the model
+            	System.out.println("--------------------------------------------");
+            	System.out.println(order.getName());
+                  // Set the flag for search results
             }
+            model.addAttribute("srch", true);
         } else {
             // No orderId provided, fetch orders for the logged-in vendor's shop
             Shop shop = shopService.getShopByOwnerEmail(principal.getName());
@@ -486,4 +519,78 @@ public class VendorController {
         // Redirect back to the profile page after attempting to change the password
         return "redirect:/vendor/profile";
     }
+    @GetMapping("/discounted-products")
+    public String viewDiscountedProducts(Principal principal, Model model,
+                                          @RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        // Retrieve the shop associated with the logged-in vendor
+        Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+
+        // Retrieve the products for the shop
+        Page<Product> products = productService.getProductsByShop(shop, pageNo, pageSize);
+
+        // Pass the products to the view
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPages", products.getTotalPages());
+
+        return "vendor/discounted_products"; 
+    }
+    // Apply promotion to a specific product (set discount)
+    @PostMapping("/product/{id}/apply-promotion")
+    public String applyPromotionToProduct(@PathVariable Integer id, @RequestParam int discount, Principal principal) {
+        Product product = productService.getProductById(id);
+        if (product != null && discount > 0) {
+            product.setDiscount(discount);  // Set the discount for the product
+            productService.applyPromotion(product);  // Apply the promotion (calculate discount price)
+            productService.saveProduct(product);  // Save the updated product
+        }
+        return "redirect:/vendor/discounted-products";  // Redirect to the page showing discounted products
+    }
+    
+    @GetMapping("/revenue")
+    public String viewRevenue(Model model, Principal principal, @RequestParam(required = false) String year) {
+        // Retrieve the shop of the logged-in vendor
+        Shop shop = shopService.getShopByOwnerEmail(principal.getName());
+        if (shop == null) {
+            model.addAttribute("errorMsg", "No shop found. Please create your shop first.");
+            return "vendor/dashboard";
+        }
+
+        // Default to the current year if no year is provided
+        if (year == null || year.isEmpty()) {
+            year = String.valueOf(LocalDate.now().getYear());
+        }
+
+        // Retrieve revenue data
+        double totalRevenue = orderService.getTotalRevenueForShop(shop);
+        int totalProductsSold = orderService.getTotalProductsSoldForShop(shop);
+        Map<String, Double> monthlyRevenueMap = null;
+        
+        try {
+	        int yearInt = Integer.parseInt(year);
+	        if (yearInt <= 0) { 
+	        	model.addAttribute("year", null);
+	        }
+	        else {
+	        	monthlyRevenueMap = orderService.getMonthlyRevenueForShop(shop, Integer.parseInt(year));
+
+		        model.addAttribute("year", year);
+	        }
+		 } catch (NumberFormatException e) {
+			 model.addAttribute("year", null);
+		 }	  
+               
+
+        // Add attributes to the model for the view
+        model.addAttribute("shop", shop);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalProductsSold", totalProductsSold);
+        model.addAttribute("monthlyRevenueMap", monthlyRevenueMap);
+
+
+        return "vendor/revenue"; // Render the vendor revenue view
+    }
+
 }

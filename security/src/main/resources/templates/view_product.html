@@ -1,99 +1,124 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Product Details</title>
-    <!-- Bootstrap CSS Link -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- FontAwesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+	<meta charset="ISO-8859-1">
+	<title>Product Details</title>
+	<!-- Bootstrap CSS Link -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+	<!-- FontAwesome for icons -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
 </head>
+
 <body>
-    <section>
-        <div class="container mt-5 card p-4 shadow-lg rounded"
-             style="margin-top: 70px; margin-bottom: 100px;">
-            <div class="row">
-                <!-- Success or Error Message Block -->
-                <th:block th:if="${session.succMsg}">
-                    <p class="text-success alert alert-success text-center" role="alert">[[${session.succMsg}]]</p>
-                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-                </th:block>
+	<section>
+		<div class="container mt-6 card p-4 shadow-lg rounded" style="margin-top: 120px; margin-bottom: 100px;">
+			<div class="row">
+				<!-- Success or Error Message Block -->
+				<th:block th:if="${session.succMsg}">
+					<p class="text-success alert alert-success text-center" role="alert">[[${session.succMsg}]]</p>
+				</th:block>
+				<th:block th:if="${session.errorMsg}">
+					<p class="text-danger alert alert-danger text-center" role="alert">[[${session.errorMsg}]]</p>
+				</th:block>
 
-                <th:block th:if="${session.errorMsg}">
-                    <p class="text-danger text-center alert alert-danger">[[${session.errorMsg}]]</p>
-                    <th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-                </th:block>
+				<!-- Product Image and Information -->
+				<div class="col-md-6 text-center mb-4">
+					<img alt="Product Image" th:src="@{'/img/product_img/'+${product.image}}" class="img-fluid rounded"
+						width="300px" height="250px">
+				</div>
 
-                <!-- Product Image and Information -->
-                <div class="col-md-6 text-center mb-4">
-                    <img alt="Product Image" th:src="@{'/img/product_img/'+${product.image}}"
-                         class="img-fluid rounded" width="300px" height="250px">
-                </div>
+				<div class="col-md-6">
+					<!-- Product Title -->
+					<h3 class="font-weight-bold">[[${product.title}]]</h3>
+ <!-- Shop Name -->
+    <p><span class="fw-bold">Shop Name:</span> [[${product.shop.name}]]</p> <!-- Thêm dòng này -->
 
-                <div class="col-md-6">
-                    <!-- Product Title -->
-                    <p class="fs-3 font-weight-bold">[[${product.title}]]</p>
-                    <!-- Product Description -->
-                    <p><span class="fw-bold">Description: </span>[[${product.description}]]</p>
+					<!-- Product Description -->
+					<p><span class="fw-bold">Description:</span> [[${product.description}]]</p>
 
-                    <!-- Product Status -->
-                    <p><span class="fw-bosld">Product Details: </span><br> Status:
-                        <th:block th:if="${product.stock > 0}">
-                            <span class="badge badge-success">Available</span>
-                        </th:block>
-                        <th:block th:unless="${product.stock > 0}">
-                            <span class="badge badge-warning">Out of Stock</span>
-                        </th:block>
-                        <br> Category: [[${product.category.name}]]<br> Policy: 7 Days Replacement & Return
-                    </p>
 
-                    <!-- Price -->
-                    <p class="fs-5 fw-bold">
-                        Price: <i class="fas fa-rupee-sign"></i> [[${product.discountPrice}]]
-                        <span class="text-secondary fs-6 text-decoration-line-through">[[${product.price}]]</span>
-                        <span class="text-success fs-6">[[${product.discount}]]% off</span>
-                    </p>
+					<!-- Product Details -->
+					<p>
+						<span class="fw-bold">Product Details:</span><br>
+						Status:
+						<span class="badge" th:class="${product.stock > 0} ? 'badge-success' : 'badge-danger'">
+							<i th:class="${product.stock > 0} ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+							[[${product.stock > 0 ? 'Available' : 'Out of Stock'}]]
+						</span><br>
+						Category: [[${product.category.name}]]<br>
+						Policy: 7 Days Replacement & Return<br>
+						Shop: [[${product.shop.name}]]
+					</p>
 
-                    <!-- Payment and Shipping Information -->
-                    <div class="row">
-                        <div class="col-md-4 text-success text-center p-2">
-                            <i class="fas fa-money-bill-wave fa-2x"></i>
-                            <p>Cash On Delivery</p>
-                        </div>
-                        <div class="col-md-4 text-danger text-center p-2">
-                            <i class="fas fa-undo-alt fa-2x"></i>
-                            <p>Return Available</p>
-                        </div>
-                        <div class="col-md-4 text-primary text-center p-2">
-                            <i class="fas fa-truck-moving fa-2x"></i>
-                            <p>Free Shipping</p>
-                        </div>
-                    </div>
 
-                    <!-- Add to Cart Button -->
-                    <th:block th:if="${product.stock > 0}">
-                        <th:block th:if="${user == null}">
-                            <a href="/signin" class="btn btn-primary btn-block">Add To Cart</a>
-                        </th:block>
-                        <th:block th:unless="${user == null}">
-                            <a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"
-                               class="btn btn-primary btn-block">Add To Cart</a>
-                        </th:block>
-                    </th:block>
+					<!-- Price -->
+					<p class="fs-5 fw-bold">
+						Price:  [[${product.discountPrice}]] ₫
+						<span class="text-secondary text-decoration-line-through fs-6">[[${product.price}]] ₫</span>
+						<span class="text-success fs-6">[[${product.discount}]]% off</span>
+					</p>
 
-                    <!-- Out of Stock Button -->
-                    <th:block th:unless="${product.stock > 0}">
-                        <a href="#" class="btn btn-warning btn-block text-white">Out of Stock</a>
-                    </th:block>
-                </div>
-            </div>
-        </div>
-    </section>
+					<!-- Payment and Shipping Information -->
+					<div class="row">
+						<div class="col-md-4 text-center">
+							<i class="fas fa-money-bill-wave fa-2x text-success"></i>
+							<p>Cash On Delivery</p>
+						</div>
+						<div class="col-md-4 text-center">
+							<i class="fas fa-undo-alt fa-2x text-danger"></i>
+							<p>Return Available</p>
+						</div>
+						<div class="col-md-4 text-center">
+							<i class="fas fa-truck-moving fa-2x text-primary"></i>
+							<p>Free Shipping</p>
+						</div>
+					</div>
+					<div class="button-container">
 
-    <!-- Bootstrap JS (optional, for form validation, etc.) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+						<!-- Add to Cart Button -->
+						<th:block th:if="${product.stock > 0}">
+							<a th:href="@{'/signin'}" class="btn btn-primary btn-block" th:if="${user == null}">Add To
+								Cart</a>
+							<a th:href="@{'/user/addCart?pid='+${product.id}+'&uid='+${user.id}}"
+								class="btn btn-primary btn-block" th:unless="${user == null}">Add To Cart</a>
+						</th:block>
+						<th:block th:unless="${product.stock > 0}">
+							<a href="#" class="btn btn-warning btn-block text-white">Out of Stock</a>
+						</th:block>
+
+
+						<!-- Favorite Button -->
+
+						<!-- Favorite Button -->
+						<div class="heart d-flex align-items-center">
+							<button id="favorite-btn" class="btn"
+								th:classappend="${isFavorite ? 'btn-danger' : 'btn-outline-danger'}"
+								th:title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
+								th:onclick="|toggleFavorite([[${product.id}]])|">
+								<i class="fa-heart" th:classappend="${isFavorite ? 'fas' : 'far'}"></i>
+								<!-- Dynamic heart class -->
+							</button>
+							 <!-- Display number of people who liked the product -->
+    <span id="favorite-count" class="ms-2 mb-0">[[${favoriteCount}]]</span>
+						</div>
+  
+
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</section>
+	<!-- Scripts placed at the end of the body -->
+
+
+	<!-- Scripts -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
+
 </html>

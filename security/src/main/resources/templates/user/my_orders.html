@@ -1,60 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+    <meta charset="ISO-8859-1">
+    <title>My Orders</title>
 </head>
 <body>
-	<section>
-		<div class="container mt-5 p-5">
-			<div class="row">
-				<p class="text-center fs-3">My Orders</p>
-				<th:block th:if="${session.succMsg}">
-					<p class="text-success fw-bold text-center">[[${session.succMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
+<section>
+    <div class="container mt-5 p-5">
+        <h2 class="text-center">My Orders</h2>
+        
+        <!-- Thông báo -->
+        <div class="container mt-3">
+            <div th:if="${succMsg}" class="alert alert-success">
+                <span th:text="${succMsg}"></span>
+            </div>
+            <div th:if="${errorMsg}" class="alert alert-danger">
+                <span th:text="${errorMsg}"></span>
+            </div>
+        </div>
 
-				<th:block th:if="${session.errorMsg}">
-					<p class="text-danger fw-bold text-center">[[${session.errorMsg}]]</p>
-					<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
-				</th:block>
-				<div class="col-md-12 ">
+        <!-- Tabs trạng thái đơn hàng -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeTab == 'all'} ? 'active'" th:href="@{/user/user-orders}">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeTab == 'delivered'} ? 'active'" th:href="@{/user/user-orders/delivered}">Completed</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeTab == 'cancelled'} ? 'active'" th:href="@{/user/user-orders/cancelled}">Cancelled</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeTab == 'in progress'} ? 'active'" th:href="@{/user/user-orders/in progress}">In Progress</a>
+            </li>
+        </ul>
 
-					<table class="table table-bordered card-sh">
-						<thead >
-							<tr >
-								<th scope="col">Order Id</th>
-								<th scope="col">Date</th>
-								<th scope="col">Product Details</th>
-								<th scope="col">Price</th>
-								<th scope="col">Status</th>
-								<th scope="col">Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="o:${orders}">
-								<th scope="row">[[${o.orderId}]]</th>
-								<td>[[${o.orderDate}]]</td>
-								<td>[[${o.product.title}]]</td>
-								<td>Quantity : [[${o.quantity}]] <br>Price :
-									[[${o.price}]] <br>Total Price :[[${o.quantity *
-									o.price}]]
-								</td>
-								<td>[[${o.status}]]</td>
-								<td><th:block th:if="${o.status!='Cancelled'}">
-										<a th:href="@{'/user/update-status?id='+${o.id}+'&st=6' }"
-											class="btn btn-sm btn-danger">Cancel</a>
-									</th:block> <th:block th:unless="${o.status!='Cancelled'}">
-										<a href="#" class="btn btn-sm btn-danger disabled" >Cancel</a>
-									</th:block></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
+        <!-- Bảng đơn hàng -->
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Shop</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.orderDate}"></td>
+                    <td th:text="${order.name}"></td>
+                    <td th:text="${order.price}"></td>
+                    <td th:text="${order.quantity}"></td>
+                    <td th:text="${order.shop.name}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td>
+                        <!-- Nút Show Review hoặc Review -->
+                        <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and reviewStatus[order.id]}"
+                           th:href="@{'/user/edit-review/' + ${order.id}}" 
+                           class="btn btn-sm btn-secondary">Show Review</a>
+                        <a th:if="${reviewStatus != null and reviewStatus[order.id] != null and !reviewStatus[order.id] and order.status == 'Delivered'}"
+                           th:href="@{'/user/review-order/' + ${order.id}}" 
+                           class="btn btn-sm btn-primary">Review</a>
 
-		</div>
-	</section>
+                        <!-- Nút Cancel -->
+                        <a th:if="${order.status != 'Cancelled' and order.status != 'Delivered'}"
+                           th:classappend="${order.status == 'Order Confirmed' or order.status == 'In Transit'} ? 'disabled' : ''"
+                           th:href="@{'/user/cancel-order/' + ${order.id}}"
+                           class="btn btn-sm btn-danger">
+                            Cancel
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
 </body>
 </html>

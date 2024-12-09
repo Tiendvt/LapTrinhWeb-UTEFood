@@ -6,10 +6,10 @@
     <title>User Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
+
 <body>
-	<section class="d-flex justify-content-center align-items-center vh-100">
-	       <div class="container mt-5 bg-light p-4 rounded shadow" style="max-width: 900px;
-		   height:800px ; width: 100%;">
+    <section class="d-flex justify-content-center align-items-center vh-100" style="overflow-y: scroll; max-height: 100vh;">
+        <div class="container mt-5 bg-light p-4 rounded shadow" style="max-width: 800px; height: 700px; width: 100%;">
             <div class="row">
                 <!-- Left: Profile -->
                 <div class="col-lg-6 col-md-12">
@@ -25,16 +25,22 @@
                     <div class="text-center mb-3">
                         <img alt="Profile Image" th:src="@{'../img/profile_img/'+${user.profileImage}}" class="rounded-circle border p-2" style="width: 120px; height: 120px;">
                     </div>
-                    <form action="/user/update-profile" method="post" enctype="multipart/form-data">
+                    <form action="/admin/update-profile" method="post" enctype="multipart/form-data" onsubmit="return validateProfileForm()">
                         <table class="table table-borderless">
                             <tbody>
                                 <tr>
                                     <th>Name</th>
-                                    <td><input type="text" name="name" class="form-control" th:value="${user.name}"></td>
+                                    <td>
+                                        <input type="text" name="name" class="form-control" th:value="${user.name}" required minlength="2" maxlength="255">
+                                        <div id="nameError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Mobile</th>
-                                    <td><input type="text" name="mobileNumber" class="form-control" th:value="${user.mobileNumber}"></td>
+                                    <td>
+                                        <input type="text" name="mobileNumber" class="form-control" th:value="${user.mobileNumber}" required pattern="[0-9]{10}">
+                                        <div id="mobileError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Email</th>
@@ -42,24 +48,34 @@
                                 </tr>
                                 <tr>
                                     <th>Address</th>
-                                    <td><input type="text" name="address" class="form-control" th:value="${user.address}"></td>
+                                    <td>
+                                        <input type="text" name="address" class="form-control" th:value="${user.address}" maxlength="255">
+                                        <div id="addressError" class="text-danger"></div>
+                                    </td>
                                 </tr>
-								<tr>
-								    <th>City/Province</th>
-								    <td>
-								        <div class="d-flex">
-								            <input type="text" name="city" class="form-control me-2" placeholder="City" th:value="${user.city}">
-								            <input type="text" name="province" class="form-control" placeholder="Province" th:value="${user.province}">
-								        </div>
-								    </td>
-								</tr>
+                                <tr>
+                                    <th>City/Province</th>
+                                    <td>
+                                        <div class="d-flex">
+                                            <input type="text" name="city" class="form-control me-2" placeholder="City" th:value="${user.city}" maxlength="255">
+                                            <input type="text" name="province" class="form-control" placeholder="Province" th:value="${user.province}" maxlength="255">
+                                        </div>
+                                        <div id="cityProvinceError" class="text-danger"></div>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <th>Pincode</th>
-                                    <td><input type="text" name="pincode" class="form-control" th:value="${user.pincode}"></td>
+                                    <td>
+                                        <input type="text" name="pincode" class="form-control" th:value="${user.pincode}" pattern="[0-9]{6}">
+                                        <div id="pincodeError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Profile Image</th>
-                                    <td><input type="file" name="img" class="form-control"></td>
+                                    <td>
+                                        <input type="file" name="img" class="form-control" accept="image/*">
+                                        <div id="imageError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Role</th>
@@ -85,20 +101,29 @@
                 <!-- Right: Change Password -->
                 <div class="col-lg-6 col-md-12">
                     <h4 class="text-center fw-bold mb-4">Change Password</h4>
-                    <form action="/user/change-password" method="post">
+                    <form action="/user/change-password" method="post" onsubmit="return validatePasswordForm()">
                         <table class="table table-borderless">
                             <tbody>
                                 <tr>
                                     <th>Current Password</th>
-                                    <td><input type="password" name="currentPassword" class="form-control" required></td>
+                                    <td>
+                                        <input type="password" name="currentPassword" class="form-control" required minlength="6" maxlength="255">
+                                        <div id="currentPasswordError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>New Password</th>
-                                    <td><input type="password" name="newPassword" class="form-control" required></td>
+                                    <td>
+                                        <input type="password" name="newPassword" class="form-control" required minlength="6" maxlength="255">
+                                        <div id="newPasswordError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Confirm Password</th>
-                                    <td><input type="password" name="confirmPassword" class="form-control" required></td>
+                                    <td>
+                                        <input type="password" name="confirmPassword" class="form-control" required minlength="6" maxlength="255">
+                                        <div id="confirmPasswordError" class="text-danger"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="text-center">
@@ -114,5 +139,73 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function validateProfileForm() {
+            let isValid = true;
+
+            // Name validation
+            const name = document.querySelector('input[name="name"]').value;
+            const nameError = document.getElementById("nameError");
+            nameError.textContent = "";
+            if (name.trim() === "" || name.length < 2) {
+                nameError.textContent = "Name must be at least 2 characters.";
+                isValid = false;
+            } else if (name.length > 255) {
+                nameError.textContent = "Name must not exceed 255 characters.";
+                isValid = false;
+            }
+
+            // Mobile number validation
+            const mobileNumber = document.querySelector('input[name="mobileNumber"]').value;
+            const mobileError = document.getElementById("mobileError");
+            mobileError.textContent = "";
+            if (!/^[0-9]{10}$/.test(mobileNumber)) {
+                mobileError.textContent = "Invalid mobile number (10 digits required).";
+                isValid = false;
+            }
+
+
+            return isValid;
+        }
+
+        function validatePasswordForm() {
+            let isValid = true;
+
+            // Current password validation
+            const currentPassword = document.querySelector('input[name="currentPassword"]').value;
+            const currentPasswordError = document.getElementById("currentPasswordError");
+            currentPasswordError.textContent = "";
+            if (currentPassword.length < 6) {
+                currentPasswordError.textContent = "Current password must be at least 6 characters.";
+                isValid = false;
+            } else if (currentPassword.length > 255) {
+                currentPasswordError.textContent = "Current password must not exceed 255 characters.";
+                isValid = false;
+            }
+
+            // New password validation
+            const newPassword = document.querySelector('input[name="newPassword"]').value;
+            const newPasswordError = document.getElementById("newPasswordError");
+            newPasswordError.textContent = "";
+            if (newPassword.length < 6) {
+                newPasswordError.textContent = "New password must be at least 6 characters.";
+                isValid = false;
+            } else if (newPassword.length > 255) {
+                newPasswordError.textContent = "New password must not exceed 255 characters.";
+                isValid = false;
+            }
+
+            // Confirm password validation
+            const confirmPassword = document.querySelector('input[name="confirmPassword"]').value;
+            const confirmPasswordError = document.getElementById("confirmPasswordError");
+            confirmPasswordError.textContent = "";
+            if (confirmPassword !== newPassword) {
+                confirmPasswordError.textContent = "New password and confirm password do not match.";
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    </script>
 </body>
 </html>
