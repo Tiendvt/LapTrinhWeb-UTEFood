@@ -99,39 +99,48 @@
 					</div>
 
 					<!-- Pagination -->
-					<th:block th:if="${!#lists.isEmpty(products)}">
-						<div class="row">
-							<!-- Tổng số sản phẩm căn giữa -->
-							<div class="col-md-12 text-center mb-3 fs-4">
-								<strong>Total Products: [[${totalElements}]]</strong>
-							</div>
-							<div class="col-md-12">
-								<th:block th:if="${productsSize > 0}">
-									<nav aria-label="Page navigation example">
-										<ul class="pagination justify-content-center">
-											<li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
-												<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo - 1}}"
-													aria-label="Previous">
-													<span aria-hidden="true">&laquo;</span>
-												</a>
-											</li>
 
-											<li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item"
-												th:classappend="${pageNo + 1 == i} ? 'active' : ''">
-												<a class="page-link"
-													th:href="@{'/products?pageNo=' + ${i - 1}}">[[${i}]]</a>
-											</li>
+					<!--  <th:block th:if="${!#lists.isEmpty(products)}">
+						<div class="row"> -->
 
-											<li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
-												<a class="page-link" th:href="@{'/products?pageNo=' + ${pageNo + 1}}"
-													aria-label="Next">
-													<span aria-hidden="true">&raquo;</span>
-												</a>
-											</li>
-										</ul>
-									</nav>
-								</th:block>
-							</div>
+					<div class="row">
+						<div class="col-md-4">
+							<p>Total Products: [[${totalElements}]]</p>
+						</div>
+						<div class="col-md-6">
+							<th:block th:if="${productsSize > 0}">
+								<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+    <!-- Trang trước -->
+    <li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
+        <a class="page-link"
+           th:href="@{'/products?pageNo=' + ${pageNo - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
+           aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+    </li>
+
+    <!-- Các số trang -->
+    <li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item"
+        th:classappend="${pageNo + 1 == i} ? 'active' : ''">
+        <a class="page-link"
+           th:href="@{'/products?pageNo=' + ${i - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}">[[${i}]]</a>
+    </li>
+
+    <!-- Trang tiếp theo -->
+    <li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
+        <a class="page-link"
+           th:href="@{'/products?pageNo=' + ${pageNo + 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
+           aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>
+</ul>
+
+</nav>
+
+							</th:block>
+
 						</div>
 						</th:block>
 			</div>

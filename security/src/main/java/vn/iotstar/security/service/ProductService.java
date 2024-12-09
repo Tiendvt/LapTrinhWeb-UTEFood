@@ -55,6 +55,10 @@ public interface ProductService {
 	
 	String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders);
 
+
 	Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize);
+
+	public Page<Product> searchProductsByCategoryAndKeyword(String category, String keyword, Pageable pageable);
+
 }
 

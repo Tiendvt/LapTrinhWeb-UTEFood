@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
@@ -56,6 +57,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	// Sản phẩm được yêu thích nhiều nhất
 	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE ORDER BY (SELECT COUNT(f) FROM FavoriteProduct f WHERE f.product = p) DESC")
 	Page<Product> findMostFavoriteProducts(Pageable pageable);
+	@Query("SELECT p FROM Product p WHERE p.category.name = :category AND p.title LIKE %:keyword% AND p.isActive = true")
+	Page<Product> findByCategoryAndKeyword(@Param("category") String category, @Param("keyword") String keyword, Pageable pageable);
 
 }
 
