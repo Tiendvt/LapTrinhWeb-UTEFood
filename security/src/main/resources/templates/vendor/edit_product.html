@@ -42,10 +42,11 @@
 								<div class="row">
 									<div class="mb-3 col">
 										<label>Category</label> <select class="form-control"
-											name="category">
-											<!-- The selected value will now be category ID -->
+											name="category.id" required>
+											<option value="">--Select Category--</option>
 											<option th:each="c : ${categories}" th:value="${c.id}"
-												th:text="${c.name}"></option>
+												th:text="${c.name}"
+												th:selected="${product.category.id == c.id}"></option>
 										</select>
 
 									</div>

@@ -16,7 +16,7 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true,columnDefinition = "NVARCHAR(255)")
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
