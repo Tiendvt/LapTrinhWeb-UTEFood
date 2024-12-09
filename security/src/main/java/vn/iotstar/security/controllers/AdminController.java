@@ -228,7 +228,7 @@ public class AdminController {
 		}
 
 		m.addAttribute("products", page.getContent());
-		m.addAttribute("pageNo", page.getNumber() + 1);
+		m.addAttribute("pageNo", page.getNumber());
 		m.addAttribute("pageSize", pageSize);
 		m.addAttribute("totalElements", page.getTotalElements());
 		m.addAttribute("totalPages", page.getTotalPages());
