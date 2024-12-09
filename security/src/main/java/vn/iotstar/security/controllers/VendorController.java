@@ -215,15 +215,26 @@ public class VendorController {
     public String viewOrders(Principal principal, Model model,
                              @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        // Ensure pageNo is at least 0 (0-based indexing)
+        if (pageNo < 0) {
+            pageNo = 0;
+        }
+
         // Retrieve the shop associated with the logged-in vendor
         Shop shop = shopService.getShopByOwnerEmail(principal.getName());
 
-        // Retrieve orders for the shop, passing the page number and page size for pagination
+        // Retrieve orders for the shop
         Page<ProductOrder> page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
 
+        // Ensure pageNo does not exceed the total number of pages
+        if (pageNo >= page.getTotalPages() && page.getTotalPages() > 0) {
+            pageNo = page.getTotalPages() - 1;
+            page = orderService.getOrdersByShopPagination(shop, pageNo, pageSize);
+        }
+
         // Add necessary attributes to the model for pagination and orders
-        model.addAttribute("orders", page.getContent());  // Orders specific to the shop
-        model.addAttribute("srch", false);  // Set to false as no search is done
+        model.addAttribute("orders", page.getContent()); // Orders specific to the shop
+        model.addAttribute("srch", false); // Set to false as no search is done
         model.addAttribute("pageNo", page.getNumber());
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalElements", page.getTotalElements());
@@ -232,8 +243,9 @@ public class VendorController {
         model.addAttribute("isLast", page.isLast());
 
         // Return the vendor orders page view
-        return "vendor/orders";  // View for vendor orders
+        return "vendor/orders"; // View for vendor orders
     }
+
 
 
 
