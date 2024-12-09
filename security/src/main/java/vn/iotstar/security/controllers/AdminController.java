@@ -296,7 +296,6 @@ public class AdminController {
 	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
-		System.out.print(values);
 		String status = null;
 
 		for (OrderStatus orderSt : values) {
@@ -381,7 +380,6 @@ public class AdminController {
 		    }
     
 	    String totalRevenue = orderService.getTotalRevenue();
-	    System.out.println(totalRevenue);
 	    String totalOrders = String.valueOf(orderService.getAllOrders().size());
 	    String totalDeliveredOrders = String.valueOf(orderService.getOrdersByStatus("Delivered").size());
 	    String totalSoldProduct = "0";
@@ -426,7 +424,6 @@ public class AdminController {
 	    Page<User> page = null;
 	    if (ch != null && !ch.isEmpty()) {
 	        page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
-	        System.out.println(role);
 	    } else {
 	        page = userService.getAllUsersPagination(role, pageNo, pageSize);
 	    }
