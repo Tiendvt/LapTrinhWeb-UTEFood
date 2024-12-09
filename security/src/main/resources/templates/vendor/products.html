@@ -54,6 +54,7 @@
 								<th>Image</th>
 								<th>Title</th>
 								<th>Price</th>
+								<th>Category</th>
 								<th>Status</th>
 								<th>Actions</th>
 							</tr>
@@ -70,6 +71,7 @@
 									<td><img th:src="@{'/img/product_img/' + ${product.image}}" width="70px" /></td>
 									<td>[[${product.title}]]</td>
 									<td>[[${product.price}]]</td>
+									<td>[[${product.category.name}]]</td>
 									<td>[[${product.isActive}]]</td>
 									<td>
 										<a th:href="@{'/vendor/edit-product/' + ${product.id}}"
