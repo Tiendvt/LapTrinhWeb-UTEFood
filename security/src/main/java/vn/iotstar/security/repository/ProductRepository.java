@@ -59,6 +59,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	Page<Product> findMostFavoriteProducts(Pageable pageable);
 	@Query("SELECT p FROM Product p WHERE p.category.name = :category AND p.title LIKE %:keyword% AND p.isActive = true")
 	Page<Product> findByCategoryAndKeyword(@Param("category") String category, @Param("keyword") String keyword, Pageable pageable);
+	
+	
+
+
 
 }
 

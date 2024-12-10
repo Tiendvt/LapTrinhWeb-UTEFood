@@ -139,9 +139,10 @@ public class HomeController {
 	    m.addAttribute("paramValue", category);
 	    m.addAttribute("categories", categories);
 
-	    Page<Product> page;
+	    Page<Product> page = null;
 
-	    // Logic tìm kiếm
+	 // Logic tìm kiếm
+	 // Logic tìm kiếm
 	    if (!StringUtils.isEmpty(ch)) {
 	        // Nếu có từ khóa tìm kiếm ch
 	        if (!StringUtils.isEmpty(category)) {
@@ -164,6 +165,7 @@ public class HomeController {
 	            page = productService.getAllActiveProductPagination(pageNo, pageSize, "");
 	        }
 	    }
+
 	    // Gán các thông tin sản phẩm vào Model
 	    List<Product> products = page.getContent();
 	    m.addAttribute("products", products);
