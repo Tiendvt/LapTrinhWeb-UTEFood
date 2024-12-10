@@ -1,47 +1,61 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
 
 <head>
-	<meta charset="ISO-8859-1">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>UTE_FOOD - Products</title>
-	<!-- Add Bootstrap CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<!-- Add FontAwesome for icons -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTE_FOOD - Products</title>
+<!-- Add Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Add FontAwesome for icons -->
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
 </head>
 
 <body>
 
-<section>
-    <!-- Search Bar -->
-    <!-- Search Bar -->
-<div class="container-fluid bg-primary p-4 mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <form action="/products" method="get">
-                <div class="input-group">
-                    <!-- Search Input -->
-                    <input type="text" class="form-control" name="ch" th:value="${param.ch}" placeholder="Search for products">
-                    
-                    <!-- Filter Criteria -->
-                    <select class="form-select" name="criteria" th:value="${param.criteria}">
-                        <option value="DEFAULT">-- Filter --</option>
-                        <option value="NEWEST" th:selected="${param.criteria == 'NEWEST'}">Newest</option>
-                        <option value="BEST_SELLING" th:selected="${param.criteria == 'BEST_SELLING'}">Best Selling</option>
-                        <option value="FAVORITE" th:selected="${param.criteria == 'FAVORITE'}">Most Favorite</option>
-                        <option value="TOP_RATED" th:selected="${param.criteria == 'TOP_RATED'}">Top Rated</option>
-                    </select>
+	<section>
+		<!-- Search Bar -->
+		<!-- Search Bar -->
+		<div class="container-fluid bg-primary p-4 mt-5">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<form action="/products" method="get">
+						<div class="input-group">
+							<!-- Search Input -->
+							<input type="text" class="form-control" name="ch"
+								th:value="${param.ch}" placeholder="Search for products">
 
-                    <!-- Search Button -->
-                    <button class="btn btn-light text-dark">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+							<!-- Filter Criteria -->
+							<select class="form-select" name="criteria"
+								th:value="${param.criteria}">
+								<option value="DEFAULT">-- Filter --</option>
+								<option value="NEWEST"
+									th:selected="${param.criteria == 'NEWEST'}">Newest</option>
+								<option value="BEST_SELLING"
+									th:selected="${param.criteria == 'BEST_SELLING'}">Best
+									Selling</option>
+								<option value="FAVORITE"
+									th:selected="${param.criteria == 'FAVORITE'}">Most
+									Favorite</option>
+								<option value="TOP_RATED"
+									th:selected="${param.criteria == 'TOP_RATED'}">Top
+									Rated</option>
+							</select>
+
+							<!-- Search Button -->
+							<button class="btn btn-light text-dark">
+								<i class="fa-solid fa-magnifying-glass"></i> Search
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
 
 
@@ -53,9 +67,11 @@
 						<div class="card-body">
 							<div class="list-group">
 								<p class="fs-5">Category</p>
-								<a href="/products" th:classappend="${param.ch == ''} ? 'active' : ''"
-									class="list-group-item list-group-item-action" aria-current="true"> All </a>
-								<a th:each="c:${categories}" th:href="@{/products(ch=${param.ch}, category=${c.name})}"
+								<a href="/products"
+									th:classappend="${param.ch == ''} ? 'active' : ''"
+									class="list-group-item list-group-item-action"
+									aria-current="true"> All </a> <a th:each="c:${categories}"
+									th:href="@{/products(ch=${param.ch}, category=${c.name})}"
 									th:classappend="${param.category == c.name} ? 'active' : ''"
 									class="list-group-item list-group-item-action">[[${c.name}]]</a>
 							</div>
@@ -73,26 +89,27 @@
 									<div class="col-md-3 mt-2" th:each="p:${products}">
 										<div class="card shadow-sm">
 											<div class="card-body text-center">
-												<img alt="" th:src="@{'/img/product_img/'+${p.image}}" width="150px"
-													height="150px">
+												<img alt="" th:src="@{'/img/product_img/'+${p.image}}"
+													width="150px" height="150px">
 												<p class="fs-5 text-center">[[${p.title}]]</p>
 												<div class="row text-center">
 													<p class="fs-6 fw-bold">
-														<span>&#8377; [[${p.discountPrice}]]</span> <br>
-														<span
+														<span> [[${p.discountPrice}]] ₫</span> <br> <span
 															class="text-decoration-line-through text-secondary">&#8377;
-															[[${p.price}]]</span>
-														<span class="fs-6 text-success">[[${p.discount}]]% off</span>
+															[[${p.price}]]</span> <span class="fs-6 text-success">[[${p.discount}]]%
+															off</span>
 													</p>
 													<a th:href="@{'/product/'+${p.id}}"
-														class="btn btn-primary col-md-6 offset-md-3">View Details</a>
+														class="btn btn-primary col-md-6 offset-md-3">View
+														Details</a>
 												</div>
 											</div>
 										</div>
 									</div>
 								</th:block>
 								<th:block th:unless="${productsSize > 0}">
-									<p class="fs-4 text-center mt-4 text-danger">Product not available</p>
+									<p class="fs-4 text-center mt-4 text-danger">Product not
+										available</p>
 								</th:block>
 							</div>
 						</div>
@@ -110,44 +127,44 @@
 						<div class="col-md-6">
 							<th:block th:if="${productsSize > 0}">
 								<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-    <!-- Trang trước -->
-    <li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
-        <a class="page-link"
-           th:href="@{'/products?pageNo=' + ${pageNo - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
-           aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-        </a>
-    </li>
+									<ul class="pagination justify-content-center">
+										<!-- Trang trước -->
+										<li class="page-item"
+											th:classappend="${isFirst} ? 'disabled' : ''"><a
+											class="page-link"
+											th:href="@{'/products?pageNo=' + ${pageNo - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
+											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+										</a></li>
 
-    <!-- Các số trang -->
-    <li th:each="i:${#numbers.sequence(1, totalPages)}" class="page-item"
-        th:classappend="${pageNo + 1 == i} ? 'active' : ''">
-        <a class="page-link"
-           th:href="@{'/products?pageNo=' + ${i - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}">[[${i}]]</a>
-    </li>
+										<!-- Các số trang -->
+										<li th:each="i:${#numbers.sequence(1, totalPages)}"
+											class="page-item "
+											th:classappend="${pageNo + 1 == i} ? 'active' : ''"><a
+											class="page-link"
+											th:href="@{'/products?pageNo=' + ${i - 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}">[[${i}]]</a>
+										</li>
 
-    <!-- Trang tiếp theo -->
-    <li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
-        <a class="page-link"
-           th:href="@{'/products?pageNo=' + ${pageNo + 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
-           aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-        </a>
-    </li>
-</ul>
+										<!-- Trang tiếp theo -->
+										<li class="page-item"
+											th:classappend="${isLast} ? 'disabled' : ''"><a
+											class="page-link"
+											th:href="@{'/products?pageNo=' + ${pageNo + 1} + '&pageSize=' + ${pageSize} + '&ch=' + ${ch} + '&criteria=' + ${criteria} + '&category=' + ${paramValue}}"
+											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+										</a></li>
+									</ul>
 
-</nav>
+								</nav>
 
 							</th:block>
 
 						</div>
 						</th:block>
-			</div>
+					</div>
 	</section>
 
 	<!-- Add Bootstrap JS and dependencies -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
 		crossorigin="anonymous"></script>
 </body>
