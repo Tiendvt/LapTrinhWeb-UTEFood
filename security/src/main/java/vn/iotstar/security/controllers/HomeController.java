@@ -143,7 +143,6 @@ public class HomeController {
 
 //	 Logic tìm kiếm
 
-	    //Làm lại:
 	    if(!StringUtils.isEmpty(ch))		//Nếu có nhập từ khóa vào tìm kiếm
 	    {
 	    	System.out.print("Có dùng keyword: "+ch+ "\n");
