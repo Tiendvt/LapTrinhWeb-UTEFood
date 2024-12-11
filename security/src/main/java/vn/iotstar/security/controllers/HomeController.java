@@ -141,31 +141,81 @@ public class HomeController {
 
 	    Page<Product> page = null;
 
-	 // Logic tìm kiếm
-	 // Logic tìm kiếm
-	    if (!StringUtils.isEmpty(ch)) {
-	        // Nếu có từ khóa tìm kiếm ch
-	        if (!StringUtils.isEmpty(category)) {
-	            // Tìm sản phẩm theo cả category và từ khóa
-	            page = productService.searchProductsByCategoryAndKeyword(category, ch, PageRequest.of(pageNo, pageSize));
-	        } else {
-	            // Tìm sản phẩm theo từ khóa mà không phân theo category
-	            page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
-	        }
-	    } else if (!"DEFAULT".equalsIgnoreCase(criteria)) {
-	        // Nếu có tiêu chí lọc (không phải mặc định)
-	        page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
-	    } else {
-	        // Nếu không có từ khóa và không có tiêu chí lọc, phân trang theo category
-	        if (!StringUtils.isEmpty(category)) {
-	            // Tìm sản phẩm theo category
-	            page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-	        } else {
-	            // Nếu category là rỗng (All), tìm tất cả sản phẩm
-	            page = productService.getAllActiveProductPagination(pageNo, pageSize, "");
-	        }
-	    }
+//	 Logic tìm kiếm
 
+	    //Làm lại:
+	    if(!StringUtils.isEmpty(ch))		//Nếu có nhập từ khóa vào tìm kiếm
+	    {
+	    	if(!"DEFAULT".equalsIgnoreCase(criteria)) {	//Nếu người dùng nhập từ khóa search, sau đó chọn tiêu chí lọc(Mới nhất, Nhiều đánh giá nhất, Bán chạy nhất,...) rồi search:
+	    		page = productService.getProductsByKeywordAndCriteria(ch, criteria, PageRequest.of(pageNo, pageSize));
+	    		System.out.print("keyword: "+ch+ "\n");
+	    		
+	    		
+	    	}
+	    	else if("DEFAULT".equalsIgnoreCase(criteria))//Nếu người dùng nhập từ khóa ko chọn tiêu chí gì cả mà search luôn:
+	    	{
+	    		System.out.print("keyword: "+ch+ "\n");
+	    		System.out.print("Ko dung criteria\n");
+	    		if(!StringUtils.isEmpty(category))
+	    		{
+	    			System.out.print("dung category" + category +"\n");
+
+	    			page = productService.searchProductsByCategoryAndKeyword(category, ch, PageRequest.of(pageNo, pageSize));
+	    		}
+	    		else
+	    			{
+	    		page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
+	    		
+	    		System.out.print("Criteria: " + criteria);
+	    			}
+	    	}
+	    	
+	    }
+	    
+	    else //trường hợp ko dùng keyword ch để search.(có thể là bấm chọn tiêu chí rồi nhấn search/ bấm chọn category rồi kết hợp với tiêu chí).
+	    {
+	    	System.out.print("Keyword la null: "+ch);
+	    	if ("DEFAULT".equalsIgnoreCase(criteria)) //Nếu người dùng ko chọn tiêu chí gì cả (thì mặc định là DEFAULT).
+	    	{
+	    		System.out.print("\nCriteria là DEFAULT: "+criteria);
+	    		if(!StringUtils.isEmpty(category))		//nếu người dùng ko chọn category.
+	    		{
+	    			
+	    			//Lấy ra tất cả sản phẩm của category đó.
+	    			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	    			
+	    		}
+	    		else				//nếu người dùng ko chọn category.
+	    		{
+	    			//Lấy ra tất cả sản phẩm mà trang có.
+	    			System.out.print("\nLấy ra tất cả các sản phẩm trên UTEFOOD ");
+	    			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	    			
+	    		}
+	    	}
+	    	else		//Nếu criteria có thể là: NEWEST, MOST FAVORITE, BEST SELLING,...
+	    	{
+	    		System.out.print("\nCriteria không là DEFAULT: "+criteria);
+	    		if(!StringUtils.isEmpty(category))		//nếu người dùng chọn category.
+	    		{
+	    			
+	    			//Lấy ra tất cả sản phẩm của category có theo criteria.
+	    			
+	    			System.out.print("\nLấy ra tất cả các sản phẩm trong category của UTEFOOD theo criteria");
+	    			page = productService.searchProductsByCategoryAndCriteria(category, criteria, PageRequest.of(pageNo, pageSize));
+	    			
+	    		}
+	    		else				//nếu người dùng ko chọn category.
+	    		{
+	    			//Lấy ra tất cả sản phẩm mà trang có theo criteria.
+	    			System.out.print("\nLấy ra tất cả các sản phẩm trên UTEFOOD theo criteria");
+	    			page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
+	    			
+	    		}
+	    	}
+	    }
+	   
+	    
 	    // Gán các thông tin sản phẩm vào Model
 	    List<Product> products = page.getContent();
 	    m.addAttribute("products", products);
@@ -338,7 +388,6 @@ public class HomeController {
 		List<Category> categories = categoryService.getAllActiveCategory();
 		m.addAttribute("categories", categories);
 		return "product";
-
 	}
 	@GetMapping("/profile")
 	public String profile() {

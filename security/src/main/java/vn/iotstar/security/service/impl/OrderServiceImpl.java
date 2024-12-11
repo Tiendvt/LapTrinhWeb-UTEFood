@@ -233,7 +233,20 @@ public class OrderServiceImpl implements OrderService {
         List<ProductOrder> orders = orderRepository.findAllByShop(shop);
 
         // Correct TreeMap instantiation
-        Map<String, Double> monthlyRevenueMap = new TreeMap<>();
+        Map<String, Double> monthlyRevenueMap = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String monthYear1, String monthYear2) {
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("MMMM yyyy");
+                    Date date1 = format.parse(monthYear1);
+                    Date date2 = format.parse(monthYear2); 
+                    return date1.compareTo(date2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
         
         for (ProductOrder order : orders) {
             if (order.getOrderDate().getYear() == year && "Delivered".equalsIgnoreCase(order.getStatus())) {
@@ -289,7 +302,7 @@ public class OrderServiceImpl implements OrderService {
             LocalDate orderDate = productOrder.getOrderDate();
             if (orderDate.getYear() == year) {
                 String monthYear = orderDate.getMonth().toString() + " " + orderDate.getYear();
-                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice());
+                monthlyRevenueMap.put(monthYear, monthlyRevenueMap.getOrDefault(monthYear, 0.0) + productOrder.getPrice()*productOrder.getQuantity());
             }
         }
 

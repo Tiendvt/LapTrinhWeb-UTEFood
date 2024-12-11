@@ -36,6 +36,7 @@ public class ProductOrder {
 	private LocalDate orderDate;
 
 	@ManyToOne
+	@JoinColumn(name = "product_id") // Tên cột khoá ngoại trong bảng product_order
 	private Product product;
 	
 	private String name ;

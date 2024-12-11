@@ -35,7 +35,7 @@
                                 <p><strong>Shop Name:</strong> [[${shop.name}]]</p>
                                 <p><strong>Owner:</strong> [[${shop.owner.name}]]</p>
                                 <p><strong>Sold:</strong> [[${shop.sold}]]</p>
-                                <p><strong>Revenue:</strong> &#8377;[[${shop.revenue}]]</p>
+                                <p><strong>Revenue:</strong> [[${shop.revenue}]] ₫</p>
                                 <a href="/vendor/shop-settings" class="btn btn-primary">Edit Shop</a>
                             </th:block>
                             <th:block th:if="${shop == null}">
@@ -52,7 +52,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">Products</h5>
                             <th:block th:if="${shop != null}">
-                                <a href="/vendor/products" class="btn btn-primary mb-2">View Products</a>
+                                <a href="/vendor/products" class="btn btn-primary">View Products</a>
                                 <a href="/vendor/add-product" class="btn btn-success">Add Product</a>
                             </th:block>
                             <th:block th:if="${shop == null}">

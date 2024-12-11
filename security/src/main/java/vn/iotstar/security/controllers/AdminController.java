@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
 import vn.iotstar.security.model.ProductOrder;
+import vn.iotstar.security.model.Shop;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.OrderService;
@@ -112,7 +113,6 @@ public class AdminController {
 
 
 	@PostMapping("/saveCategory")
-
 	public String saveCategory(@ModelAttribute Category category, @RequestParam("file") MultipartFile file,
 			HttpSession session) throws IOException {
 		
@@ -228,7 +228,7 @@ public class AdminController {
 		}
 
 		m.addAttribute("products", page.getContent());
-		m.addAttribute("pageNo", page.getNumber() + 1);
+		m.addAttribute("pageNo", page.getNumber());
 		m.addAttribute("pageSize", pageSize);
 		m.addAttribute("totalElements", page.getTotalElements());
 		m.addAttribute("totalPages", page.getTotalPages());
@@ -296,7 +296,6 @@ public class AdminController {
 	public String updateOrderStatus(@RequestParam Integer id, @RequestParam Integer st, HttpSession session) {
 
 		OrderStatus[] values = OrderStatus.values();
-		System.out.print(values);
 		String status = null;
 
 		for (OrderStatus orderSt : values) {
@@ -309,6 +308,20 @@ public class AdminController {
 		
 
 		ProductOrder updateOrder = orderService.updateOrderStatus(id, status);
+		
+		if (updateOrder != null && "Delivered".equals(status)) {
+            // Get the associated product and shop from the order
+            Product product = updateOrder.getProduct();
+            Shop shop = product.getShop();
+            int productQuantity = updateOrder.getQuantity();
+            // Increment sold quantity in Product
+            product.setSold(product.getSold() + updateOrder.getQuantity());
+            productService.saveProduct(product);  // Update the product
+
+            // Update shop sold and revenue without saving the entire shop
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice()*productQuantity,productQuantity);
+            
+        }
 
 		try {
 			commonUtil.sendMailForProductOrder(updateOrder, status);
@@ -411,7 +424,6 @@ public class AdminController {
 	    Page<User> page = null;
 	    if (ch != null && !ch.isEmpty()) {
 	        page = userService.searchUsersPagination(role, pageNo, pageSize, ch);
-	        System.out.println(role);
 	    } else {
 	        page = userService.getAllUsersPagination(role, pageNo, pageSize);
 	    }

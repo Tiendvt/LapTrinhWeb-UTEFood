@@ -12,6 +12,7 @@
 </head>
 
 <body>
+
 <section>
     <!-- Search Bar -->
     <!-- Search Bar -->
@@ -19,28 +20,26 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <form action="/products" method="get">
-                <div class="input-group">
-                    <!-- Search Input -->
-                    <input type="text" class="form-control" name="ch" th:value="${param.ch}" placeholder="Search for products">
-                    
-                    <!-- Filter Criteria -->
-                    <select class="form-select" name="criteria" th:value="${param.criteria}">
-                        <option value="DEFAULT">-- Filter --</option>
-                        <option value="NEWEST" th:selected="${param.criteria == 'NEWEST'}">Newest</option>
-                        <option value="BEST_SELLING" th:selected="${param.criteria == 'BEST_SELLING'}">Best Selling</option>
-                        <option value="FAVORITE" th:selected="${param.criteria == 'FAVORITE'}">Most Favorite</option>
-                        <option value="TOP_RATED" th:selected="${param.criteria == 'TOP_RATED'}">Top Rated</option>
-                    </select>
+    <div class="input-group">
+        <input type="text" class="form-control" name="ch" th:value="${param.ch}" placeholder="Search for products">
+        <input type="hidden" name="category" th:value="${param.category}" />
+        <select class="form-select" name="criteria" th:value="${param.criteria}">
+            <option value="DEFAULT">-- Filter --</option>
+            <option value="NEWEST" th:selected="${param.criteria == 'NEWEST'}">Newest</option>
+            <option value="BEST_SELLING" th:selected="${param.criteria == 'BEST_SELLING'}">Best Selling</option>
+            <option value="FAVORITE" th:selected="${param.criteria == 'FAVORITE'}">Most Favorite</option>
+            <option value="TOP_RATED" th:selected="${param.criteria == 'TOP_RATED'}">Top Rated</option>
+        </select>
+        <button class="btn btn-light text-dark">
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+        </button>
+    </div>
+</form>
 
-                    <!-- Search Button -->
-                    <button class="btn btn-light text-dark">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
+
 
 
 		<!-- Product Categories Sidebar -->
@@ -53,7 +52,7 @@
 								<p class="fs-5">Category</p>
 								<a href="/products" th:classappend="${param.ch == ''} ? 'active' : ''"
 									class="list-group-item list-group-item-action" aria-current="true"> All </a>
-								<a th:each="c:${categories}" th:href="@{/products(ch=${param.ch}, category=${c.name})}"
+								<a th:each="c:${categories}" th:href="@{/products(ch=${param.ch}, category=${c.name}, criteria=${param.criteria})}"
 									th:classappend="${param.category == c.name} ? 'active' : ''"
 									class="list-group-item list-group-item-action">[[${c.name}]]</a>
 							</div>
@@ -97,6 +96,10 @@
 					</div>
 
 					<!-- Pagination -->
+
+					<!--  <th:block th:if="${!#lists.isEmpty(products)}">
+						<div class="row"> -->
+
 					<div class="row">
 						<div class="col-md-4">
 							<p>Total Products: [[${totalElements}]]</p>
@@ -134,11 +137,10 @@
 </nav>
 
 							</th:block>
+
 						</div>
-					</div>
-				</div>
+						</th:block>
 			</div>
-		</div>
 	</section>
 
 	<!-- Add Bootstrap JS and dependencies -->

@@ -13,7 +13,7 @@ public interface ShopService {
     boolean doesShopExistForOwner(String email);
 
     Shop saveShop(Shop shop);
-    void updateShopSoldAndRevenue(Integer shopId, Double revenue);
+    void updateShopSoldAndRevenue(Integer shopId, Double revenue,int quantity);
     
     List<Shop> getAll();
 

@@ -37,7 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 			String ch2, Pageable pageable);
 
 	Page<Product> findByShop(Shop shop, Pageable pageable);
-
+	Page<Product> findByShopAndTitleContainingIgnoreCase(Shop shop, String searchQuery, Pageable pageable);
 	List<Product> findByDiscountGreaterThan(int discount);
 	List<Product> findBySoldGreaterThanOrderBySoldDesc(int soldCount);
 	///---- Lọc sản phẩm ----
@@ -50,16 +50,36 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE ORDER BY p.sold DESC")
 	Page<Product> findBestSellingProducts(Pageable pageable);
 
-	// Sản phẩm được đánh giá cao nhất
+	// Sản phẩm được đánh giá nhiều nhất
 	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE ORDER BY (SELECT COUNT(r) FROM Review r WHERE r.order.product = p) DESC")
 	Page<Product> findTopRatedProducts(Pageable pageable);
 
 	// Sản phẩm được yêu thích nhiều nhất
 	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE ORDER BY (SELECT COUNT(f) FROM FavoriteProduct f WHERE f.product = p) DESC")
 	Page<Product> findMostFavoriteProducts(Pageable pageable);
-	@Query("SELECT p FROM Product p WHERE p.category.name = :category AND p.title LIKE %:keyword% AND p.isActive = true")
+	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE AND LOWER(p.category.name) = LOWER(:category) AND LOWER(p.title) LIKE %:keyword%")
 	Page<Product> findByCategoryAndKeyword(@Param("category") String category, @Param("keyword") String keyword, Pageable pageable);
 	
+	@Query("SELECT p FROM Product p WHERE p.isActive = TRUE AND p.title LIKE %:keyword% " +
+		       "ORDER BY CASE WHEN :criteria = 'NEWEST' THEN p.createdDate END DESC, " +
+		       "CASE WHEN :criteria = 'BEST_SELLING' THEN p.sold END DESC, " +
+		       "CASE WHEN :criteria = 'TOP_RATED' THEN (SELECT COUNT(r) FROM Review r WHERE r.order.product = p) END DESC, " +
+		       "CASE WHEN :criteria = 'FAVORITE' THEN (SELECT COUNT(f) FROM FavoriteProduct f WHERE f.product = p) END DESC")
+	Page<Product> findByKeywordAndCriteria(@Param("keyword") String keyword, @Param("criteria") String criteria, Pageable pageable);
+	
+	@Query("SELECT p FROM Product p " +
+		       "WHERE p.isActive = TRUE " +
+		       "AND (:category IS NULL OR LOWER(p.category.name) = LOWER(:category)) " +
+		       "ORDER BY " +
+		       "CASE WHEN :criteria = 'NEWEST' THEN p.createdDate END DESC, " +
+		       "CASE WHEN :criteria = 'BEST_SELLING' THEN p.sold END DESC, " +
+		       "CASE WHEN :criteria = 'TOP_RATED' THEN (SELECT COUNT(r) FROM Review r WHERE r.order.product = p) END DESC, " +
+		       "CASE WHEN :criteria = 'FAVORITE' THEN (SELECT COUNT(f) FROM FavoriteProduct f WHERE f.product = p) END DESC")
+		Page<Product> findByCategoryAndCriteria(@Param("category") String category,
+		                                        @Param("criteria") String criteria,
+		                                        Pageable pageable);
+
+
 	
 
 

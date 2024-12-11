@@ -45,8 +45,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Transactional
     @Override
-    public void updateShopSoldAndRevenue(Integer shopId, Double revenue) {
-        shopRepository.updateShopSoldAndRevenue(shopId, revenue);
+    public void updateShopSoldAndRevenue(Integer shopId, Double revenue,int quantity) {
+        shopRepository.updateShopSoldAndRevenue(shopId, revenue, quantity);
     }
 
 

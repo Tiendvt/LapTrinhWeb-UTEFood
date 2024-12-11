@@ -232,6 +232,15 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Invalid criteria: " + criteria);
     }
 	}
+	public Page<Product> getProductsByKeywordAndCriteria(String keyword, String criteria, Pageable pageable) {
+		Page<Product>  res =  productRepository.findByKeywordAndCriteria(keyword, criteria, pageable);
+	    // In ra kết quả
+        System.out.println("Result size: " + res.getTotalElements());
+        res.forEach(product -> {
+            System.out.println("Product ID: " + product.getId() + ", Title: " + product.getTitle());
+        });
+        return res;
+	}
 
 	public Boolean deleteProductByCategory(Category category) {
 		List<Product> listProduct = productRepository.findByCategory(category);
@@ -258,13 +267,27 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+    public Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize) {
+        return productRepository.findByShopAndTitleContainingIgnoreCase(shop, searchQuery, PageRequest.of(pageNo, pageSize));
+    }
+	
+
+
+	@Override
 	public Page<Product> searchProductsByCategoryAndKeyword(String category, String keyword, Pageable pageable) {
+		
 		 return productRepository.findByCategoryAndKeyword(category, keyword, pageable);
 	}
 
-	
+	@Override
+	public Page<Product> searchProductsByCategoryAndCriteria(String category, String criteria, Pageable pageable) {
+		category = (category == null || category.trim().isEmpty()) ? null : category.toLowerCase();
+	    criteria = (criteria == null || criteria.trim().isEmpty()) ? "DEFAULT" : criteria.toUpperCase();
 
-	
+	    // Gọi Repository
+	    return productRepository.findByCategoryAndCriteria(category, criteria, pageable);
+	}
+
 
 }
 
