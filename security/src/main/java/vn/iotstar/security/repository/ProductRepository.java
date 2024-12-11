@@ -79,6 +79,20 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 		                                        @Param("criteria") String criteria,
 		                                        Pageable pageable);
 
+	@Query("SELECT p FROM Product p " +
+		       "WHERE p.isActive = TRUE " +
+		       "AND (:category IS NULL OR LOWER(p.category.name) = LOWER(:category)) " +
+		       "AND (:keyword IS NULL OR LOWER(p.title) LIKE %:keyword%) " +
+		       "ORDER BY " +
+		       "CASE WHEN :criteria = 'NEWEST' THEN p.createdDate END DESC, " +
+		       "CASE WHEN :criteria = 'BEST_SELLING' THEN p.sold END DESC, " +
+		       "CASE WHEN :criteria = 'TOP_RATED' THEN (SELECT COUNT(r) FROM Review r WHERE r.order.product = p) END DESC, " +
+		       "CASE WHEN :criteria = 'FAVORITE' THEN (SELECT COUNT(f) FROM FavoriteProduct f WHERE f.product = p) END DESC")
+		Page<Product> findByCategoryCriteriaAndKeyword(
+		        @Param("category") String category,
+		        @Param("criteria") String criteria,
+		        @Param("keyword") String keyword,
+		        Pageable pageable);
 
 	
 

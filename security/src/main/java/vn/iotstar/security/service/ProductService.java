@@ -62,5 +62,6 @@ public interface ProductService {
 	public Page<Product> getProductsByKeywordAndCriteria(String keyword, String criteria, Pageable pageable) ;
 	
 	public Page<Product> searchProductsByCategoryAndCriteria(String category, String criteria, Pageable pageable);
+	public Page<Product> searchProductsByCategoryCriteriaAndKeyword(String category, String criteria, String keyword, Pageable pageable);
 }
 

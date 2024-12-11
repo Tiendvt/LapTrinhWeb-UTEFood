@@ -284,8 +284,17 @@ public class ProductServiceImpl implements ProductService {
 		category = (category == null || category.trim().isEmpty()) ? null : category.toLowerCase();
 	    criteria = (criteria == null || criteria.trim().isEmpty()) ? "DEFAULT" : criteria.toUpperCase();
 
-	    // Gọi Repository
 	    return productRepository.findByCategoryAndCriteria(category, criteria, pageable);
+	}
+
+	@Override
+	public Page<Product> searchProductsByCategoryCriteriaAndKeyword(String category, String criteria, String keyword,
+			Pageable pageable) {
+		category = (category == null || category.trim().isEmpty()) ? null : category.toLowerCase();
+	    keyword = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.toLowerCase();
+	    criteria = (criteria == null || criteria.trim().isEmpty()) ? "DEFAULT" : criteria.toUpperCase();
+
+	    return productRepository.findByCategoryCriteriaAndKeyword(category, criteria, keyword, pageable);
 	}
 
 
