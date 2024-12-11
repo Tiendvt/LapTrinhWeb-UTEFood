@@ -146,9 +146,20 @@ public class HomeController {
 	    //Làm lại:
 	    if(!StringUtils.isEmpty(ch))		//Nếu có nhập từ khóa vào tìm kiếm
 	    {
+	    	System.out.print("Có dùng keyword: "+ch+ "\n");
 	    	if(!"DEFAULT".equalsIgnoreCase(criteria)) {	//Nếu người dùng nhập từ khóa search, sau đó chọn tiêu chí lọc(Mới nhất, Nhiều đánh giá nhất, Bán chạy nhất,...) rồi search:
-	    		page = productService.getProductsByKeywordAndCriteria(ch, criteria, PageRequest.of(pageNo, pageSize));
-	    		System.out.print("keyword: "+ch+ "\n");
+	    		System.out.print("Có chọn tiêu chí search: "+ch+ "\n");
+	    		if(StringUtils.isEmpty(category)){
+	    			System.out.print("Không chọn theo Category: "+ch+ "\n");
+	    			page = productService.getProductsByKeywordAndCriteria(ch, criteria, PageRequest.of(pageNo, pageSize));
+	    		
+	    		}
+	    		else {
+	    			System.out.print("Có chọn theo Category: "+ch+ "\n");
+	    			page = productService.searchProductsByCategoryCriteriaAndKeyword(category, criteria, ch, PageRequest.of(pageNo, pageSize));
+	    		
+	    	}
+	    		
 	    		
 	    		
 	    	}
@@ -165,8 +176,7 @@ public class HomeController {
 	    		else
 	    			{
 	    		page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
-	    		
-	    		System.out.print("Criteria: " + criteria);
+
 	    			}
 	    	}
 	    	
@@ -177,7 +187,7 @@ public class HomeController {
 	    	System.out.print("Keyword la null: "+ch);
 	    	if ("DEFAULT".equalsIgnoreCase(criteria)) //Nếu người dùng ko chọn tiêu chí gì cả (thì mặc định là DEFAULT).
 	    	{
-	    		System.out.print("\nCriteria là DEFAULT: "+criteria);
+	    		System.out.print("\nCriteria là: "+criteria);
 	    		if(!StringUtils.isEmpty(category))		//nếu người dùng ko chọn category.
 	    		{
 	    			
@@ -195,7 +205,7 @@ public class HomeController {
 	    	}
 	    	else		//Nếu criteria có thể là: NEWEST, MOST FAVORITE, BEST SELLING,...
 	    	{
-	    		System.out.print("\nCriteria không là DEFAULT: "+criteria);
+	    		System.out.print("\nCriteria là: "+criteria);
 	    		if(!StringUtils.isEmpty(category))		//nếu người dùng chọn category.
 	    		{
 	    			
