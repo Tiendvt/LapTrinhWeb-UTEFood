@@ -146,7 +146,19 @@ public class UserController {
 	    if (request.getTotalPrice() == null) {
 	        throw new IllegalArgumentException("Total price is required.");
 	    }
-
+	    // Giảm stock sản phẩm ngay khi đặt hàng
+	    List<Cart> carts = cartService.getCartsByUser(user.getId());
+	    for (Cart cart : carts) {
+	        Product product = cart.getProduct();
+	        if (product.getStock() < cart.getQuantity()) {
+	            throw new IllegalArgumentException("Not enough stock for product: " + product.getTitle());
+	        }
+	        product.setStock(product.getStock() - cart.getQuantity());
+	        productService.saveProduct(product);
+	    }
+	     
+	    
+	    
 	    // Check payment type
 	    if ("ONLINE".equalsIgnoreCase(request.getPaymentType())) {
 	        // Generate VNPay URL
@@ -314,6 +326,7 @@ public class UserController {
 	public String cancelOrder(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
 	    ProductOrder order = orderService.getOrderById(id);
 	    
+	    //Đơn hàng sẽ ko hủy nếu từ trạng thái được xác nhận trở lên.	
 	    if (order == null || "Cancelled".equals(order.getStatus()) || 
 	        "Delivered".equals(order.getStatus()) || 
 	        "Order Confirmed".equals(order.getStatus()) || 
@@ -322,6 +335,16 @@ public class UserController {
 	        return "redirect:/user/user-orders";
 	    }
 	    
+	    // Hoàn trả stock cho sản phẩm trong đơn hàng
+	    Product product = order.getProduct(); // Truy cập sản phẩm trong đơn hàng
+	    int quantity = order.getQuantity();   // Lấy số lượng sản phẩm trong đơn hàng
+	   
+	    // Cập nhật lại stock
+	    product.setStock(product.getStock() + quantity);
+	    productService.saveProduct(product);
+	    
+	    
+	 // Cập nhật trạng thái đơn hàng thành "Cancelled" nếu hủy thành công.
 	    order.setStatus(OrderStatus.CANCELLED.getName());
 	    orderService.updateOrderStatus(order.getId(), OrderStatus.CANCELLED.getName());
 	    redirectAttributes.addFlashAttribute("succMsg", "Order cancelled successfully.");
