@@ -377,27 +377,32 @@ public class UserController {
         System.out.print("review object: " + review.getFileUrls());
         model.addAttribute("order", order);
         model.addAttribute("review", review); // Pass review data to the view
-
+        
+        model.addAttribute("rating", review.getRating()); // Pass rating to the view
+      
         return "user/edit_review_orders"; // Use the same review_order.html template
     }
 
     @PostMapping("/update-review")
     public String updateReview(@RequestParam Integer reviewId,
                                @RequestParam String comment,
+                               @RequestParam Integer rating, // Nhận rating từ form
                                @RequestParam("files") MultipartFile[] files,
                                RedirectAttributes redirectAttributes) {
-    	try {
-            // Chỉ gửi file không trống tới service
-            if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
-                reviewService.updateReview(reviewId, comment, null);
-            } else {
-                reviewService.updateReview(reviewId, comment, files);
-            }
-            redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMsg", "Error updating review: " + e.getMessage());
-        }
-        return "redirect:/user/user-orders";
+    	 try {
+    	        if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
+    	            // Update review without files
+    	            reviewService.updateReview(reviewId, comment, rating, null);
+    	          
+    	        } else {
+    	            // Update review with files
+    	            reviewService.updateReview(reviewId, comment, rating, files);
+    	        }
+    	        redirectAttributes.addFlashAttribute("succMsg", "Review updated successfully!");
+    	    } catch (Exception e) {
+    	        redirectAttributes.addFlashAttribute("errorMsg", "Error updating review: " + e.getMessage());
+    	    }
+    	    return "redirect:/user/user-orders";
 
     }
     @PostMapping("/upload-files")

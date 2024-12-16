@@ -31,13 +31,13 @@ public class ReviewServiceImpl implements ReviewService{
 	}
 
 	@Override
-	public void updateReview(Integer reviewId, String comment, MultipartFile[] files) {
+	public void updateReview(Integer reviewId, String comment, Integer rating, MultipartFile[] files) {
 		 Review review = reviewRepository.findById(reviewId)
 		            .orElseThrow(() -> new RuntimeException("Review not found"));
 
 		    // Update comment
 		    review.setComment(comment);
-
+		    review.setRating(rating);
 		    // Process file uploads if any
 		    if (files != null && files.length > 0) {
 		        List<String> uploadedFiles = new ArrayList<>();

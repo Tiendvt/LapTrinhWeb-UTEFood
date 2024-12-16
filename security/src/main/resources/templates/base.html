@@ -277,35 +277,39 @@ body {
 <!-- Script for Star Rating -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const stars = document.querySelectorAll('.star-rating .fas'); // Lấy tất cả icon sao
-        const ratingInput = document.getElementById('rating'); // Input ẩn để lưu giá trị rating
-        const ratingHint = document.getElementById('rating-hint'); // Vùng hiển thị gợi ý
+    const stars = document.querySelectorAll('.star-rating .fas'); // Lấy tất cả các icon sao
+    const ratingInput = document.getElementById('rating'); // Input ẩn để lưu giá trị rating
+    const ratingHint = document.getElementById('rating-hint'); // Vùng hiển thị gợi ý
 
-        // Mặc định là 5 sao khi trang tải lên
-        const defaultRating = 5;
-        ratingInput.value = defaultRating;
-        highlightStars(defaultRating);
-        const hints = ["Very Bad", "Bad", "Average", "Good", "Excellent"];
-        ratingHint.textContent = hints[defaultRating - 1];
+    const hints = ["Very Bad", "Bad", "Average", "Good", "Excellent"];
 
-        // Xử lý click vào các ngôi sao
-        stars.forEach((star, index) => {
-            star.addEventListener('click', () => {
-                const value = index + 1; // Tính giá trị sao dựa vào index
-                ratingInput.value = value; // Gán giá trị vào input ẩn
-                highlightStars(value); // Tô sáng các ngôi sao
-                ratingHint.textContent = hints[index]; // Hiển thị gợi ý tương ứng
-            });
+    // Kiểm tra từ backend: nếu là lần đầu (review == null) -> gán rating mặc định là 5
+    const isEditing = document.querySelector('input[name="reviewId"]') !== null; // Kiểm tra có reviewId hay không
+    const defaultRating = isEditing ? parseInt(ratingInput.value) : 5; // Lấy rating từ backend nếu đang chỉnh sửa, mặc định là 5 nếu lần đầu
+
+    ratingInput.value = defaultRating; // Gán giá trị rating vào input
+    highlightStars(defaultRating); // Tô sáng sao
+    ratingHint.textContent = hints[defaultRating - 1]; // Hiển thị gợi ý phù hợp
+
+    // Xử lý click vào các ngôi sao
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            const value = index + 1; // Giá trị tương ứng với sao được click
+            ratingInput.value = value; // Cập nhật giá trị rating vào input ẩn
+            highlightStars(value); // Tô sáng các ngôi sao
+            ratingHint.textContent = hints[index]; // Hiển thị gợi ý tương ứng
         });
-
-        // Hàm tô sáng các ngôi sao
-        function highlightStars(rating) {
-            stars.forEach((star, i) => {
-                star.classList.toggle('text-warning', i < rating); // Sao được chọn tô màu vàng
-                star.classList.toggle('text-secondary', i >= rating); // Sao còn lại giữ màu xám
-            });
-        }
     });
+
+    // Hàm tô sáng các ngôi sao
+    function highlightStars(rating) {
+        stars.forEach((star, i) => {
+            star.classList.toggle('text-warning', i < rating); // Sao được chọn tô màu vàng
+            star.classList.toggle('text-secondary', i >= rating); // Sao còn lại giữ màu xám
+        });
+    }
+});
+
 </script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

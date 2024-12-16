@@ -5,7 +5,7 @@
     <title>Review Product</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 </head>
-<body>
+<body class="no-star-script">
 <section>
     <div class="container mt-5">
         <h2 class="text-center" th:text="${review != null} ? 'Chỉnh sửa đánh giá sản phẩm' : 'Đánh giá sản phẩm'"></h2>
@@ -15,11 +15,30 @@
             <!-- Hidden input lưu reviewId nếu là chỉnh sửa -->
             <input type="hidden" name="reviewId" th:if="${review != null}" th:value="${review.id}">
             
+              <!-- Rating -->
+       
+
+         
+            <div class="mb-3">
+    <label class="form-label">Your Rating</label>
+    <div class="star-rating d-flex">
+        <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, 5)}"
+           th:classappend="${i <= rating} ? 'fas fa-star text-warning' : 'fas fa-star text-secondary'"
+           data-value="${i}"></i>
+    </div>
+    <input type="hidden" name="rating" id="rating" th:value="${rating}" required>
+    <p id="rating-hint" class="mt-2 text-muted">Click to select your rating</p>
+</div>
+
+            <!-- comment -->
+       
             <div class="mb-3">
                 <label for="comment" class="form-label">Your Review (at least 50 characters)</label>
                 <textarea class="form-control" id="comment" name="comment" rows="5" minlength="50" maxlength="500" required
                           th:text="${review != null} ? ${review.comment} : ''"></textarea>
             </div>
+            
+           
             
             <div class="mb-3">
                 <label for="files" class="form-label">Upload Images or Videos</label>
@@ -52,5 +71,6 @@
         </form>
     </div>
 </section>
+
 </body>
 </html>
