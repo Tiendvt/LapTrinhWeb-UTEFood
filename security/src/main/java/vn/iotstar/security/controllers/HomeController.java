@@ -144,10 +144,13 @@ public class HomeController {
 	    m.addAttribute("categories", categories);
 
 	    Page<Product> page = null;
+	 // Loại bỏ khoảng trắng thừa trước khi truyền vào service (VALIDATION)
+	    category = category.trim();
+	    criteria = criteria.trim();
+	    ch = ch.trim();
 
 	    //Logic tìm kiếm
 
-	    //Làm lại:
 	    if(!StringUtils.isEmpty(ch))		//Nếu có nhập từ khóa vào tìm kiếm
 	    {
 	    	System.out.print("Có dùng keyword: "+ch+ "\n");

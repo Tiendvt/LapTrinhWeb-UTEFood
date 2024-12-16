@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
 
 <head>
-	<meta charset="ISO-8859-1">
-	<title>Product Management</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-	<style>
-		/* ... (Your existing CSS) ... */
-	</style>
+<meta charset="ISO-8859-1">
+<title>Product Management</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+	rel="stylesheet" />
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet" />
+<style>
+/* ... (Your existing CSS) ... */
+</style>
 </head>
 
 <body>
@@ -17,8 +22,8 @@
 			<div class="row">
 				<p class="text-center fs-3 mt-2">All Products</p>
 				<hr>
-				<a href="/admin/" class="text-decoration-none">
-					<i class="fa-solid fa-arrow-left"></i> Back
+				<a href="/admin/" class="text-decoration-none"> <i
+					class="fa-solid fa-arrow-left"></i> Back
 				</a>
 
 				<!-- Session Message Handling -->
@@ -33,17 +38,19 @@
 				</th:block>
 
 				<div class="row p-3">
-					<form action="/admin/products" method="get" class="d-flex align-items-center" onsubmit="return validateSearchForm()">
+					<form action="/admin/products" method="get"
+						class="d-flex align-items-center"
+						onsubmit="return validateSearchForm()">
 						<!-- Search Input -->
 						<div class="col-3">
-							<input type="text" class="form-control rounded-pill" name="ch" id="searchInput"
-								placeholder="Search Products" minlength="2">
-                                <div id="searchError" class="text-danger"></div>
+							<input type="text" class="form-control rounded-pill" name="ch"
+								id="searchInput" placeholder="Search Products" minlength="2">
+							<div id="searchError" class="text-danger"></div>
 						</div>
 						<!-- Category Dropdown -->
 						<div class="col-1 mx-2">
-							<label for="type" class="visually-hidden">number</label>
-							<select class="form-control rounded-pill" id="type" name="type">
+							<label for="type" class="visually-hidden">number</label> <select
+								class="form-control rounded-pill" id="type" name="type">
 								<option value="1">All</option>
 								<option value="2">Products</option>
 								<option value="3">Category</option>
@@ -80,69 +87,66 @@
 						<tbody>
 							<th:block th:if="${#lists.isEmpty(products)}">
 								<tr>
-									<td colspan="11" class="text-center text-danger">No products available.</td>
+									<td colspan="11" class="text-center text-danger">No
+										products available.</td>
 								</tr>
 							</th:block>
 							<th:block th:unless="${#lists.isEmpty(products)}">
 								<tr th:each="p,c:${products}">
 									<th scope="row">[[${c.count}]]</th>
-									<td><img th:src="@{'/img/product_img/'+${p.image}}" width="70px" height="70px"></td>
+									<td><img th:src="@{'/img/product_img/'+${p.image}}"
+										width="70px" height="70px"></td>
 									<td>[[${p.title}]]</td>
 									<td>[[${p.category.name}]]</td>
 									<td>[[${p.price}]]</td>
 									<td>[[${p.discount}]]</td>
 									<td>[[${p.discountPrice}]]</td>
-									<td>[[${p.isActive}]] </td>
+									<td>[[${p.isActive}]]</td>
 									<td>[[${p.stock}]]</td>
 									<td>[[${p.shop.name}]]</td>
-									<td>
-										<a th:href="@{'/admin/editProduct/'+${p.id}}" class="btn btn-sm btn-primary">
-											<i class="fa-solid fa-pen-to-square"></i> Edit
-										</a>
-										<a th:href="@{'/admin/deleteProduct/'+${p.id}}" class="btn btn-sm btn-danger">
-											<i class="fa-solid fa-trash"></i> Delete
-										</a>
-									</td>
+									<td><a th:href="@{'/admin/editProduct/'+${p.id}}"
+										class="btn btn-sm btn-primary"> <i
+											class="fa-solid fa-pen-to-square"></i> Edit
+									</a> <a th:href="@{'/admin/deleteProduct/'+${p.id}}"
+										class="btn btn-sm btn-danger"> <i
+											class="fa-solid fa-trash"></i> Delete
+									</a></td>
 								</tr>
 							</th:block>
 						</tbody>
 					</table>
 
-					<!-- Pagination -->
-					<th:block th:if="${!#lists.isEmpty(products)}">
-						<div class="row">
-							<!-- Tá»•ng sá»‘ sáº£n pháº©m cÄƒn giá»¯a -->
-							<div class="col-md-12 text-center mb-3 fs-4">
-							    <strong>Total Products: [[${totalElements}]]</strong>
-							</div>
-							<!-- Pháº§n phÃ¢n trang -->
-							<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-5">
+							<p>Total Products: [[${totalElements}]]</p>
+						</div>
+						<div class="col-md-6">
+							<th:block>
 								<nav aria-label="Page navigation example">
-									<ul class="pagination justify-content-center">
-										<!-- NÃºt Previous -->
-										<li class="page-item" th:classappend="${isFirst} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo-1}}"
-												aria-label="Previous">
-												<span aria-hidden="true">«</span>
-											</a>
-										</li>
-										<!-- CÃ¡c trang -->
-										<li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item active"
-											th:classappend="${pageNo+1 == i} ? 'active' : ''">
+									<ul class="pagination">
+										<li class="page-item"
+											th:classappend="${isFirst} ? 'disabled':''"><a
+											class="page-link"
+											th:href="@{'/admin/products?pageNo='+${pageNo-1}}"
+											aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+										</a></li>
+
+										<li th:each="i:${#numbers.sequence(1,totalPages)}"
+											class="page-item" th:classappend="${pageNo+1==i}?'active':''">
 											<a class="page-link"
-												th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
+											th:href="@{'/admin/products?pageNo='+${i-1}}">[[${i}]]</a>
 										</li>
-										<!-- NÃºt Next -->
-										<li class="page-item" th:classappend="${isLast} ? 'disabled':''">
-											<a class="page-link" th:href="@{'/admin/products?pageNo='+${pageNo+1}}"
-												aria-label="Next">
-												<span aria-hidden="true">»</span>
-											</a>
-										</li>
+
+										<li class="page-item"
+											th:classappend="${isLast} ? 'disabled':''"><a
+											class="page-link"
+											th:href="@{'/admin/products?pageNo='+${pageNo+1}}"
+											aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+										</a></li>
 									</ul>
 								</nav>
-							</div>
 						</div>
+					</div>
 					</th:block>
 					``
 
@@ -150,20 +154,20 @@
 			</div>
 		</div>
 	</section>
-    <script>
-        function validateSearchForm() {
-            const searchTerm = document.getElementById("searchInput").value;
-            const searchError = document.getElementById("searchError");
-            searchError.textContent = "";
+	<script>
+		function validateSearchForm() {
+			const searchTerm = document.getElementById("searchInput").value;
+			const searchError = document.getElementById("searchError");
+			searchError.textContent = "";
 
-            if (searchTerm.trim() !== "" && searchTerm.length < 2) {
-                searchError.textContent = "Search term must be at least 2 characters.";
-                return false;
-            }
+			if (searchTerm.trim() !== "" && searchTerm.length < 2) {
+				searchError.textContent = "Search term must be at least 2 characters.";
+				return false;
+			}
 
-            return true;
-        }
-    </script>
+			return true;
+		}
+	</script>
 </body>
 
 </html>

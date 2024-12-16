@@ -276,7 +276,7 @@ public class VendorController {
             productService.saveProduct(product);  // Update the product
             int productQuantity = updateOrder.getQuantity();
             // Update shop sold and revenue without saving the entire shop
-            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice(),productQuantity);
+            shopService.updateShopSoldAndRevenue(shop.getId(), product.getDiscountPrice()*productQuantity,productQuantity);
 
             // Log or display success message
             session.setAttribute("succMsg", "Order status updated to Delivered. Product sold and shop revenue updated.");

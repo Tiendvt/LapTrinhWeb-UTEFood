@@ -27,7 +27,7 @@
 						<img alt="Profile Image" th:src="@{'../img/profile_img/'+${user.profileImage}}"
 							class="rounded-circle border p-2" style="width: 120px; height: 120px;">
 					</div>
-					<form action="/vendor/update-profile" method="post" enctype="multipart/form-data">
+					<form action="/user/update-profile" method="post" enctype="multipart/form-data">
 						<table class="table table-borderless">
 							<tbody>
 								<tr>
@@ -83,7 +83,7 @@
 				<!-- Right: Change Password -->
 				<div class="col-lg-6 col-md-12">
 					<h4 class="text-center fw-bold mb-4">Change Password</h4>
-					<form action="/vendor/change-password" method="post">
+					<form action="/user/change-password" method="post">
 						<table class="table table-borderless">
 							<tbody>
 								<tr>
