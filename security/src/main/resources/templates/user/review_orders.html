@@ -11,6 +11,19 @@
         <h2 class="text-center">Đánh giá sản phẩm</h2>
         <form th:action="@{/user/review-order}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="orderId" th:value="${order.id}">
+             <!-- Rating Stars -->
+            <div class="mb-3">
+                <label class="form-label">Your Rating</label>
+                <div class="star-rating d-flex">
+                    <i class="fas fa-star" data-value="1"></i>
+                    <i class="fas fa-star" data-value="2"></i>
+                    <i class="fas fa-star" data-value="3"></i>
+                    <i class="fas fa-star" data-value="4"></i>
+                    <i class="fas fa-star" data-value="5"></i>
+                </div>
+                <input type="hidden" name="rating" id="rating" value="5" required>
+                <p id="rating-hint" class="mt-2 text-muted"></p>
+            </div>
             <div class="mb-3">
                 <label for="comment" class="form-label">Your Review (at least 50 characters)</label>
                 <textarea class="form-control" id="comment" name="comment" rows="5" minlength="50" maxlength="100" required></textarea>

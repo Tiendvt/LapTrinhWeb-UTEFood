@@ -145,19 +145,22 @@ public class OrderServiceImpl implements OrderService {
         
     }
 
-    public void submitReview(Integer orderId, String comment, MultipartFile[] files) {
+    public void submitReview(Integer orderId, String comment, Integer rating, MultipartFile[] files) {
+    	 // Tìm ProductOrder dựa trên orderId
     	ProductOrder order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-
+    	
+    	  // Chỉ cho phép đánh giá các đơn hàng đã giao hàng thành công
         if (!"Delivered".equalsIgnoreCase(order.getStatus())) {
             throw new RuntimeException("Only completed orders can be reviewed");
         }
-
+        
         // Giả định có bảng Review hoặc lưu trực tiếp vào bảng ProductOrder
         Review review = new Review();
         review.setComment(comment);
         review.setOrder(order);
-
+        review.setRating(rating);   // Lưu số sao đánh giá      
+        
         // Xử lý upload file (nếu có)
         if (files != null) {
             for (MultipartFile file : files) {
@@ -313,6 +316,8 @@ public class OrderServiceImpl implements OrderService {
         
         return monthlyRevenueMap;
 	}
+
+
 	
 
 }

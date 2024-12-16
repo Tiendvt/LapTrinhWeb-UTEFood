@@ -37,4 +37,7 @@ public class Review {
     public void addFile(String fileUrl) {
         this.fileUrls.add(fileUrl);
     }
+    @Column(nullable = false)
+    private Integer rating; // Rating từ 1 đến 5
+
 }

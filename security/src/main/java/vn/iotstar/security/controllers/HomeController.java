@@ -34,12 +34,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import vn.iotstar.security.model.Category;
 import vn.iotstar.security.model.Product;
+import vn.iotstar.security.model.Review;
 import vn.iotstar.security.model.User;
 import vn.iotstar.security.repository.FavoriteProductRepository;
 import vn.iotstar.security.service.CartService;
 import vn.iotstar.security.service.CategoryService;
 import vn.iotstar.security.service.FavoriteService;
 import vn.iotstar.security.service.ProductService;
+import vn.iotstar.security.service.ReviewService;
 import vn.iotstar.security.service.UserService;
 import vn.iotstar.security.util.CommonUtil;
 
@@ -52,7 +54,9 @@ public class HomeController {
 	@Autowired
 	private ProductService productService;
 
-
+	@Autowired
+	private ReviewService reviewService;
+	
 	@Autowired
 	private UserService userService;
 
@@ -144,6 +148,7 @@ public class HomeController {
 	    category = category.trim();
 	    criteria = criteria.trim();
 	    ch = ch.trim();
+
 	    //Logic tìm kiếm
 
 	    if(!StringUtils.isEmpty(ch))		//Nếu có nhập từ khóa vào tìm kiếm
@@ -251,6 +256,11 @@ public class HomeController {
 	public String product(@PathVariable int id, Model m, Principal principal) {
 		Product product = productService.getProductById(id);
 	    m.addAttribute("product", product);
+	    
+	    // Lấy danh sách review dựa trên productId
+	    List<Review> reviews = reviewService.findReviewsByProductId(id);
+	    m.addAttribute("reviews", reviews);
+	    
 	    boolean isFavorite = false;
 	    if (principal != null) {
 	        User user = userService.getUserByEmail(principal.getName());

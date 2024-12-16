@@ -37,7 +37,7 @@ public interface OrderService {
 
     List<ProductOrder> getOrdersByStatusAndUser(String status, Integer userId);
     ProductOrder getOrderById(Integer id);
-    void submitReview(Integer orderId, String comment, MultipartFile[] files);
+    void submitReview(Integer orderId, String comment, Integer rating , MultipartFile[] files);
     Map<Integer, Boolean> getReviewStatusForOrders(List<ProductOrder> orders);
 
 	/**

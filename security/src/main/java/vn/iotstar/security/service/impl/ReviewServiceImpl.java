@@ -56,4 +56,9 @@ public class ReviewServiceImpl implements ReviewService{
 		
 	}
 
+	@Override
+	public List<Review> findReviewsByProductId(Integer ProductId) {
+		return reviewRepository.findReviewsByProductId(ProductId);
+	}
+
 }

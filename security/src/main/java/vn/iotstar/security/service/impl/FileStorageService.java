@@ -15,9 +15,10 @@ import vn.iotstar.security.util.AppConstant;
 public class FileStorageService  {
 	
     public String storeFile(MultipartFile file) {
-//    	if (file == null || file.isEmpty()) {
-//            throw new RuntimeException("Invalid file: File is empty or null");
-//        }
+    	 // Kiểm tra nếu file rỗng, trả về "default.jpg"
+        if (file == null || file.isEmpty()) {
+            return "default.jpg";
+        }
     	try {
             // Tạo thư mục nếu chưa tồn tại
             Path uploadPath = Paths.get(AppConstant.uploadDir);
