@@ -121,9 +121,19 @@ public class UserController {
 		return user;
 	}
 	@GetMapping("/cartQuantityUpdate")
-	public String updateCartQuantity(@RequestParam String sy, @RequestParam Integer cid) {
-		cartService.updateQuantity(sy, cid);
-		return "redirect:/user/cart";
+	public String updateCartQuantity(@RequestParam String sy, @RequestParam Integer cid, HttpSession session) {
+		Cart cart = cartService.getCartById(cid);
+	    Product product = cart.getProduct();
+
+	    // Kiểm tra nếu số lượng vượt quá stock
+	    if ("in".equalsIgnoreCase(sy) && cart.getQuantity() + 1 > product.getStock()) {
+	        session.setAttribute("errorMsg", "Số lượng sản phẩm vượt quá kho hiện tại!");
+	        return "redirect:/user/cart";
+	    }
+
+	    // Cập nhật số lượng trong giỏ hàng
+	    cartService.updateQuantity(sy, cid);
+	    return "redirect:/user/cart";
 	}
 	@GetMapping("/orders")
 	public String orderPage(Principal p, Model m) {

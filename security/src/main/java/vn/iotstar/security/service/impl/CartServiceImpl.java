@@ -109,5 +109,11 @@ public class CartServiceImpl implements CartService {
 		
 	}
 
+	@Override
+	public Cart getCartById(Integer cartId) {
+		 return cartRepository.findById(cartId)
+		            .orElseThrow(() -> new RuntimeException("Cart not found with ID: " + cartId));
+	}
+
 
 }
