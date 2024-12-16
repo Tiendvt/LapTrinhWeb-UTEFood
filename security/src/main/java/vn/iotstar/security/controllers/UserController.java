@@ -252,8 +252,21 @@ public class UserController {
 	@PostMapping("/review-order")
 	public String submitReview(@RequestParam Integer orderId,
 	                           @RequestParam String comment,
-	                           @RequestParam("files") MultipartFile[] files) {
-	    orderService.submitReview(orderId, comment, files);
+	                           @RequestParam Integer rating, // Nhận rating từ form
+	                           @RequestParam(value = "files", required = false) MultipartFile[] files, RedirectAttributes redirectAttributes) {
+		 
+		try {
+		        if (files == null || files.length == 0 || Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {
+		            // Không có file được tải lên, chỉ lưu đánh giá text và rating
+		            orderService.submitReview(orderId, comment, rating, null);
+		        } else {
+		            // Lưu đánh giá kèm các file được tải lên
+		            orderService.submitReview(orderId, comment, rating, files);
+		        }
+		        redirectAttributes.addFlashAttribute("succMsg", "Review submitted successfully!");
+		    } catch (Exception e) {
+		        redirectAttributes.addFlashAttribute("errorMsg", "Error submitting review: " + e.getMessage());
+		    }
 	    return "redirect:/user/user-orders/delivered"; // Quay lại tab "Completed"
 	}
 	@GetMapping("/update-status")

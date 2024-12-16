@@ -164,4 +164,19 @@ body {
     font-size: 1.2rem; /* Tăng kích thước biểu tượng */
     vertical-align: middle;
 }
+.fa-star {
+    font-size: 16px;
+}
+.text-warning {
+    color: #f8d000 !important;
+}
+.star-rating {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+.star-rating .active {
+            color: gold;
+        }
 

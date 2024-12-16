@@ -191,7 +191,7 @@ body {
         })
         .catch(error => console.error('Error:', error));
     }
-</script>
+	</script>
 	<!-- Script cho render áº£nh ÄÃ¡nh giÃ¡ trÆ°á»c khi gá»­i:  -->
 	<script>
     document.getElementById('files').addEventListener('change', function(event) {
@@ -232,10 +232,10 @@ body {
             fileReader.readAsDataURL(file); // Äá»c file dÆ°á»i dáº¡ng URL
         }
     });
-</script>
+	</script>
 
-<!--render ảnh cho update -->
-<script>
+	<!--render ảnh cho update -->
+	<script>
 	document.getElementById('files').addEventListener('change', function (event) {
     let formData = new FormData();
     Array.from(event.target.files).forEach(file => {
@@ -273,8 +273,41 @@ body {
     .catch(error => console.error('Error:', error));
 });
 
+	</script>
+<!-- Script for Star Rating -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll('.star-rating .fas'); // Lấy tất cả icon sao
+        const ratingInput = document.getElementById('rating'); // Input ẩn để lưu giá trị rating
+        const ratingHint = document.getElementById('rating-hint'); // Vùng hiển thị gợi ý
 
+        // Mặc định là 5 sao khi trang tải lên
+        const defaultRating = 5;
+        ratingInput.value = defaultRating;
+        highlightStars(defaultRating);
+        const hints = ["Very Bad", "Bad", "Average", "Good", "Excellent"];
+        ratingHint.textContent = hints[defaultRating - 1];
+
+        // Xử lý click vào các ngôi sao
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                const value = index + 1; // Tính giá trị sao dựa vào index
+                ratingInput.value = value; // Gán giá trị vào input ẩn
+                highlightStars(value); // Tô sáng các ngôi sao
+                ratingHint.textContent = hints[index]; // Hiển thị gợi ý tương ứng
+            });
+        });
+
+        // Hàm tô sáng các ngôi sao
+        function highlightStars(rating) {
+            stars.forEach((star, i) => {
+                star.classList.toggle('text-warning', i < rating); // Sao được chọn tô màu vàng
+                star.classList.toggle('text-secondary', i >= rating); // Sao còn lại giữ màu xám
+            });
+        }
+    });
 </script>
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 
