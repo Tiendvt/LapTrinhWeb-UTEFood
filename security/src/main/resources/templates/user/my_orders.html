@@ -43,6 +43,8 @@
                     <th>Date</th>
                     <th>Product</th>
                     <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Shop</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -51,8 +53,10 @@
                 <tr th:each="order : ${orders}">
                     <td th:text="${order.orderId}"></td>
                     <td th:text="${order.orderDate}"></td>
-                    <td th:text="${order.product.title}"></td>
+                    <td th:text="${order.name}"></td>
                     <td th:text="${order.price}"></td>
+                    <td th:text="${order.quantity}"></td>
+                    <td th:text="${order.shop.name}"></td>
                     <td th:text="${order.status}"></td>
                     <td>
                         <!-- Nút Show Review hoặc Review -->

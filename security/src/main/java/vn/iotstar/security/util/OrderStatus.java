@@ -3,7 +3,7 @@ package vn.iotstar.security.util;
 public enum OrderStatus {
 
 	NEW_ORDER(1, "New Order"), ORDER_CONFIRMED(2, "Order Confirmed"), PRODUCT_PACKED(3, "In Transit"),
-	DELIVERED(4, "Delivered"), CANCELLED(5, "Cancelled"),RETURNED_REFUNDED(6,"Returned - Refunded");
+	DELIVERED(4, "Delivered"), CANCELLED(5, "Cancelled"),RETURNED_REFUNDED(6,"Returned - Refunded"), ONLINE(7,"Pending payment");
 
 	private Integer id;
 

@@ -14,7 +14,7 @@ public interface ShopRepository extends JpaRepository<Shop, Integer> {
 
     boolean existsByOwnerEmail(String email);
     @Modifying
-    @Query("UPDATE Shop s SET s.sold = s.sold + 1, s.revenue = s.revenue + :revenue WHERE s.id = :shopId")
-    void updateShopSoldAndRevenue(@Param("shopId") Integer shopId, @Param("revenue") Double revenue);
+    @Query("UPDATE Shop s SET s.sold = s.sold + :quantity, s.revenue = s.revenue + :revenue WHERE s.id = :shopId")
+    void updateShopSoldAndRevenue(@Param("shopId") Integer shopId, @Param("revenue") Double revenue,@Param("quantity") Integer quantity);
 
 }

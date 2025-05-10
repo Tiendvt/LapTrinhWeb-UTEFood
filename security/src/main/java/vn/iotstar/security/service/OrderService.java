@@ -53,5 +53,10 @@ public interface OrderService {
 	double getTotalRevenueForShop(Shop shop);
         
     void productIdToNull(int product_id);
+    
+    String getTotalRevenue();
+    
+    Map<String, Double> getMonthlyRevenue(List<ProductOrder> listDeliveredOrder, int year);
+    
 }
 

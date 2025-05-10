@@ -155,7 +155,7 @@ public class UserController {
 	        // Save the order details before redirecting (if needed for tracking)
 	        orderService.saveOrder(user.getId(), request);
 
-	        // Redirect to VNPay
+	        
 	        return "redirect:" + vnpayUrl;
 	    } else if ("COD".equalsIgnoreCase(request.getPaymentType())) {
 	        // Process Cash on Delivery (COD)
@@ -383,8 +383,9 @@ public class UserController {
         return response;
     }
     @GetMapping("/vnpay-payment")
-    public String handleVnPayReturn(HttpServletRequest request, Model model) {
+    public String handleVnPayReturn(Principal p, HttpServletRequest request, Model model) {
         // Extract parameters from VNPay's callback
+    	System.out.print("thanh toán");
         String orderInfo = request.getParameter("vnp_OrderInfo");
         String paymentTime = request.getParameter("vnp_PayDate");
         String transactionId = request.getParameter("vnp_TransactionNo");
@@ -400,11 +401,25 @@ public class UserController {
         model.addAttribute("totalPrice", actualPrice);
         model.addAttribute("paymentTime", paymentTime);
         model.addAttribute("transactionId", transactionId);
+        
+        User user = getLoggedInUserDetails(p);
 
         // Check payment status
+
         if ("00".equals(paymentStatus)) { // "00" indicates success
+        	// Clear cart after successful order placement
+	        cartService.clearCartByUserId(user.getId());
+        	       	
+
             return "user/ordersuccess"; // Redirect to success page
         } else {
+        	
+        	List<ProductOrder> order = orderService.getOrdersByStatusAndUser(OrderStatus.ONLINE.getName(), user.getId());
+        	
+        	   
+        	order.get(0).setStatus(OrderStatus.CANCELLED.getName());
+        	orderService.updateOrderStatus(order.get(0).getId(), OrderStatus.CANCELLED.getName());
+        	
             return "user/orderfail"; // Redirect to failure page
         }
     }

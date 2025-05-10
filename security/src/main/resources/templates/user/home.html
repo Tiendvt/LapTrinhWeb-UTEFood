@@ -70,7 +70,7 @@
                 <div class="col-md-2" th:each="c:${categories}">
                     <div class="card rounded-circle shadow-sm p-3 mb-5 bg-body-tertiary rounded">
                         <div class="card-body text-center">
-                            <img th:src="@{'/img/category_img/'+${c.imageName}}" width="65%" height="140px"><br>
+                            <img th:src="@{'/img/category_img/'+${c.imageName}}" width="90%" height="120px"><br>
                             <a th:href="@{'/products?category='+${c.name}}" class="text-decoration-none">[[${c.name}]]</a>
                         </div>
                     </div>

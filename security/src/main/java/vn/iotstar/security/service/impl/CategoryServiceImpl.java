@@ -20,6 +20,9 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private ProductServiceImpl productService;
 
 	@Override
 	public Category saveCategory(Category category) {
@@ -39,6 +42,10 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Boolean deleteCategory(int id) {
 		Category category = categoryRepository.findById(id).orElse(null);
+		
+		if(!productService.deleteProductByCategory(category)) {
+			return false;
+		}		
 
 		if (!ObjectUtils.isEmpty(category)) {
 			categoryRepository.delete(category);

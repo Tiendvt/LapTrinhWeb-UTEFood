@@ -216,5 +216,59 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findBySoldGreaterThanOrderBySoldDesc(10);
     }
 
+	@Override
+
+	public Page<Product> getProductsByCriteria(String criteria, Pageable pageable) {
+		switch (criteria.toUpperCase()) {
+        case "NEWEST":
+            return productRepository.findNewestProducts(pageable);
+        case "BEST_SELLING":
+            return productRepository.findBestSellingProducts(pageable);
+        case "TOP_RATED":
+            return productRepository.findTopRatedProducts(pageable);
+        case "FAVORITE":
+            return productRepository.findMostFavoriteProducts(pageable);
+        default:
+            throw new IllegalArgumentException("Invalid criteria: " + criteria);
+    }
+	}
+
+	public Boolean deleteProductByCategory(Category category) {
+		List<Product> listProduct = productRepository.findByCategory(category);
+		
+		for (Product product : listProduct) {
+			deleteProduct(product.getId());
+		}
+		
+		listProduct = productRepository.findByCategory(category);
+		
+		if(ObjectUtils.isEmpty(listProduct)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String getTotalSoldProduct(List<ProductOrder> allDeliveredOrders) {
+		int totalProduct = 0;
+		for (ProductOrder productOrder : allDeliveredOrders) {
+            totalProduct += productOrder.getQuantity();
+        }
+		return String.valueOf(totalProduct);
+	}
+
+	@Override
+    public Page<Product> searchVendorProductsPagination(Shop shop, String searchQuery, int pageNo, int pageSize) {
+        return productRepository.findByShopAndTitleContainingIgnoreCase(shop, searchQuery, PageRequest.of(pageNo, pageSize));
+    }
+	
+
+
+	@Override
+	public Page<Product> searchProductsByCategoryAndKeyword(String category, String keyword, Pageable pageable) {
+		 return productRepository.findByCategoryAndKeyword(category, keyword, pageable);
+	}
+
+
 }
 

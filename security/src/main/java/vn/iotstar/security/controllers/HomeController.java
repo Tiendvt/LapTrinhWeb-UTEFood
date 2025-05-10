@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -120,37 +121,69 @@ public class HomeController {
 	}
 
 	@GetMapping("/products")
-	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
-			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
-			@RequestParam(defaultValue = "") String ch) {
+	public String products(
+	        Model m,
+	        @RequestParam(value = "category", defaultValue = "") String category,
+	        @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+	        @RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
+	        @RequestParam(defaultValue = "") String ch,
+	        @RequestParam(name = "criteria", defaultValue = "DEFAULT") String criteria) {
 
-		List<Category> categories = categoryService.getAllActiveCategory();
-		m.addAttribute("paramValue", category);
-		m.addAttribute("categories", categories);
+	    // Nếu có tiêu chí lọc thì đổi pageSize thành 20
+	    if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        pageSize = 20;
+	    }
 
-		List<Product> product = productService.getAllActiveProducts(category);
-		m.addAttribute("products", product);
-		Page<Product> page = null;
-		if (StringUtils.isEmpty(ch)) {
-			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
-		} else {
-			page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
-		}
+	    // Lấy danh sách danh mục
+	    List<Category> categories = categoryService.getAllActiveCategory();
+	    m.addAttribute("paramValue", category);
+	    m.addAttribute("categories", categories);
 
-		List<Product> products = page.getContent();
-		m.addAttribute("products", products);
-		m.addAttribute("productsSize", products.size());
+	    Page<Product> page;
 
-		m.addAttribute("pageNo", page.getNumber());
-		m.addAttribute("pageSize", pageSize);
-		m.addAttribute("totalElements", page.getTotalElements());
-		m.addAttribute("totalPages", page.getTotalPages());
-		m.addAttribute("isFirst", page.isFirst());
-		m.addAttribute("isLast", page.isLast());
+	    // Logic tìm kiếm
+	    if (!StringUtils.isEmpty(ch)) {
 
-		return "product";
+	        // Nếu có từ khóa tìm kiếm ch
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo cả category và từ khóa
+	            page = productService.searchProductsByCategoryAndKeyword(category, ch, PageRequest.of(pageNo, pageSize));
+	        } else {
+	            // Tìm sản phẩm theo từ khóa mà không phân theo category
+	            page = productService.searchActiveProductPagination(pageNo, pageSize, "", ch);
+	        }
+	    } else if (!"DEFAULT".equalsIgnoreCase(criteria)) {
+	        // Nếu có tiêu chí lọc (không phải mặc định)
+	        page = productService.getProductsByCriteria(criteria, PageRequest.of(pageNo, pageSize));
+	    } else {
+	        // Nếu không có từ khóa và không có tiêu chí lọc, phân trang theo category
+	        if (!StringUtils.isEmpty(category)) {
+	            // Tìm sản phẩm theo category
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+	        } else {
+	            // Nếu category là rỗng (All), tìm tất cả sản phẩm
+	            page = productService.getAllActiveProductPagination(pageNo, pageSize, "");
+	        }
+	    }
+
+	    // Gán các thông tin sản phẩm vào Model
+	    List<Product> products = page.getContent();
+	    m.addAttribute("products", products);
+	    m.addAttribute("productsSize", products.size());
+	    m.addAttribute("pageNo", page.getNumber());
+	    m.addAttribute("pageSize", pageSize);
+	    m.addAttribute("totalElements", page.getTotalElements());
+	    m.addAttribute("totalPages", page.getTotalPages());
+	    m.addAttribute("isFirst", page.isFirst());
+	    m.addAttribute("isLast", page.isLast());
+	    m.addAttribute("criteria", criteria);
+	    m.addAttribute("ch", ch); // Thêm `ch` vào Model để giữ giá trị trong view
+
+	    return "product";
 	}
+
+
+
 
 	@GetMapping("/product/{id}")
 	public String product(@PathVariable int id, Model m, Principal principal) {
@@ -305,7 +338,6 @@ public class HomeController {
 		List<Category> categories = categoryService.getAllActiveCategory();
 		m.addAttribute("categories", categories);
 		return "product";
-
 	}
 	@GetMapping("/profile")
 	public String profile() {
